@@ -14,7 +14,8 @@ type RecipeState = {
   recipes: Recipe[];
   addRecipe: (recipe: Recipe) => void;
   getRecipeById: (id: string) => Recipe | undefined;
-  deleteRecipe: (id: string) => void; // ✅ new method
+  deleteRecipe: (id: string) => void;
+  
 };
 
 export const useRecipeStore = create<RecipeState>()(

@@ -3,9 +3,29 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Alert, Button, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRecipeStore } from '../../stores/useRecipeStore';
 
+type InstructionStep = {
+  text?: string;
+  [key: string]: any;
+};
+
+type InstructionSection = {
+  itemListElement?: InstructionStep[];
+  [key: string]: any;
+};
+
 export default function RecipeDetailsScreen() {
   const router = useRouter();
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id } = useLocalSearchParams<{ id?: string }>();
+
+  if (!id) {
+    return (
+      <View style={styles.centered}>
+        <Text style={styles.title}>Invalid Recipe ID</Text>
+        <Button title="Go Back" onPress={() => router.back()} />
+      </View>
+    );
+  }
+
   const recipe = useRecipeStore((state) => state.getRecipeById(id));
   const deleteRecipe = useRecipeStore((state) => state.deleteRecipe);
 
@@ -18,6 +38,42 @@ export default function RecipeDetailsScreen() {
     );
   }
 
+  const rawInstructions = recipe.instructions;
+
+  let instructions: string[] = [];
+
+  // Helper: extract text recursively from sections and steps
+  const extractInstructionText = (input: any): string[] => {
+    if (Array.isArray(input)) {
+      // Array can contain strings or objects
+      return input.flatMap(item => extractInstructionText(item));
+    } else if (typeof input === 'string') {
+      return input.trim() ? [input.trim()] : [];
+    } else if (typeof input === 'object' && input !== null) {
+      // Check for HowToSection or similar structure
+      if (Array.isArray(input.itemListElement)) {
+        return extractInstructionText(input.itemListElement);
+      }
+      // Fallback to .text property if exists
+      if (typeof input.text === 'string' && input.text.trim()) {
+        return [input.text.trim()];
+      }
+      // If no text found, return empty
+      return [];
+    }
+    return [];
+  };
+
+  // Use extraction helper on raw instructions
+  instructions = extractInstructionText(rawInstructions);
+
+  // Ingredients fallback
+  const ingredients = Array.isArray(recipe.ingredients) ? recipe.ingredients.map(String) : [];
+
+  const imageUri = recipe.imageUrl && recipe.imageUrl.length > 0
+    ? recipe.imageUrl
+    : 'https://via.placeholder.com/400';
+
   const handleDelete = () => {
     Alert.alert(
       'Delete Recipe',
@@ -28,11 +84,10 @@ export default function RecipeDetailsScreen() {
           text: 'Delete',
           style: 'destructive',
           onPress: async () => {
-            // Try to delete local image if it exists in FileSystem
-            if (recipe.imageUrl.startsWith(FileSystem.documentDirectory!)) {
+            if (imageUri.startsWith(FileSystem.documentDirectory!)) {
               try {
-                await FileSystem.deleteAsync(recipe.imageUrl, { idempotent: true });
-                console.log('Deleted image file:', recipe.imageUrl);
+                await FileSystem.deleteAsync(imageUri, { idempotent: true });
+                console.log('Deleted image file:', imageUri);
               } catch (err) {
                 console.warn('Failed to delete image:', err);
               }
@@ -50,17 +105,29 @@ export default function RecipeDetailsScreen() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>{recipe.title}</Text>
-      <Image source={{ uri: recipe.imageUrl }} style={styles.image} resizeMode="cover" />
+      <Image source={{ uri: imageUri }} style={styles.image} resizeMode="cover" />
 
       <Text style={styles.sectionTitle}>Ingredients:</Text>
-      {recipe.ingredients.map((item, index) => (
-        <Text key={`ing-${index}`} style={styles.itemText}>• {item}</Text>
-      ))}
+      {ingredients.length > 0 ? (
+        ingredients.map((item, index) => (
+          <Text key={`ing-${index}`} style={styles.itemText}>
+            • {item}
+          </Text>
+        ))
+      ) : (
+        <Text style={styles.itemText}>No ingredients available.</Text>
+      )}
 
       <Text style={styles.sectionTitle}>Instructions:</Text>
-      {recipe.instructions.map((step, index) => (
-        <Text key={`step-${index}`} style={styles.itemText}>{index + 1}. {step}</Text>
-      ))}
+      {instructions.length > 0 ? (
+        instructions.map((step, index) => (
+          <Text key={`step-${index}`} style={styles.itemText}>
+            {index + 1}. {step}
+          </Text>
+        ))
+      ) : (
+        <Text style={styles.itemText}>No instructions available.</Text>
+      )}
 
       <View style={styles.buttonRow}>
         <Button title="Go Back" onPress={() => router.back()} />
