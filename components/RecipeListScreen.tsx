@@ -14,7 +14,6 @@ export default function RecipeListScreen() {
   };
 
   const handleAddRecipe = () => {
-    console.log("Add Recipe button clicked");
     router.push('/add-recipe'); // Adjust path if different
   };
 

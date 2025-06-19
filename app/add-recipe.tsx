@@ -1,19 +1,24 @@
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Alert, Button, ScrollView, Text } from 'react-native';
+import { Alert, Button, Image, ScrollView, Text } from 'react-native';
+//import { v4 as uuidv4 } from 'uuid';
 import { useRecipeStore } from '../stores/useRecipeStore';
 import { downloadAndStoreImage } from '../utils/downloadAndStoreImage'; // adjust path as needed
+
+
+const defaultImage = require('../assets/images/error.png'); // adjust path if needed
+
 
 export default function AddRecipeForm() {
   const addRecipe = useRecipeStore((state) => state.addRecipe);
   const router = useRouter();
 
   const testRecipe = {
-    id: 'test-001',
+    id: `recipe-${Date.now()}`,
     title: 'Simple Pancakes',
     ingredients: ['Flour', 'Eggs', 'Milk'],
     instructions: ['Mix ingredients', 'Pour on pan', 'Cook until golden'],
-    imageUrl: encodeURI('https://images.immediate.co.uk/production/volatile/sites/30/2020/08/recipe-image-legacy-id-202451_12-50a0c95.jpg?resize=440,400'), // guaranteed to work
+    imageUrl: encodeURI('not url'), // guaranteed to work
   };
 
   const isValidImageUrl = (url: string) => {
@@ -21,20 +26,19 @@ export default function AddRecipeForm() {
 };
 
 
-  const handleAddTestRecipe = async () => {
+const handleAddTestRecipe = async () => {
   console.log("Add Recipe button clicked");
-  if (!isValidImageUrl(testRecipe.imageUrl)) {
-    Alert.alert('Invalid Image URL', 'Please use a direct image link ending in .jpg, .png, etc.');
-    return;
-  }
+
+  let localImageUri: string;
 
   try {
-    const localImageUri = await downloadAndStoreImage(testRecipe.imageUrl);
-    console.log("downloadAndStoreImage returned:", localImageUri);
-
-    if (!localImageUri) {
-      Alert.alert('Image Download Failed', 'Could not download the image locally.');
-      return;
+    if (isValidImageUrl(testRecipe.imageUrl)) {
+      const downloaded = await downloadAndStoreImage(testRecipe.imageUrl);
+      console.log("downloadAndStoreImage returned:", downloaded);
+      localImageUri = downloaded ?? Image.resolveAssetSource(defaultImage).uri;
+    } else {
+      console.warn("Invalid image URL — using fallback image.");
+      localImageUri = Image.resolveAssetSource(defaultImage).uri;
     }
 
     const recipeWithLocalImage = {
@@ -42,7 +46,7 @@ export default function AddRecipeForm() {
       imageUrl: localImageUri,
     };
 
-    console.log('Saving test recipe with local image:', recipeWithLocalImage);
+    console.log('Saving test recipe with image:', recipeWithLocalImage);
     addRecipe(recipeWithLocalImage);
     console.log('Test recipe saved!');
     router.back();
@@ -53,7 +57,8 @@ export default function AddRecipeForm() {
   }
 };
 
-  return (
+
+return (
     <ScrollView contentContainerStyle={{ padding: 16 }}>
       <Text style={{ marginBottom: 12 }}>
         Press the button to add a test recipe with a downloaded local image.
