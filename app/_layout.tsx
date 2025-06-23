@@ -8,7 +8,16 @@ import { Stack } from "expo-router";
 export default function Layout() {
   return (
     <GluestackUIProvider config={config}>
-      <Stack />
+      <Stack>
+        <Stack.Screen
+          name="index"
+          options={{
+            title: '',
+            headerStyle: { backgroundColor: '#0A192F' },
+            headerTitleStyle: { fontSize: 20, fontWeight: 'bold' },
+          }}
+        />
+    </Stack>
     </GluestackUIProvider>
   );
 }

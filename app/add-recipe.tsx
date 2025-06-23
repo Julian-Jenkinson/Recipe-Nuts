@@ -18,7 +18,7 @@ export default function AddRecipeForm() {
     title: 'Simple Pancakes',
     ingredients: ['Flour', 'Eggs', 'Milk'],
     instructions: ['Mix ingredients', 'Pour on pan', 'Cook until golden'],
-    imageUrl: encodeURI('not url'), // guaranteed to work
+    imageUrl: encodeURI('not url'),
   };
 
   const isValidImageUrl = (url: string) => {

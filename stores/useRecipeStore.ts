@@ -3,11 +3,19 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 export type Recipe = {
-  id: string; // Keep this, generate on add
+  id: string; // local UUID
   title: string;
   ingredients: string[];
   instructions: string[];
   imageUrl: string;
+  source: string;
+  category: string;
+  notes: string[];
+  difficulty: string;
+  cookTime: string;
+  prepTime: string;
+  servingSize: string;
+  favourite: boolean;
 };
 
 type RecipeState = {
@@ -15,13 +23,12 @@ type RecipeState = {
   addRecipe: (recipe: Recipe) => void;
   getRecipeById: (id: string) => Recipe | undefined;
   deleteRecipe: (id: string) => void;
-  
 };
 
 export const useRecipeStore = create<RecipeState>()(
   persist(
     (set, get) => ({
-      recipes: [], // Start with empty array
+      recipes: [],
 
       addRecipe: (recipe) =>
         set((state) => ({
@@ -33,10 +40,10 @@ export const useRecipeStore = create<RecipeState>()(
       deleteRecipe: (id) =>
         set((state) => ({
           recipes: state.recipes.filter((r) => r.id !== id),
-        })), // ✅ actual delete logic
+        })),
     }),
     {
-      name: 'recipe-storage', // key for AsyncStorage
+      name: 'recipe-storage',
       storage: createJSONStorage(() => AsyncStorage),
     }
   )

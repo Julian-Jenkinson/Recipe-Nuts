@@ -3,16 +3,6 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Alert, Button, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRecipeStore } from '../../stores/useRecipeStore';
 
-type InstructionStep = {
-  text?: string;
-  [key: string]: any;
-};
-
-type InstructionSection = {
-  itemListElement?: InstructionStep[];
-  [key: string]: any;
-};
-
 export default function RecipeDetailsScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
@@ -38,39 +28,11 @@ export default function RecipeDetailsScreen() {
     );
   }
 
-  const rawInstructions = recipe.instructions;
-
-  let instructions: string[] = [];
-
-  // Helper: extract text recursively from sections and steps
-  const extractInstructionText = (input: any): string[] => {
-    if (Array.isArray(input)) {
-      // Array can contain strings or objects
-      return input.flatMap(item => extractInstructionText(item));
-    } else if (typeof input === 'string') {
-      return input.trim() ? [input.trim()] : [];
-    } else if (typeof input === 'object' && input !== null) {
-      // Check for HowToSection or similar structure
-      if (Array.isArray(input.itemListElement)) {
-        return extractInstructionText(input.itemListElement);
-      }
-      // Fallback to .text property if exists
-      if (typeof input.text === 'string' && input.text.trim()) {
-        return [input.text.trim()];
-      }
-      // If no text found, return empty
-      return [];
-    }
-    return [];
-  };
-
-  // Use extraction helper on raw instructions
-  instructions = extractInstructionText(rawInstructions);
-
-  // Ingredients fallback
+  const instructions = Array.isArray(recipe.instructions) ? recipe.instructions : [];
   const ingredients = Array.isArray(recipe.ingredients) ? recipe.ingredients.map(String) : [];
+  const notes = Array.isArray(recipe.notes) ? recipe.notes.map(String) : [];
 
-  const imageUri = recipe.imageUrl && recipe.imageUrl.length > 0
+  const imageUri = recipe.imageUrl?.length
     ? recipe.imageUrl
     : 'https://via.placeholder.com/400';
 
@@ -87,12 +49,10 @@ export default function RecipeDetailsScreen() {
             if (imageUri.startsWith(FileSystem.documentDirectory!)) {
               try {
                 await FileSystem.deleteAsync(imageUri, { idempotent: true });
-                console.log('Deleted image file:', imageUri);
               } catch (err) {
                 console.warn('Failed to delete image:', err);
               }
             }
-
             deleteRecipe(recipe.id);
             router.back();
           },
@@ -106,6 +66,14 @@ export default function RecipeDetailsScreen() {
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>{recipe.title}</Text>
       <Image source={{ uri: imageUri }} style={styles.image} resizeMode="cover" />
+
+      <Text style={styles.metaText}>Source: {recipe.source}</Text>
+      <Text style={styles.metaText}>Prep Time: {recipe.prepTime || 'N/A'}</Text>
+      <Text style={styles.metaText}>Cook Time: {recipe.cookTime || 'N/A'}</Text>
+      <Text style={styles.metaText}>Difficulty: {recipe.difficulty || 'N/A'}</Text>
+      <Text style={styles.metaText}>Serving Size: {recipe.servingSize || 'N/A'}</Text>
+      <Text style={styles.metaText}>Category: {recipe.category || 'N/A'}</Text>
+      <Text style={styles.metaText}>Favourite: {recipe.favourite ? 'Yes' : 'No'}</Text>
 
       <Text style={styles.sectionTitle}>Ingredients:</Text>
       {ingredients.length > 0 ? (
@@ -121,12 +89,23 @@ export default function RecipeDetailsScreen() {
       <Text style={styles.sectionTitle}>Instructions:</Text>
       {instructions.length > 0 ? (
         instructions.map((step, index) => (
-          <Text key={`step-${index}`} style={styles.itemText}>
-            {index + 1}. {step}
+          <Text key={`step-${index}`} style={styles.instructionParagraph}>
+            {step}
           </Text>
         ))
       ) : (
         <Text style={styles.itemText}>No instructions available.</Text>
+      )}
+
+      {notes.length > 0 && (
+        <>
+          <Text style={styles.sectionTitle}>Notes:</Text>
+          {notes.map((note, idx) => (
+            <Text key={`note-${idx}`} style={styles.itemText}>
+              • {note}
+            </Text>
+          ))}
+        </>
       )}
 
       <View style={styles.buttonRow}>
@@ -153,16 +132,26 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     textAlign: 'center',
   },
+  instructionParagraph: {
+    fontSize: 16,
+    marginBottom: 12,
+    lineHeight: 22,
+  },
   image: {
     width: '100%',
     height: 200,
     borderRadius: 12,
     marginBottom: 20,
   },
+  metaText: {
+    fontSize: 16,
+    marginBottom: 4,
+    color: '#555',
+  },
   sectionTitle: {
     fontSize: 20,
     fontWeight: '600',
-    marginTop: 12,
+    marginTop: 16,
     marginBottom: 8,
   },
   itemText: {

@@ -5,10 +5,18 @@ type RecipeCardProps = {
   id: string;
   title: string;
   imageUrl: string;
+  source?: string; // optional just in case
+   prepTime?: string;
+  cookTime?: string;
+  difficulty?: string;
+  servingSize?: string;
+  notes?: string[];
+  category?: string;
+  favourite?: boolean;
   onPress: () => void;
 };
 
-export default function RecipeCard({ title, imageUrl, onPress }: RecipeCardProps) {
+export default function RecipeCard({ title, imageUrl, source, onPress }: RecipeCardProps) {
   const [imageError, setImageError] = useState(false);
 
   return (
@@ -16,9 +24,9 @@ export default function RecipeCard({ title, imageUrl, onPress }: RecipeCardProps
       <Box
         mb="$2"
         bg="$backgroundLight300"
-        borderRadius={20}
+        borderRadius={8}
         width="100%"
-        aspectRatio={1}
+        aspectRatio={1.05}
         overflow="hidden"
         justifyContent="center"
         alignItems="center"
@@ -35,15 +43,21 @@ export default function RecipeCard({ title, imageUrl, onPress }: RecipeCardProps
           <Box
             width="100%"
             height="100%"
-            bg="$backgroundLight200" // slightly different shade for blank box
+            bg="$backgroundLight200"
             borderRadius={20}
           />
         )}
       </Box>
-      <Box>
-        <Text fontSize="$md" pb={20} color="$textLight900">
+
+      <Box mt="$2">
+        <Text fontSize="$md" pb="$1" fontWeight={500} color="$textLight900" numberOfLines={1}>
           {title}
         </Text>
+        {!!source && (
+          <Text fontSize="$sm" color="$textLight600" numberOfLines={1}>
+            {source.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]}
+          </Text>
+        )}
       </Box>
     </Pressable>
   );

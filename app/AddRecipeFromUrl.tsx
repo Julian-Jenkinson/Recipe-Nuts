@@ -27,7 +27,7 @@ export default function AddRecipeFromUrl() {
         throw new Error('Incomplete recipe data');
       }
 
-      // ✅ Download image locally if available
+      // Download image if available
       let localImageUri = '';
       if (data.image) {
         localImageUri = await downloadAndStoreImage(data.image) || '';
@@ -38,7 +38,15 @@ export default function AddRecipeFromUrl() {
         title: data.title,
         ingredients: data.ingredients,
         instructions: data.instructions,
-        imageUrl: localImageUri || '', // fallback blank if no image
+        imageUrl: localImageUri,
+        source: data.source || '',
+        category: data.category || '',
+        notes: Array.isArray(data.notes) ? data.notes : [],
+        difficulty: data.difficulty || '',
+        cookTime: data.cookTime || '',
+        prepTime: data.prepTime || '',
+        servingSize: data.servingSize || '',
+        favourite: false,
       };
 
       addRecipe(newRecipe);
