@@ -25,7 +25,7 @@ export default function AddRecipeButton({ onPress }: Props) {
         <Text color='#777' size="2xl">+</Text>
       </Box>
       <Box mt="$2">
-        <Text fontSize="$md" pb={5} fontWeight={500} color="$textLight900">
+        <Text fontSize="$md" pb={5} style={{ fontFamily: 'Nunito-800' }} color="$textLight900">
           Add Recipe
         </Text>
       </Box>

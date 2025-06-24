@@ -1,8 +1,9 @@
-import { Ionicons } from '@expo/vector-icons';
-import { Box, HStack, Input, InputField, InputIcon, InputSlot, Pressable, Text } from '@gluestack-ui/themed';
+import { Feather, Ionicons } from '@expo/vector-icons';
+import { Box, HStack, Input, InputField, InputSlot, Pressable, Text } from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { FlatList, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import AddRecipeButton from '../components/AddRecipeButton';
 import { useRecipeStore } from '../stores/useRecipeStore';
 import RecipeCard from './RecipeCard';
@@ -11,6 +12,8 @@ import RecipeCard from './RecipeCard';
 export default function RecipeListScreen() {
   const router = useRouter();
   const recipes = useRecipeStore((state) => state.recipes);
+  const [searchQuery, setSearchQuery] = React.useState('');
+
 
   // Updated Recipe type with new fields
   type Recipe = {
@@ -35,9 +38,35 @@ export default function RecipeListScreen() {
     return 'type' in item && item.type === 'add';
   };
 
+  const query = searchQuery.trim().toLowerCase();
+
+const isFavQuery =
+  query === 'fav' ||
+  query === 'favo' ||
+  query === 'favou' ||
+  query === 'favour' ||
+  query === 'favouri' ||
+  query === 'favourit' ||
+  query === 'favourite' || 
+  query === 'favorite';
+
+const filteredRecipes = recipes.filter((recipe) => {
+  // Special case: user is searching for favourites
+  if (isFavQuery) {
+    return recipe.favourite;
+  }
+
+  return (
+    (recipe.title || '').toLowerCase().includes(query) ||
+    (recipe.source || '').toLowerCase().includes(query) ||
+    (recipe.category || '').toLowerCase().includes(query)
+  );
+});
+
+
   const displayRecipes: DisplayRecipe[] = [
     { id: 'add', type: 'add' },
-    ...recipes,
+    ...filteredRecipes,
   ];
 
   const handlePress = (id: string) => {
@@ -53,30 +82,53 @@ export default function RecipeListScreen() {
   };
 
   return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#0A192F' }}>
+  
+
     <View style={{ flex: 1, backgroundColor: '#0A192F' }}>
       
       <Box
         borderTopLeftRadius={25}
         borderTopRightRadius={25}
         pt={45}
+        mt={60}
         bg="$backgroundLight100"
         flex={1}
       >
-        <Input variant="outline" size="md" borderColor="#666" borderRadius="$xl" mx={16}>
-        <InputSlot>
-          <InputIcon as={Ionicons} name="search" size="xl" color="#666" ml="$2" />
+        <Input variant="outline" size="md" borderColor="#555" borderRadius="$xl" mx={16}>
+        <InputSlot pl={10}>
+            <Ionicons name="search" size={24} color="#555"/>
         </InputSlot>  
-          <InputField placeholder="Search" fontSize={18} fontWeight={500} />
+        <InputField
+          placeholder="Search"
+          fontSize={18}
+          style={{ fontFamily: 'Nunito-500' }}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+        {searchQuery.length > 0 && (
+          <InputSlot pr={10}>
+            <Pressable onPress={() => setSearchQuery('')}>
+              <Feather name="x" size={20} color="#888" />
+            </Pressable>
+          </InputSlot>
+        )}
         </Input>
 
+        
+
         <HStack px={16} pt={30} pb={6} justifyContent="space-between" alignItems="center">
-          <Text fontSize={24} fontWeight="$bold" color='#444'>
+        
+          <Text fontSize= {24} color="#333" style={{ fontFamily: 'Nunito-800' }}>
             Recipes
           </Text>
+
+
+
           <Pressable onPress={() => console.log('Open sort & filters')}>
             <HStack alignItems="center" space="sm">
-              <Text fontSize={18} fontWeight="700" color="#444">
-                Sort & Filters
+              <Text fontSize={18} style={{ fontFamily: 'Nunito-700' }} color="#333">
+                Sort by
               </Text>
               <Ionicons name="options" size={22} color="#333" />
             </HStack>
@@ -114,6 +166,9 @@ export default function RecipeListScreen() {
                   category={item.category}
                   favourite={item.favourite}
                   onPress={() => handlePress(item.id)}
+                  onToggleFavourite={() => {
+                    useRecipeStore.getState().toggleFavourite(item.id); // See below
+                  }}
                 />
               )}
             </Box>
@@ -121,5 +176,6 @@ export default function RecipeListScreen() {
         />
       </Box>
     </View>
+    </SafeAreaView>
   );
 }

@@ -23,6 +23,7 @@ type RecipeState = {
   addRecipe: (recipe: Recipe) => void;
   getRecipeById: (id: string) => Recipe | undefined;
   deleteRecipe: (id: string) => void;
+  toggleFavourite: (id: string) => void; 
 };
 
 export const useRecipeStore = create<RecipeState>()(
@@ -41,6 +42,14 @@ export const useRecipeStore = create<RecipeState>()(
         set((state) => ({
           recipes: state.recipes.filter((r) => r.id !== id),
         })),
+
+      toggleFavourite: (id: string) =>
+        set((state) => ({
+          recipes: state.recipes.map((r) =>
+            r.id === id ? { ...r, favourite: !r.favourite } : r
+          ),
+        })),
+
     }),
     {
       name: 'recipe-storage',
