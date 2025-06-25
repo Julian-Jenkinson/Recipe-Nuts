@@ -5,15 +5,15 @@ import React from 'react';
 import { FlatList, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AddRecipeButton from '../components/AddRecipeButton';
+import FilterDrawer from '../components/FilterDrawer'; // fixed import typo here
 import { useRecipeStore } from '../stores/useRecipeStore';
 import RecipeCard from './RecipeCard';
-
 
 export default function RecipeListScreen() {
   const router = useRouter();
   const recipes = useRecipeStore((state) => state.recipes);
   const [searchQuery, setSearchQuery] = React.useState('');
-
+  const [isFilterDrawerOpen, setIsFilterDrawerOpen] = React.useState(false);  // drawer open state
 
   // Updated Recipe type with new fields
   type Recipe = {
@@ -40,29 +40,28 @@ export default function RecipeListScreen() {
 
   const query = searchQuery.trim().toLowerCase();
 
-const isFavQuery =
-  query === 'fav' ||
-  query === 'favo' ||
-  query === 'favou' ||
-  query === 'favour' ||
-  query === 'favouri' ||
-  query === 'favourit' ||
-  query === 'favourite' || 
-  query === 'favorite';
+  const isFavQuery =
+    query === 'fav' ||
+    query === 'favo' ||
+    query === 'favou' ||
+    query === 'favour' ||
+    query === 'favouri' ||
+    query === 'favourit' ||
+    query === 'favourite' || 
+    query === 'favorite';
 
-const filteredRecipes = recipes.filter((recipe) => {
-  // Special case: user is searching for favourites
-  if (isFavQuery) {
-    return recipe.favourite;
-  }
+  const filteredRecipes = recipes.filter((recipe) => {
+    // Special case: user is searching for favourites
+    if (isFavQuery) {
+      return recipe.favourite;
+    }
 
-  return (
-    (recipe.title || '').toLowerCase().includes(query) ||
-    (recipe.source || '').toLowerCase().includes(query) ||
-    (recipe.category || '').toLowerCase().includes(query)
-  );
-});
-
+    return (
+      (recipe.title || '').toLowerCase().includes(query) ||
+      (recipe.source || '').toLowerCase().includes(query) ||
+      (recipe.category || '').toLowerCase().includes(query)
+    );
+  });
 
   const displayRecipes: DisplayRecipe[] = [
     { id: 'add', type: 'add' },
@@ -97,31 +96,32 @@ const filteredRecipes = recipes.filter((recipe) => {
             size="sm" 
             borderColor="#555" 
             borderRadius="$xl" 
-            mx={16}>
-          <InputSlot pl={10}>
+            mx={16}
+          >
+            <InputSlot pl={10}>
               <Ionicons name="search" size={20} color="#555"/>
-          </InputSlot>  
-          <InputField
-            placeholder="Search"
-            fontSize={16}
-            style={{ fontFamily: 'Nunito-500' }}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-          {searchQuery.length > 0 && (
-            <InputSlot pr={10}>
-              <Pressable onPress={() => setSearchQuery('')}>
-                <Feather name="x" size={20} color="#888" />
-              </Pressable>
-            </InputSlot>
-          )}
+            </InputSlot>  
+            <InputField
+              placeholder="Search"
+              fontSize={16}
+              style={{ fontFamily: 'Nunito-500' }}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+            {searchQuery.length > 0 && (
+              <InputSlot pr={10}>
+                <Pressable onPress={() => setSearchQuery('')}>
+                  <Feather name="x" size={20} color="#888" />
+                </Pressable>
+              </InputSlot>
+            )}
           </Input>
 
           <HStack px={16} pt={30} pb={6} justifyContent="space-between" alignItems="center">
-            <Text fontSize= {24} color="#333" style={{ fontFamily: 'Nunito-800' }}>
+            <Text fontSize={24} color="#333" style={{ fontFamily: 'Nunito-800' }}>
               Recipes
             </Text>
-            <Pressable onPress={() => console.log('Open sort & filters')}>
+            <Pressable onPress={() => setIsFilterDrawerOpen(true)}>
               <HStack alignItems="center" space="sm">
                 <Text fontSize={18} style={{ fontFamily: 'Nunito-700' }} color="#333">
                   Sort by
@@ -147,14 +147,14 @@ const filteredRecipes = recipes.filter((recipe) => {
                 }}
               >
                 {isAddItem(item) ? (
-                  <AddRecipeButton onPress={handleAddFromUrl} /> // can also call handleAddRecipe to test
+                  <AddRecipeButton onPress={handleAddFromUrl} />
                 ) : (
                   <RecipeCard
                     id={item.id}
                     title={item.title}
                     imageUrl={item.imageUrl}
-                    source={item.source} // pass source for display
-                    prepTime={item.prepTime} // pass if you want to show later
+                    source={item.source}
+                    prepTime={item.prepTime}
                     cookTime={item.cookTime}
                     difficulty={item.difficulty}
                     servingSize={item.servingSize}
@@ -163,7 +163,7 @@ const filteredRecipes = recipes.filter((recipe) => {
                     favourite={item.favourite}
                     onPress={() => handlePress(item.id)}
                     onToggleFavourite={() => {
-                      useRecipeStore.getState().toggleFavourite(item.id); // See below
+                      useRecipeStore.getState().toggleFavourite(item.id);
                     }}
                   />
                 )}
@@ -172,6 +172,12 @@ const filteredRecipes = recipes.filter((recipe) => {
           />
         </Box>
       </View>
+
+      {/* Filter Drawer component */}
+      <FilterDrawer 
+        open={isFilterDrawerOpen} 
+        onClose={() => setIsFilterDrawerOpen(false)} 
+      />
     </SafeAreaView>
   );
 }
