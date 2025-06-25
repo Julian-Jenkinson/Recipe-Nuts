@@ -82,8 +82,8 @@ const filteredRecipes = recipes.filter((recipe) => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#0A192F' }}>
-      <View style={{ flex: 1, backgroundColor: '#0A192F' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#F1A733' }}>
+      <View style={{ flex: 1, backgroundColor: '#F1A733' }}>
         <Box
           borderTopLeftRadius={25}
           borderTopRightRadius={25}

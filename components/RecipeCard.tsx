@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
 import { Box, Image, Pressable, Text } from '@gluestack-ui/themed';
 import React, { useState } from 'react';
 
@@ -54,11 +54,10 @@ export default function RecipeCard({ title, imageUrl, source, onPress, favourite
             alignItems="center"
             justifyContent="center"
           >
-            <Ionicons
-              name={favourite ? 'heart' : 'heart-outline'}
+            <FontAwesome
+              name={favourite ? 'star' : 'star-o'}
               size={20}
-              //color={favourite ? '#EF4444' : '#EF4444'}
-              color={favourite ? '#EF4444' : '#333'}
+              color={favourite ? '#FFC107' : '#333'}
             />
           </Box>
         </Pressable>
