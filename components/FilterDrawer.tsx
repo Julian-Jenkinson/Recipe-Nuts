@@ -1,7 +1,13 @@
+import { Feather } from '@expo/vector-icons';
 import { Box, HStack, Pressable, Text } from '@gluestack-ui/themed';
 import Slider from '@react-native-community/slider';
 import React, { useState } from 'react';
-import { Modal, StyleSheet, View } from 'react-native';
+import { Modal, StyleSheet } from 'react-native';
+
+import { Ionicons } from '@expo/vector-icons';
+
+<Ionicons name="close" size={24} color="#333" />
+
 
 
 type FilterDrawerProps = {
@@ -32,9 +38,17 @@ export default function FilterDrawer({ open, onClose }: FilterDrawerProps) {
         {/* This inner View prevents the press event from propagating to the overlay */}
         <Pressable
           onPress={(e) => e.stopPropagation()}
-          style={{ backgroundColor: 'white', padding: 16, borderTopLeftRadius: 20, borderTopRightRadius: 20, height: 660 }}
+          style={{ backgroundColor: 'white', padding: 16, borderTopLeftRadius: 20, borderTopRightRadius: 20, height: 650 }}
         >
-          <Text fontFamily="Nunito-800" size="2xl" color='#000' pb={14} pt={14}>Sort By</Text>
+          
+        <HStack justifyContent="space-between" mt="auto" >
+          <Text fontFamily="Nunito-800" size="2xl" color='#000' pb={14}>Sort By</Text>
+            <Pressable onPress={onClose}>
+              <Feather name="x" size={24} color="#000" />
+            </Pressable>
+          </HStack>          
+          
+          
           <Box flexDirection="row" flexWrap="wrap" gap={12} pb={8}>
             <Pressable style={styles.pill}>
               <Text style={styles.pillText}>Newest</Text>
@@ -90,10 +104,10 @@ export default function FilterDrawer({ open, onClose }: FilterDrawerProps) {
             </Pressable>
           </Box>
 
-          <Text fontFamily="Nunito-800" size="lg" color='#000'pb={8}>Cook Time</Text>
-          {/*<Text fontSize={16} fontWeight="600" mb={2}>
-            Max Cook Time: {maxCookTime} min
-          </Text>*/}
+          <Text fontFamily="Nunito-800" size="lg" color='#000'>Max Cook Time</Text>
+          <Text fontFamily="Nunito-700" size="md" color='#666'pb={8}>
+            {/*{maxCookTime}*/}25 mins
+          </Text>
           <Slider
             style={{ width: '100%', height: 30 }}
             minimumValue={0}
@@ -105,52 +119,30 @@ export default function FilterDrawer({ open, onClose }: FilterDrawerProps) {
             //value={maxCookTime}
             //onValueChange={setMaxCookTime}
           />
-          {/* Marks */}
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              paddingHorizontal: 10,
-              //marginTop: 0,
-            }}
-          >
-            {marks.map((mark) => (
-              
-              <Text
-                key={mark}
-                style={{
-                  fontSize: 12,
-                  color: '#000',
-                  fontFamily: 'Nunito-500',
-                  textAlign: 'center',
-                  width: 26,
-                }}
-              >
-                {mark}
-              </Text>
-            ))}
-          </View>
+          
 
-          <HStack justifyContent="space-between" mt="auto" mx={25} pt={12}>
+          <HStack justifyContent="space-between" mt="auto" mx={32} pt={30}>
             <Pressable
               onPress={onClose}
               style={{
-                backgroundColor: '#000',
-                paddingVertical: 10,
-                paddingHorizontal: 50,
+                //backgroundColor: '#000',
+                paddingVertical: 6,
+                paddingHorizontal: 40,
                 borderRadius: 9999,
+                borderColor: '#000',
+                borderWidth: 1.5,
               }}
             >
-              <Text color="#fff" size="lg" fontFamily='Nunito-700'>
-                Cancel
+              <Text color="#000" size="lg" fontFamily='Nunito-700'>
+                Reset
               </Text>
             </Pressable>
             <Pressable
               onPress={onClose}
               style={{
                 backgroundColor: '#000',
-                paddingVertical: 10,
-                paddingHorizontal: 50,
+                paddingVertical: 6,
+                paddingHorizontal: 40,
                 borderRadius: 9999,
               }}
             >
