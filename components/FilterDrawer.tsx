@@ -10,6 +10,7 @@ export type FiltersType = {
   category: string;
   difficulty: string;
   maxCookTime: number;
+  favourites: boolean;
 };
 
 type FilterDrawerProps = {
@@ -19,8 +20,8 @@ type FilterDrawerProps = {
   setFilters: React.Dispatch<React.SetStateAction<FiltersType>>;
 };
 
-const SORT_OPTIONS = ['Newest', 'Oldest', 'Alphabetical', 'Prep Time'];
-const CATEGORIES = ['Breakfast', 'Appetiser', 'Main', 'Vegetarian', 'Dessert', 'Other'];
+const SORT_OPTIONS = ['Recent', 'Alphabetical', 'Prep Time'];
+const CATEGORIES = ['Breakfast', 'Appetiser', 'Main', 'Vegetarian', 'Dessert', 'Favourites'];
 const DIFFICULTIES = ['Easy', 'Medium', 'Hard'];
 
 export default function FilterDrawer({ open, onClose, filters, setFilters }: FilterDrawerProps) {
@@ -40,7 +41,7 @@ export default function FilterDrawer({ open, onClose, filters, setFilters }: Fil
       visible={open}
       onRequestClose={onClose}
       navigationBarTranslucent
-      statusBarTranslucent
+      //statusBarTranslucent
     >
       <Pressable
         style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.4)' }}
@@ -48,12 +49,12 @@ export default function FilterDrawer({ open, onClose, filters, setFilters }: Fil
       >
         <Pressable
           onPress={(e) => e.stopPropagation()}
-          style={{ backgroundColor: 'white', padding: 16, borderTopLeftRadius: 20, borderTopRightRadius: 20, height: 650 }}
+          style={{ backgroundColor: 'white', padding: 16, borderTopLeftRadius: 20, borderTopRightRadius: 20, height: 550 }}
         >
           <HStack justifyContent="space-between" mt="auto">
-            <Text fontFamily="Nunito-800" size="2xl" color="#000" pb={14}>Sort By</Text>
+            <Text fontFamily="Nunito-800" size="2xl" color="#000" pb={12}>Sort By</Text>
             <Pressable onPress={onClose}>
-              <Feather name="x" size={24} color="#000" />
+              <Feather name="x" size={24} color="#999" />
             </Pressable>
           </HStack>
 
@@ -68,7 +69,7 @@ export default function FilterDrawer({ open, onClose, filters, setFilters }: Fil
             ))}
           </Box>
 
-          <Text fontFamily="Nunito-800" size="2xl" color="#000" pb={14} pt={16}>Filters</Text>
+          <Text fontFamily="Nunito-800" size="2xl" color="#000" pb={12} pt={8}>Filters</Text>
 
           <Text fontFamily="Nunito-800" size="lg" color="#000" pb={10}>Category</Text>
           <Box flexDirection="row" flexWrap="wrap" gap={12} pb={16}>
@@ -76,8 +77,18 @@ export default function FilterDrawer({ open, onClose, filters, setFilters }: Fil
               <FilterPill
                 key={category}
                 label={category}
-                isSelected={localFilters.category === category}
-                onPress={() => setLocalFilters((prev) => ({ ...prev, category }))}
+                isSelected={
+                  category === 'Favourites'
+                    ? localFilters.favourites
+                    : localFilters.category === category
+                }
+                onPress={() => {
+                  if (category === 'Favourites') {
+                    setLocalFilters((prev) => ({ ...prev, favourites: !prev.favourites }));
+                  } else {
+                    setLocalFilters((prev) => ({ ...prev, category }));
+                  }
+                }}
               />
             ))}
           </Box>
@@ -96,7 +107,7 @@ export default function FilterDrawer({ open, onClose, filters, setFilters }: Fil
 
           <Text fontFamily="Nunito-800" size="lg" color="#000">Max Cook Time</Text>
           <Text fontFamily="Nunito-700" size="md" color="#666" pb={8}>
-            {localFilters.maxCookTime} mins
+            {localFilters.maxCookTime === 240 ? 'Max' : `${localFilters.maxCookTime} mins`}
           </Text>
           <Slider
             style={{ width: '100%', height: 30 }}
@@ -110,10 +121,10 @@ export default function FilterDrawer({ open, onClose, filters, setFilters }: Fil
             onValueChange={(value) => setLocalFilters((prev) => ({ ...prev, maxCookTime: value }))}
           />
 
-          <HStack justifyContent="space-between" mt="auto" mx={32} pt={30}>
+          <HStack justifyContent="space-between" mt="auto" mx={10} pt={30}>
             <Pressable
               onPress={() => {
-                setLocalFilters({ sortBy: '', category: '', difficulty: '', maxCookTime: 240 });
+                setLocalFilters({ sortBy: '', category: '', difficulty: '', maxCookTime: 240, favourites: false });
               }}
               style={{ paddingVertical: 6, paddingHorizontal: 40, borderRadius: 9999, borderColor: '#000', borderWidth: 1.5 }}
             >

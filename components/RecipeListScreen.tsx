@@ -20,6 +20,7 @@ export default function RecipeListScreen() {
     category: '', // 'Breakfast', 'Main', etc.
     difficulty: '', // 'Easy', 'Medium', etc.
     maxCookTime: 240, // slider value
+    favourites: false,
   });
 
   type Recipe = {
@@ -59,6 +60,7 @@ export default function RecipeListScreen() {
   const filteredRecipes = recipes
   .filter((recipe) => {
     if (isFavQuery) return recipe.favourite;
+    
 
     const matchesSearch =
       (recipe.title || '').toLowerCase().includes(query) ||
@@ -72,14 +74,14 @@ export default function RecipeListScreen() {
       ? true  // 240 means no upper limit, show all
       : totalTime <= filters.maxCookTime;
 
-    return matchesSearch && matchesCategory && matchesDifficulty && matchesCookTime;
+    const matchesFavourites = !filters.favourites || recipe.favourite;
+
+    return matchesSearch && matchesCategory && matchesDifficulty && matchesCookTime && matchesFavourites;
   })
   .sort((a, b) => {
     switch (filters.sortBy) {
-      case 'Newest':
-        return b.id.localeCompare(a.id); // assuming id is UUID or timestamp-based
-      case 'Oldest':
-        return a.id.localeCompare(b.id);
+      case 'Recent':
+        return b.id.localeCompare(a.id);
       case 'Alphabetical':
         return a.title.localeCompare(b.title);
       case 'Prep Time':
@@ -122,12 +124,12 @@ export default function RecipeListScreen() {
           alignSelf="flex-end"
           bg="#3A4255"
           borderRadius={8}
-          px={8} py={4} mt={16} mr={16}
+          px={8} py={6} mt={16} mr={16}
         >
           <HStack space='sm' alignItems="center">
-            <Feather name="book" size={18} color="#ddd" />
-            <Text color="#ddd" fontSize={18} fontFamily="Nunito-600">
-              {filteredRecipes.length}
+            <Feather name="book" size={18} color="#eee" />
+            <Text color="#eee" fontSize={18} fontFamily="Nunito-600">
+              {recipes.length}
             </Text>
           </HStack>
         </Box>
@@ -136,7 +138,7 @@ export default function RecipeListScreen() {
           borderTopLeftRadius={25}
           borderTopRightRadius={25}
           pt={45}
-          mt={2}
+          mt={25}
           bg="$backgroundLight100"
           flex={1}
         >
@@ -190,6 +192,7 @@ export default function RecipeListScreen() {
                 category: '',
                 difficulty: '',
                 maxCookTime: 240,
+                favourites: false
               })}
               style={{ paddingVertical: 3 }}
             >

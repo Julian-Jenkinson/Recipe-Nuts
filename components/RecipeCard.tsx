@@ -49,15 +49,15 @@ export default function RecipeCard({ title, imageUrl, source, onPress, favourite
           <Box
             //bg="$backgroundLight100"   
             bg="white"
-            p={2}                     
-            borderRadius={7}       
+            p={3}                     
+            borderRadius={6}       
             alignItems="center"
             justifyContent="center"
           >
             <FontAwesome
               name={favourite ? 'star' : 'star-o'}
-              size={20}
-              color={favourite ? '#FFC107' : '#333'}
+              size={16}
+              color={favourite ? '#FFC107' : '#999'}
             />
           </Box>
         </Pressable>

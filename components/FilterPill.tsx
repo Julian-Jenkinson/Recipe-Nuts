@@ -41,6 +41,7 @@ const pillStyles = StyleSheet.create({
   pillText: {
     color: '#000',
     fontFamily: 'Nunito-800',
+    fontSize: 14,
   },
   pillTextPressed: {
     color: '#fff',
