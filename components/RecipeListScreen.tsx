@@ -15,7 +15,13 @@ export default function RecipeListScreen() {
   const [searchQuery, setSearchQuery] = React.useState('');
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = React.useState(false);  // drawer open state
 
-  // Updated Recipe type with new fields
+  const [filters, setFilters] = React.useState({
+    sortBy: '', // 'Newest', 'Oldest', etc.
+    category: '', // 'Breakfast', 'Main', etc.
+    difficulty: '', // 'Easy', 'Medium', etc.
+    maxCookTime: 240, // slider value
+  });
+
   type Recipe = {
     id: string;
     title: string;
@@ -50,18 +56,46 @@ export default function RecipeListScreen() {
     query === 'favourite' || 
     query === 'favorite';
 
-  const filteredRecipes = recipes.filter((recipe) => {
-    // Special case: user is searching for favourites
-    if (isFavQuery) {
-      return recipe.favourite;
-    }
+  const filteredRecipes = recipes
+  .filter((recipe) => {
+    if (isFavQuery) return recipe.favourite;
 
-    return (
+    const matchesSearch =
       (recipe.title || '').toLowerCase().includes(query) ||
       (recipe.source || '').toLowerCase().includes(query) ||
-      (recipe.category || '').toLowerCase().includes(query)
-    );
+      (recipe.category || '').toLowerCase().includes(query);
+
+    const matchesCategory = !filters.category || recipe.category === filters.category;
+    const matchesDifficulty = !filters.difficulty || recipe.difficulty === filters.difficulty;
+    const totalTime = (parseInt(recipe.prepTime || '0') + parseInt(recipe.cookTime || '0'));
+    const matchesCookTime = filters.maxCookTime >= 240 
+      ? true  // 240 means no upper limit, show all
+      : totalTime <= filters.maxCookTime;
+
+    return matchesSearch && matchesCategory && matchesDifficulty && matchesCookTime;
+  })
+  .sort((a, b) => {
+    switch (filters.sortBy) {
+      case 'Newest':
+        return b.id.localeCompare(a.id); // assuming id is UUID or timestamp-based
+      case 'Oldest':
+        return a.id.localeCompare(b.id);
+      case 'Alphabetical':
+        return a.title.localeCompare(b.title);
+      case 'Prep Time':
+        return parseInt(a.prepTime || '0') - parseInt(b.prepTime || '0');
+      default:
+        return 0;
+    }
   });
+  
+  // Calculate active filters count
+  const activeFiltersCount = [
+    filters.sortBy,
+    filters.category,
+    filters.difficulty,
+    ].filter((f) => f && f.length > 0).length + (filters.maxCookTime < 240 ? 1 : 0);
+
 
   const displayRecipes: DisplayRecipe[] = [
     { id: 'add', type: 'add' },
@@ -81,13 +115,28 @@ export default function RecipeListScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#F1A733' }}>
-      <View style={{ flex: 1, backgroundColor: '#F1A733' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#242c3d' }}> 
+      <View style={{ flex: 1, backgroundColor: '#242c3d' }}>
+        
+        <Box
+          alignSelf="flex-end"
+          bg="#3A4255"
+          borderRadius={8}
+          px={8} py={4} mt={16} mr={16}
+        >
+          <HStack space='sm' alignItems="center">
+            <Feather name="book" size={18} color="#ddd" />
+            <Text color="#ddd" fontSize={18} fontFamily="Nunito-600">
+              {filteredRecipes.length}
+            </Text>
+          </HStack>
+        </Box>
+        
         <Box
           borderTopLeftRadius={25}
           borderTopRightRadius={25}
           pt={45}
-          mt={40}
+          mt={2}
           bg="$backgroundLight100"
           flex={1}
         >
@@ -124,10 +173,29 @@ export default function RecipeListScreen() {
             <Pressable onPress={() => setIsFilterDrawerOpen(true)}>
               <HStack alignItems="center" space="sm">
                 <Text fontSize={18} style={{ fontFamily: 'Nunito-700' }} color="#333">
-                  Sort by
+                  Sort & Filters
                 </Text>
                 <Ionicons name="options" size={22} color="#333" />
               </HStack>
+            </Pressable>
+          </HStack>
+
+          <HStack justifyContent="space-between" px={16} mb={8} alignItems="center">
+            <Text fontSize={17} style={{ fontFamily: 'Nunito-600' }} color="#666">
+              {activeFiltersCount} Filter{activeFiltersCount !== 1 ? 's' : ''} selected
+            </Text>
+            <Pressable
+              onPress={() => setFilters({
+                sortBy: '',
+                category: '',
+                difficulty: '',
+                maxCookTime: 240,
+              })}
+              style={{ paddingVertical: 3 }}
+            >
+              <Text fontSize={18} style={{ fontFamily: 'Nunito-700' }} color="#007AFF">
+                Reset
+              </Text>
             </Pressable>
           </HStack>
 
@@ -177,6 +245,8 @@ export default function RecipeListScreen() {
       <FilterDrawer 
         open={isFilterDrawerOpen} 
         onClose={() => setIsFilterDrawerOpen(false)} 
+        filters={filters}
+        setFilters={setFilters}
       />
     </SafeAreaView>
   );
