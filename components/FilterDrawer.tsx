@@ -1,14 +1,15 @@
 import { Feather } from '@expo/vector-icons';
-import { Box, HStack, Text } from '@gluestack-ui/themed';
+import { Box, HStack, Text, useTheme } from '@gluestack-ui/themed';
 import Slider from '@react-native-community/slider';
-import React, { useEffect, useState } from 'react';
-import { Modal, Pressable } from 'react-native';
+import * as SystemUI from 'expo-system-ui';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Modal, Pressable, StatusBar } from 'react-native';
 import { FilterPill } from '../components/FilterPill';
 
 export type FiltersType = {
   sortBy: string;
-  category: string;
-  difficulty: string;
+  category: string[];
+  difficulty: string[];
   maxCookTime: number;
   favourites: boolean;
 };
@@ -27,13 +28,28 @@ const DIFFICULTIES = ['Easy', 'Medium', 'Hard'];
 export default function FilterDrawer({ open, onClose, filters, setFilters }: FilterDrawerProps) {
   const [localFilters, setLocalFilters] = useState<FiltersType>(filters);
 
-  // Keep localFilters in sync when drawer opens
   useEffect(() => {
     if (open) {
       setLocalFilters(filters);
     }
-  }, [open, filters]);
+  }, [open]);
 
+  const toggleItem = (array: string[], item: string): string[] => {
+    return array.includes(item) ? array.filter(i => i !== item) : [...array, item];
+  };
+
+  const handleSliderComplete = useCallback((value: number) => {
+    setLocalFilters((prev) => ({ ...prev, maxCookTime: value }));
+  }, []);
+
+  const theme = useTheme();
+  useEffect(() => {
+    if (open) {
+      SystemUI.setBackgroundColorAsync('#0A192F');  // Set nav bar to match modal
+    } else {
+      SystemUI.setBackgroundColorAsync('#F2F2F2');    // Or your app's normal nav bar color
+    }
+  }, [open]);
   return (
     <Modal
       animationType="slide"
@@ -41,15 +57,17 @@ export default function FilterDrawer({ open, onClose, filters, setFilters }: Fil
       visible={open}
       onRequestClose={onClose}
       navigationBarTranslucent
-      //statusBarTranslucent
+      statusBarTranslucent
     >
+      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+      
       <Pressable
         style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.4)' }}
         onPress={onClose}
       >
         <Pressable
           onPress={(e) => e.stopPropagation()}
-          style={{ backgroundColor: 'white', padding: 16, borderTopLeftRadius: 20, borderTopRightRadius: 20, height: 550 }}
+          style={{ backgroundColor: 'white', padding: 16, borderTopLeftRadius: 20, borderTopRightRadius: 20, height: 580 }}
         >
           <HStack justifyContent="space-between" mt="auto">
             <Text fontFamily="Nunito-800" size="2xl" color="#000" pb={12}>Sort By</Text>
@@ -80,13 +98,16 @@ export default function FilterDrawer({ open, onClose, filters, setFilters }: Fil
                 isSelected={
                   category === 'Favourites'
                     ? localFilters.favourites
-                    : localFilters.category === category
+                    : localFilters.category.includes(category)
                 }
                 onPress={() => {
                   if (category === 'Favourites') {
                     setLocalFilters((prev) => ({ ...prev, favourites: !prev.favourites }));
                   } else {
-                    setLocalFilters((prev) => ({ ...prev, category }));
+                    setLocalFilters((prev) => ({
+                      ...prev,
+                      category: toggleItem(prev.category, category),
+                    }));
                   }
                 }}
               />
@@ -99,8 +120,13 @@ export default function FilterDrawer({ open, onClose, filters, setFilters }: Fil
               <FilterPill
                 key={level}
                 label={level}
-                isSelected={localFilters.difficulty === level}
-                onPress={() => setLocalFilters((prev) => ({ ...prev, difficulty: level }))}
+                isSelected={localFilters.difficulty.includes(level)}
+                onPress={() => {
+                  setLocalFilters((prev) => ({
+                    ...prev,
+                    difficulty: toggleItem(prev.difficulty, level),
+                  }));
+                }}
               />
             ))}
           </Box>
@@ -118,13 +144,13 @@ export default function FilterDrawer({ open, onClose, filters, setFilters }: Fil
             maximumTrackTintColor="#333"
             thumbTintColor="#0A192F"
             value={localFilters.maxCookTime}
-            onValueChange={(value) => setLocalFilters((prev) => ({ ...prev, maxCookTime: value }))}
+            onSlidingComplete={handleSliderComplete}
           />
 
-          <HStack justifyContent="space-between" mt="auto" mx={10} pt={30}>
+          <HStack justifyContent="space-between" mt="auto" mx={10} pt={20} mb={50}>
             <Pressable
               onPress={() => {
-                setLocalFilters({ sortBy: '', category: '', difficulty: '', maxCookTime: 240, favourites: false });
+                setLocalFilters({ sortBy: '', category: [], difficulty: [], maxCookTime: 240, favourites: false });
               }}
               style={{ paddingVertical: 6, paddingHorizontal: 40, borderRadius: 9999, borderColor: '#000', borderWidth: 1.5 }}
             >

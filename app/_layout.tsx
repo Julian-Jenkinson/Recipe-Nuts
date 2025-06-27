@@ -38,10 +38,17 @@ export default function Layout() {
           name="index"
           options={{
             headerShown: false, //hide header
-            statusBarStyle: 'light',
-            title: '',
-            headerStyle: { backgroundColor: '#0A192F' },
-            headerTitleStyle: { fontSize: 20, fontWeight: 'bold' },
+            statusBarStyle: 'dark',
+            //title: '',
+            //headerStyle: { backgroundColor: '#0A192F' },
+            //headerTitleStyle: { fontSize: 20, fontWeight: 'bold' },
+          }}
+        />
+        <Stack.Screen
+          name="recipes/[id]"
+          options={{
+            headerShown: false, //hide header
+            statusBarStyle: 'dark',
           }}
         />
     </Stack>

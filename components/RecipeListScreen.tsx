@@ -2,10 +2,10 @@ import { Feather, Ionicons } from '@expo/vector-icons';
 import { Box, HStack, Input, InputField, InputSlot, Pressable, Text } from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { FlatList, View } from 'react-native';
+import { FlatList, StatusBar, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AddRecipeButton from '../components/AddRecipeButton';
-import FilterDrawer from '../components/FilterDrawer'; // fixed import typo here
+import FilterDrawer from '../components/FilterDrawer';
 import { useRecipeStore } from '../stores/useRecipeStore';
 import RecipeCard from './RecipeCard';
 
@@ -13,13 +13,13 @@ export default function RecipeListScreen() {
   const router = useRouter();
   const recipes = useRecipeStore((state) => state.recipes);
   const [searchQuery, setSearchQuery] = React.useState('');
-  const [isFilterDrawerOpen, setIsFilterDrawerOpen] = React.useState(false);  // drawer open state
+  const [isFilterDrawerOpen, setIsFilterDrawerOpen] = React.useState(false);
 
   const [filters, setFilters] = React.useState({
-    sortBy: '', // 'Newest', 'Oldest', etc.
-    category: '', // 'Breakfast', 'Main', etc.
-    difficulty: '', // 'Easy', 'Medium', etc.
-    maxCookTime: 240, // slider value
+    sortBy: '',
+    category: [] as string[],
+    difficulty: [] as string[],
+    maxCookTime: 240,
     favourites: false,
   });
 
@@ -58,47 +58,43 @@ export default function RecipeListScreen() {
     query === 'favorite';
 
   const filteredRecipes = recipes
-  .filter((recipe) => {
-    if (isFavQuery) return recipe.favourite;
-    
+    .filter((recipe) => {
+      if (isFavQuery) return recipe.favourite;
 
-    const matchesSearch =
-      (recipe.title || '').toLowerCase().includes(query) ||
-      (recipe.source || '').toLowerCase().includes(query) ||
-      (recipe.category || '').toLowerCase().includes(query);
+      const matchesSearch =
+        (recipe.title || '').toLowerCase().includes(query) ||
+        (recipe.source || '').toLowerCase().includes(query) ||
+        (recipe.category || '').toLowerCase().includes(query);
 
-    const matchesCategory = !filters.category || recipe.category === filters.category;
-    const matchesDifficulty = !filters.difficulty || recipe.difficulty === filters.difficulty;
-    const totalTime = (parseInt(recipe.prepTime || '0') + parseInt(recipe.cookTime || '0'));
-    const matchesCookTime = filters.maxCookTime >= 240 
-      ? true  // 240 means no upper limit, show all
-      : totalTime <= filters.maxCookTime;
+      const matchesCategory = filters.category.length === 0 || filters.category.includes(recipe.category);
+      const matchesDifficulty = filters.difficulty.length === 0 || filters.difficulty.includes(recipe.difficulty);
 
-    const matchesFavourites = !filters.favourites || recipe.favourite;
+      const totalTime = (parseInt(recipe.prepTime || '0') + parseInt(recipe.cookTime || '0'));
+      const matchesCookTime = filters.maxCookTime >= 240 ? true : totalTime <= filters.maxCookTime;
+      const matchesFavourites = !filters.favourites || recipe.favourite;
 
-    return matchesSearch && matchesCategory && matchesDifficulty && matchesCookTime && matchesFavourites;
-  })
-  .sort((a, b) => {
-    switch (filters.sortBy) {
-      case 'Recent':
-        return b.id.localeCompare(a.id);
-      case 'Alphabetical':
-        return a.title.localeCompare(b.title);
-      case 'Prep Time':
-        return parseInt(a.prepTime || '0') - parseInt(b.prepTime || '0');
-      default:
-        return 0;
-    }
-  });
+      return matchesSearch && matchesCategory && matchesDifficulty && matchesCookTime && matchesFavourites;
+    })
+    .sort((a, b) => {
+      switch (filters.sortBy) {
+        case 'Recent':
+          return b.id.localeCompare(a.id);
+        case 'Alphabetical':
+          return a.title.localeCompare(b.title);
+        case 'Prep Time':
+          return parseInt(a.prepTime || '0') - parseInt(b.prepTime || '0');
+        default:
+          return 0;
+      }
+    });
+
+  const activeFiltersCount =
+  (filters.sortBy ? 1 : 0) +
+  filters.category.length +
+  filters.difficulty.length +
+  (filters.maxCookTime < 240 ? 1 : 0) +
+  (filters.favourites ? 1 : 0);
   
-  // Calculate active filters count
-  const activeFiltersCount = [
-    filters.sortBy,
-    filters.category,
-    filters.difficulty,
-    ].filter((f) => f && f.length > 0).length + (filters.maxCookTime < 240 ? 1 : 0);
-
-
   const displayRecipes: DisplayRecipe[] = [
     { id: 'add', type: 'add' },
     ...filteredRecipes,
@@ -117,9 +113,16 @@ export default function RecipeListScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#242c3d' }}> 
-      <View style={{ flex: 1, backgroundColor: '#242c3d' }}>
+
+    <SafeAreaView style={{ flex: 1 }}> 
+      <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
+      <View style={{ flex: 1 }}>
+        <Pressable ml={16} mt={25}>
+          <Feather name="menu" size={30} color="#444" />
+        </Pressable>
         
+
+        {/*  
         <Box
           alignSelf="flex-end"
           bg="#3A4255"
@@ -133,11 +136,10 @@ export default function RecipeListScreen() {
             </Text>
           </HStack>
         </Box>
-        
+         */}
         <Box
           borderTopLeftRadius={25}
           borderTopRightRadius={25}
-          pt={45}
           mt={25}
           bg="$backgroundLight100"
           flex={1}
@@ -182,6 +184,7 @@ export default function RecipeListScreen() {
             </Pressable>
           </HStack>
 
+          {activeFiltersCount > 0 && (
           <HStack justifyContent="space-between" px={16} mb={8} alignItems="center">
             <Text fontSize={17} style={{ fontFamily: 'Nunito-600' }} color="#666">
               {activeFiltersCount} Filter{activeFiltersCount !== 1 ? 's' : ''} selected
@@ -189,8 +192,8 @@ export default function RecipeListScreen() {
             <Pressable
               onPress={() => setFilters({
                 sortBy: '',
-                category: '',
-                difficulty: '',
+                category: [],
+                difficulty: [],
                 maxCookTime: 240,
                 favourites: false
               })}
@@ -201,6 +204,7 @@ export default function RecipeListScreen() {
               </Text>
             </Pressable>
           </HStack>
+          )}
 
           <FlatList
             data={displayRecipes}
@@ -244,7 +248,6 @@ export default function RecipeListScreen() {
         </Box>
       </View>
 
-      {/* Filter Drawer component */}
       <FilterDrawer 
         open={isFilterDrawerOpen} 
         onClose={() => setIsFilterDrawerOpen(false)} 

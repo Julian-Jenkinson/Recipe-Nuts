@@ -28,7 +28,7 @@ export default function RecipeCard({ title, imageUrl, source, onPress, favourite
         bg="$backgroundLight300"
         borderRadius={8}
         width="100%"
-        aspectRatio={1.05}
+        aspectRatio={1.2}
         overflow="hidden"
         justifyContent="center"
         alignItems="center"

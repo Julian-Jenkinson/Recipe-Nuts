@@ -1,6 +1,10 @@
+import { Feather, FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Box, HStack, Image, Pressable, Text, View } from '@gluestack-ui/themed';
 import * as FileSystem from 'expo-file-system';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Alert, Button, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { Alert, Button, ScrollView, Share, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRecipeStore } from '../../stores/useRecipeStore';
 
 export default function RecipeDetailsScreen() {
@@ -10,7 +14,7 @@ export default function RecipeDetailsScreen() {
   if (!id) {
     return (
       <View style={styles.centered}>
-        <Text style={styles.title}>Invalid Recipe ID</Text>
+        <Text>Invalid Recipe ID</Text>
         <Button title="Go Back" onPress={() => router.back()} />
       </View>
     );
@@ -18,11 +22,12 @@ export default function RecipeDetailsScreen() {
 
   const recipe = useRecipeStore((state) => state.getRecipeById(id));
   const deleteRecipe = useRecipeStore((state) => state.deleteRecipe);
+  const toggleFavourite = useRecipeStore((state) => state.toggleFavourite);
 
   if (!recipe) {
     return (
       <View style={styles.centered}>
-        <Text style={styles.title}>Recipe not found</Text>
+        <Text >Recipe not found</Text>
         <Button title="Go Back" onPress={() => router.back()} />
       </View>
     );
@@ -62,57 +67,151 @@ export default function RecipeDetailsScreen() {
     );
   };
 
+  const handleShare = async () => {
+  try {
+    await Share.share({
+      message: `Check out this recipe: \n\n${recipe.title}\nBy ${recipe.source}\n\nIngredients: \n\n${ingredients.join('\n')}\n\nInstructions: \n\n ${instructions.join('\n\n')}`,
+    });
+    } catch (error) {
+    if (error instanceof Error) {
+      console.error('Error sharing:', error.message);
+    } else {
+      console.error('Error sharing:', error);
+    }
+  }
+};
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>{recipe.title}</Text>
-      <Image source={{ uri: imageUri }} style={styles.image} resizeMode="cover" />
+    <SafeAreaView style={{ flex: 1 }}>
+      
+      {/*Header*/}
+      <HStack 
+        pl={6} pr={18} py={14} 
+        justifyContent="space-between" 
+        alignItems="center">
+        <Pressable onPress={() => router.back()}>
+          <Feather name="chevron-left" size={36} color="#333" />
+        </Pressable>
+        <Box flexDirection='row'>
+          <Pressable pr={22} onPress={handleShare}>
+            <Feather name="share-2" size={24} color="#333" />
+          </Pressable>
+          <Pressable pr={22}>
+            <Feather name="edit-2" size={24} color="#333" />
+          </Pressable>
+          <Pressable onPress={handleDelete}>
+            <Feather name="trash-2" size={24} color="#C1121F" />
+          </Pressable>
+        </Box>
+      </HStack>
+      
+      {/*Image box*/}
+      <ScrollView>
+        <Box>
+          <Image source={{ uri: imageUri }} style={styles.image} resizeMode="cover" alt='{recipe.title}'/>
+          {/* Heart icon overlay */}
+          <Pressable
+            onPress={() => toggleFavourite(recipe.id)}
+            style={{
+              position: 'absolute',
+              top: 12,
+              right: 12,
+              zIndex: 10,
+            }}
+          >
+            <Box
+              bg="white"
+              p={4}                     
+              borderRadius={6}       
+              alignItems="center"
+              justifyContent="center"
+            >
+              <FontAwesome
+                name={recipe.favourite ? 'star' : 'star-o'}
+                size={24}
+                color={recipe.favourite ? '#FFC107' : '#999'}
+              />
+            </Box>
+          </Pressable>
+        </Box>
 
-      <Text style={styles.metaText}>Source: {recipe.source}</Text>
-      <Text style={styles.metaText}>Prep Time: {recipe.prepTime || 'N/A'}</Text>
-      <Text style={styles.metaText}>Cook Time: {recipe.cookTime || 'N/A'}</Text>
-      <Text style={styles.metaText}>Difficulty: {recipe.difficulty || 'N/A'}</Text>
-      <Text style={styles.metaText}>Serving Size: {recipe.servingSize || 'N/A'}</Text>
-      <Text style={styles.metaText}>Category: {recipe.category || 'N/A'}</Text>
-      <Text style={styles.metaText}>Favourite: {recipe.favourite ? 'Yes' : 'No'}</Text>
+        {/*Title display*/}
+        <View style={styles.container}>
+          <Text fontFamily='Nunito-700' size={'3xl'}>{recipe.title}</Text>
+          <Text fontFamily='Nunito-500' size={'md'} color='#888'>By {recipe.source}</Text>
+          
+          {/*recipe stats*/}
+          <HStack 
+            pl={6} pr={10} pb={8} pt={20} 
+            justifyContent="space-between" 
+            alignItems="flex-start"
+            flexWrap="wrap" // If supported by your HStack, or switch to a View with flexDirection: 'row' and flexWrap
+          >
+            <Box alignItems="center" flexShrink={1}>
+              <Feather name="clock" size={22} color="#333" />
+              <Text pt={3} color='#777' fontFamily='Nunito-600'>
+                {+recipe.prepTime + +recipe.cookTime || '-'} mins
+              </Text>
+            </Box>
+            <Box alignItems="center" flexShrink={1}>
+              <MaterialCommunityIcons name="bowl-mix-outline" size={22} color="#333" />
+              <Text pt={3} color='#777' fontFamily='Nunito-600'>
+                {recipe.category || 'Other'}
+              </Text>
+            </Box>
+            <Box alignItems="center" flexShrink={1}>
+              <Feather name="bar-chart" size={22} color="#333" />
+              <Text pt={3} color='#777' fontFamily='Nunito-600'>
+                {+recipe.difficulty || 'Medium'}
+              </Text>
+            </Box>
+            <Box alignItems="center" flexShrink={1} maxWidth="25%">
+              <Feather name="user" size={22} color="#333" />
+              <Text pt={3} color='#777' fontFamily='Nunito-600'>
+                Serves {+recipe.servingSize || '-'}
+              </Text>
+            </Box>  
+          </HStack>
+        
+        
+          {/* Ingredients Section */} 
+          <Text fontFamily='Nunito-700' size={'2xl'} my={20}>Ingredients:</Text>
+          
+          {ingredients.length > 0 ? (
+            ingredients.map((item, index) => (
+              <Text key={`ing-${index}`} style={styles.itemText}>
+                {item}
+              </Text>
+            ))
+          ) : (
+            <Text style={styles.itemText}>No ingredients available.</Text>
+          )}
+          
+          {/* Instructions Section */}
+          <Text fontFamily='Nunito-700' size={'2xl'} my={20}>Instructions:</Text>
+          {instructions.length > 0 ? (
+            instructions.map((step, index) => (
+              <Text key={`step-${index}`} style={styles.instructionParagraph}>
+                {step}
+              </Text>
+            ))
+          ) : (
+            <Text style={styles.itemText}>No instructions available.</Text>
+          )}
 
-      <Text style={styles.sectionTitle}>Ingredients:</Text>
-      {ingredients.length > 0 ? (
-        ingredients.map((item, index) => (
-          <Text key={`ing-${index}`} style={styles.itemText}>
-            • {item}
-          </Text>
-        ))
-      ) : (
-        <Text style={styles.itemText}>No ingredients available.</Text>
-      )}
-
-      <Text style={styles.sectionTitle}>Instructions:</Text>
-      {instructions.length > 0 ? (
-        instructions.map((step, index) => (
-          <Text key={`step-${index}`} style={styles.instructionParagraph}>
-            {step}
-          </Text>
-        ))
-      ) : (
-        <Text style={styles.itemText}>No instructions available.</Text>
-      )}
-
-      {notes.length > 0 && (
-        <>
-          <Text style={styles.sectionTitle}>Notes:</Text>
-          {notes.map((note, idx) => (
-            <Text key={`note-${idx}`} style={styles.itemText}>
-              • {note}
-            </Text>
-          ))}
-        </>
-      )}
-
-      <View style={styles.buttonRow}>
-        <Button title="Go Back" onPress={() => router.back()} />
-        <Button title="Delete" onPress={handleDelete} color="#ff4444" />
-      </View>
-    </ScrollView>
+          {notes.length > 0 && (
+            <>
+              <Text fontFamily='Nunito-700' size={'2xl'}>Notes:</Text>
+              {notes.map((note, idx) => (
+                <Text key={`note-${idx}`} style={styles.itemText}>
+                  • {note}
+                </Text>
+              ))}
+            </>
+          )}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -126,12 +225,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 16,
-    textAlign: 'center',
-  },
   instructionParagraph: {
     fontSize: 16,
     marginBottom: 12,
@@ -139,9 +232,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '100%',
-    height: 200,
-    borderRadius: 12,
-    marginBottom: 20,
+    height: 270,
   },
   metaText: {
     fontSize: 16,

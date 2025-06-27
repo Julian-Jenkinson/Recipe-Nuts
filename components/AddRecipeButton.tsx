@@ -17,7 +17,7 @@ export default function AddRecipeButton({ onPress }: Props) {
         borderColor='#999'
         borderWidth={1}
         width="100%"
-        aspectRatio={1.05}
+        aspectRatio={1.2}
         overflow="hidden"
         justifyContent="center"
         alignItems="center"
