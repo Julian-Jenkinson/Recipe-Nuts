@@ -32,6 +32,13 @@ export default function RecipeCard({ title, imageUrl, source, onPress, favourite
         overflow="hidden"
         justifyContent="center"
         alignItems="center"
+        // Shadow for iOS
+        shadowColor="#000"
+        shadowOffset={{ width: 0, height: 2 }}
+        shadowOpacity={0.2}
+        shadowRadius={4}
+        // Shadow for Android
+        elevation={4}
       >
         {/* Heart icon overlay */}
         <Pressable
