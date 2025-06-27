@@ -70,7 +70,7 @@ export default function RecipeDetailsScreen() {
   const handleShare = async () => {
   try {
     await Share.share({
-      message: `Check out this recipe: \n\n${recipe.title}\nBy ${recipe.source}\n\nIngredients: \n\n${ingredients.join('\n')}\n\nInstructions: \n\n ${instructions.join('\n\n')}`,
+      message: `Check out this recipe: \n\n${recipe.title}\nBy ${recipe.source}\n\nIngredients: \n\n${ingredients.join('\n')}\n\nInstructions: \n\n ${instructions.join('\n\n') }`,
     });
     } catch (error) {
     if (error instanceof Error) {
@@ -90,17 +90,17 @@ export default function RecipeDetailsScreen() {
         justifyContent="space-between" 
         alignItems="center">
         <Pressable onPress={() => router.back()}>
-          <Feather name="chevron-left" size={36} color="#333" />
+          <Feather name="chevron-left" size={30} color="#333" />
         </Pressable>
         <Box flexDirection='row'>
           <Pressable pr={22} onPress={handleShare}>
-            <Feather name="share-2" size={24} color="#333" />
+            <Feather name="share-2" size={20} color="#333" />
           </Pressable>
           <Pressable pr={22}>
-            <Feather name="edit-2" size={24} color="#333" />
+            <Feather name="edit-2" size={20} color="#333" />
           </Pressable>
           <Pressable onPress={handleDelete}>
-            <Feather name="trash-2" size={24} color="#C1121F" />
+            <Feather name="trash-2" size={20} color="#C1121F" />
           </Pressable>
         </Box>
       </HStack>
@@ -142,32 +142,32 @@ export default function RecipeDetailsScreen() {
           
           {/*recipe stats*/}
           <HStack 
-            pl={6} pr={10} pb={8} pt={20} 
+            pl={6} pr={10} pt={20} 
             justifyContent="space-between" 
             alignItems="flex-start"
-            flexWrap="wrap" // If supported by your HStack, or switch to a View with flexDirection: 'row' and flexWrap
+            flexWrap="wrap" 
           >
             <Box alignItems="center" flexShrink={1}>
-              <Feather name="clock" size={22} color="#333" />
-              <Text pt={3} color='#777' fontFamily='Nunito-600'>
+              <Feather name="clock" size={20} color="#333" />
+              <Text pt={3} color='#777' fontFamily='Nunito-600' size={'sm'}>
                 {+recipe.prepTime + +recipe.cookTime || '-'} mins
               </Text>
             </Box>
             <Box alignItems="center" flexShrink={1}>
-              <MaterialCommunityIcons name="bowl-mix-outline" size={22} color="#333" />
-              <Text pt={3} color='#777' fontFamily='Nunito-600'>
+              <MaterialCommunityIcons name="bowl-mix-outline" size={20} color="#333" />
+              <Text pt={3} color='#777' fontFamily='Nunito-600' size={'sm'}>
                 {recipe.category || 'Other'}
               </Text>
             </Box>
             <Box alignItems="center" flexShrink={1}>
-              <Feather name="bar-chart" size={22} color="#333" />
-              <Text pt={3} color='#777' fontFamily='Nunito-600'>
+              <Feather name="bar-chart" size={20} color="#333" />
+              <Text pt={3} color='#777' fontFamily='Nunito-600' size={'sm'}>
                 {+recipe.difficulty || 'Medium'}
               </Text>
             </Box>
             <Box alignItems="center" flexShrink={1} maxWidth="25%">
-              <Feather name="user" size={22} color="#333" />
-              <Text pt={3} color='#777' fontFamily='Nunito-600'>
+              <Feather name="user" size={20} color="#333" />
+              <Text pt={3} color='#777' fontFamily='Nunito-600' size={'sm'}>
                 Serves {+recipe.servingSize || '-'}
               </Text>
             </Box>  
