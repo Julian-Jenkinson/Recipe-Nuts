@@ -10,8 +10,8 @@ import {
   TextInput,
   View
 } from 'react-native';
-import { useRecipeStore } from '../stores/useRecipeStore';
-import { downloadAndStoreImage } from '../utils/downloadAndStoreImage';
+import { useRecipeStore } from '../../stores/useRecipeStore';
+import { downloadAndStoreImage } from '../../utils/downloadAndStoreImage';
 
 export default function AddRecipeFromUrl() {
   const [inputUrl, setInputUrl] = useState('');
@@ -119,7 +119,6 @@ export default function AddRecipeFromUrl() {
       <Button title={loading ? 'Importing...' : 'Import from URL'} onPress={handleImport} disabled={loading} />
 
       <View style={{ marginTop: 24 }}>
-        
 
         {draftRecipe.imageUrl ? (
           <Image

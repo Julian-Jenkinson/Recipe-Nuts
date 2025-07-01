@@ -25,18 +25,18 @@ export const FilterPill = ({ label, isSelected, onPress }: PillProps) => (
 
 const pillStyles = StyleSheet.create({
   pill: {
-    alignSelf: 'flex-start',
-    borderWidth: 1.5,
-    borderColor: '#ccc',
-    paddingVertical: 6,
-    paddingHorizontal: 16,
+    //alignSelf: 'center',
+    //borderWidth: 1.5,
+    //borderColor: '#ccc',
+    paddingVertical: 8,
+    paddingHorizontal: 18,
     borderRadius: 9999,
     marginRight: 2,
-    backgroundColor: 'transparent',
+    backgroundColor: '#e3e3e3',
   },
   pillPressed: {
     backgroundColor: '#000',
-    borderColor: '#000',
+    ///borderColor: '#000',
   },
   pillText: {
     color: '#000',

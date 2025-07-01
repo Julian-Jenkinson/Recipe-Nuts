@@ -5,7 +5,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { Alert, Button, ScrollView, Share, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRecipeStore } from '../../stores/useRecipeStore';
+import { useRecipeStore } from '../../../stores/useRecipeStore';
 
 export default function RecipeDetailsScreen() {
   const router = useRouter();
