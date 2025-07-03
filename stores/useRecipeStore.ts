@@ -23,7 +23,8 @@ type RecipeState = {
   addRecipe: (recipe: Recipe) => void;
   getRecipeById: (id: string) => Recipe | undefined;
   deleteRecipe: (id: string) => void;
-  toggleFavourite: (id: string) => void; 
+  toggleFavourite: (id: string) => void;
+  updateRecipe: (updatedRecipe: Recipe) => void;  // <-- Added
 };
 
 export const useRecipeStore = create<RecipeState>()(
@@ -50,6 +51,12 @@ export const useRecipeStore = create<RecipeState>()(
           ),
         })),
 
+      updateRecipe: (updatedRecipe) =>
+        set((state) => ({
+          recipes: state.recipes.map((r) =>
+            r.id === updatedRecipe.id ? updatedRecipe : r
+          ),
+        })),
     }),
     {
       name: 'recipe-storage',

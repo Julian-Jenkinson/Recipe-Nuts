@@ -13,24 +13,29 @@ export default function RecipeDetailsScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
 
+  // ✅ Always call hooks at the top, unconditionally
+  const deleteRecipe = useRecipeStore((state) => state.deleteRecipe);
+  const toggleFavourite = useRecipeStore((state) => state.toggleFavourite);
+  const recipe = useRecipeStore((state) => id ? state.getRecipeById(id) : undefined);
+
+  const scrollViewRef = useRef<ScrollView>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  // ✅ Handle invalid ID after hooks
   if (!id) {
     return (
       <View style={styles.centered}>
         <Text>Invalid Recipe ID</Text>
-        <Button title="Go Back" onPress={() => router.back()} />
+        <Button title="Go Back" onPress={() => router.replace('/recipes/')} />
       </View>
     );
   }
-
-  const recipe = useRecipeStore((state) => state.getRecipeById(id));
-  const deleteRecipe = useRecipeStore((state) => state.deleteRecipe);
-  const toggleFavourite = useRecipeStore((state) => state.toggleFavourite);
 
   if (!recipe) {
     return (
       <View style={styles.centered}>
         <Text>Recipe not found</Text>
-        <Button title="Go Back" onPress={() => router.back()} />
+        <Button title="Go Back" onPress={() => router.replace('/recipes/')} />
       </View>
     );
   }
@@ -39,9 +44,7 @@ export default function RecipeDetailsScreen() {
   const ingredients = Array.isArray(recipe.ingredients) ? recipe.ingredients.map(String) : [];
   const notes = Array.isArray(recipe.notes) ? recipe.notes.map(String) : [];
 
-  const imageUri = recipe.imageUrl?.length
-    ? recipe.imageUrl
-    : 'https://via.placeholder.com/400';
+  const imageUri = recipe.imageUrl?.length ? recipe.imageUrl : 'https://via.placeholder.com/400';
 
   const handleDelete = () => {
     Alert.alert(
@@ -53,15 +56,15 @@ export default function RecipeDetailsScreen() {
           text: 'Delete',
           style: 'destructive',
           onPress: async () => {
-            if (imageUri.startsWith(FileSystem.documentDirectory!)) {
+            if (recipe.imageUrl && recipe.imageUrl.startsWith(FileSystem.documentDirectory!)) {
               try {
-                await FileSystem.deleteAsync(imageUri, { idempotent: true });
+                await FileSystem.deleteAsync(recipe.imageUrl, { idempotent: true });
               } catch (err) {
                 console.warn('Failed to delete image:', err);
               }
             }
             deleteRecipe(recipe.id);
-            router.back();
+            router.replace('/recipes/');
           },
         },
       ],
@@ -72,27 +75,19 @@ export default function RecipeDetailsScreen() {
   const handleShare = async () => {
     try {
       await Share.share({
-        message: `Check out this recipe: \n\n${recipe.title}\nBy ${recipe.source}\n\nIngredients: \n\n${ingredients.join('\n')}\n\nInstructions: \n\n ${instructions.join('\n\n')}`,
+        message: `Check out this recipe: \n\n${recipe.title}\nBy ${recipe.source}\n\nIngredients: \n\n${ingredients.join('\n')}\n\nInstructions: \n\n${instructions.join('\n\n')}`,
       });
     } catch (error) {
-      if (error instanceof Error) {
-        console.error('Error sharing:', error.message);
-      } else {
-        console.error('Error sharing:', error);
-      }
+      console.error('Error sharing:', error instanceof Error ? error.message : error);
     }
   };
-
-  // Scroll and toggle state for ingredients/instructions horizontal paging
-  const scrollViewRef = useRef<ScrollView>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
 
   const scrollToPage = (index: number) => {
     setActiveIndex(index);
     scrollViewRef.current?.scrollTo({ x: screenWidth * index, animated: true });
   };
 
-  const onScroll = (event: { nativeEvent: { contentOffset: { x: any; }; }; }) => {
+  const onScroll = (event: { nativeEvent: { contentOffset: { x: number } } }) => {
     const x = event.nativeEvent.contentOffset.x;
     const page = Math.round(x / screenWidth);
     if (page !== activeIndex) {
@@ -102,49 +97,40 @@ export default function RecipeDetailsScreen() {
 
   return (
     <SafeAreaView edges={['top']} style={{ flex: 1 }}>
-      {/* Header */}
       <HStack pl={6} pr={18} py={14} justifyContent="space-between" alignItems="center">
-        <Pressable onPress={() => router.back()}>
+        <Pressable onPress={() => router.replace('/recipes/')}>
           <Feather name="chevron-left" size={32} color="#333" />
         </Pressable>
         <Box flexDirection="row">
           <Pressable pr={22} onPress={handleShare}>
             <Feather name="share-2" size={22} color="#333" />
           </Pressable>
-          <Pressable pr={22}>
+          <Pressable pr={22} onPress={() => router.push(`/recipes/EditRecipe?id=${recipe.id}`)}>
             <Feather name="edit-2" size={22} color="#333" />
           </Pressable>
           <Pressable onPress={handleDelete}>
-            <Feather name="trash-2" size={20} color="#C1121F" />
+            <Feather name="trash-2" size={22} color="#C1121F" />
           </Pressable>
         </Box>
       </HStack>
 
-      {/* Image Box */}
       <ScrollView>
         <Box>
           <Image source={{ uri: imageUri }} style={styles.image} resizeMode="cover" alt={recipe.title} />
-          {/* Heart icon overlay */}
           <Pressable
             onPress={() => toggleFavourite(recipe.id)}
-            style={{
-              position: 'absolute',
-              top: 12,
-              right: 12,
-              zIndex: 10,
-            }}
+            style={{ position: 'absolute', top: 12, right: 12, zIndex: 10 }}
           >
             <Box bg="white" p={4} borderRadius={6} alignItems="center" justifyContent="center">
               <FontAwesome
                 name={recipe.favourite ? 'star' : 'star-o'}
-                size={24}
+                size={22}
                 color={recipe.favourite ? '#FFC107' : '#999'}
               />
             </Box>
           </Pressable>
         </Box>
 
-        {/* Title and stats */}
         <View style={styles.container}>
           <Text fontFamily="Nunito-700" size={'3xl'} pt={8}>
             {recipe.title}
@@ -153,14 +139,7 @@ export default function RecipeDetailsScreen() {
             By {recipe.source}
           </Text>
 
-          <HStack
-            pl={4}
-            pr={10}
-            pt={20}
-            justifyContent="space-between"
-            alignItems="flex-start"
-            flexWrap="wrap"
-          >
+          <HStack pl={4} pr={10} pt={20} justifyContent="space-between" alignItems="flex-start" flexWrap="wrap">
             <Box alignItems="center" flexShrink={1}>
               <Feather name="clock" size={20} color="#333" />
               <Text pt={3} color="#777" fontFamily="Nunito-600" size={'sm'}>
@@ -187,7 +166,6 @@ export default function RecipeDetailsScreen() {
             </Box>
           </HStack>
 
-          {/* Toggle buttons for Ingredients/Instructions */}
           <Box flexDirection="row" justifyContent="center" my={20}>
             <Pressable
               onPress={() => scrollToPage(0)}
@@ -203,7 +181,6 @@ export default function RecipeDetailsScreen() {
             </Pressable>
           </Box>
 
-          {/* Horizontal scroll for Ingredients and Instructions */}
           <ScrollView
             ref={scrollViewRef}
             horizontal
@@ -214,34 +191,27 @@ export default function RecipeDetailsScreen() {
             contentContainerStyle={{ paddingBottom: 20 }}
             nestedScrollEnabled
           >
-            {/* Ingredients page */}
             <View style={[styles.page, { width: screenWidth - 32 }]}>
-              {ingredients.length > 0 ? (
-                ingredients.map((item, index) => (
-                  <Text key={`ing-${index}`} style={styles.itemText}>
-                    • {item}
-                  </Text>
-                ))
-              ) : (
-                <Text style={styles.itemText}>No ingredients available.</Text>
-              )}
+              {ingredients.length > 0
+                ? ingredients.map((item, index) => (
+                    <Text key={`ing-${index}`} style={styles.itemText}>
+                      • {item}
+                    </Text>
+                  ))
+                : <Text style={styles.itemText}>No ingredients available.</Text>}
             </View>
 
-            {/* Instructions page */}
             <View style={[styles.page, { width: screenWidth - 32 }]}>
-              {instructions.length > 0 ? (
-                instructions.map((step, index) => (
-                  <Text key={`step-${index}`} style={styles.instructionParagraph}>
-                    {index + 1}. {step}
-                  </Text>
-                ))
-              ) : (
-                <Text style={styles.itemText}>No instructions available.</Text>
-              )}
+              {instructions.length > 0
+                ? instructions.map((step, index) => (
+                    <Text key={`step-${index}`} style={styles.instructionParagraph}>
+                      {index + 1}. {step}
+                    </Text>
+                  ))
+                : <Text style={styles.itemText}>No instructions available.</Text>}
             </View>
           </ScrollView>
 
-          {/* Notes section (unchanged) */}
           {notes.length > 0 && (
             <>
               <Text fontFamily="Nunito-700" size={'2xl'} style={{ marginTop: 20 }}>
@@ -306,3 +276,4 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
 });
+
