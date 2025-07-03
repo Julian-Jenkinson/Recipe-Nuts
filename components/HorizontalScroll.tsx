@@ -16,7 +16,7 @@ const CATEGORIES = ['All', 'Favourites', 'Appetisers', 'Mains', 'Desserts', 'Bre
 
 export default function HorizontalScroll({ filters, setFilters }: HorizontalScrollProps) {
   return (
-    <Box pt={20} pb={5}>
+    <Box pt={14} pb={14}>
       <ScrollView 
         horizontal={true}
         showsHorizontalScrollIndicator={false}

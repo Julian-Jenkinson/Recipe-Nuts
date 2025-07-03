@@ -1,5 +1,5 @@
 // app/_layout.tsx
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { config } from '@gluestack-ui/config';
 import { GluestackUIProvider } from '@gluestack-ui/themed';
 import { useFonts } from 'expo-font';
@@ -38,6 +38,7 @@ export default function Layout() {
           headerShown: false,
           tabBarActiveTintColor: '#0A192F',
           tabBarInactiveTintColor: '#999',
+          tabBarStyle: {backgroundColor: '#f2f2f2'},
         }}
       >
         <Tabs.Screen
@@ -45,7 +46,7 @@ export default function Layout() {
           options={{
             title: 'Recipes',
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="list" size={size} color={color} />
+              <MaterialCommunityIcons name="pot-mix-outline" size={size} color={color} />
             ),
           }}
         />
@@ -54,7 +55,7 @@ export default function Layout() {
           options={{
             title: 'Add',
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="add-circle" size={size} color={color} />
+              <MaterialCommunityIcons name="plus-circle-outline" size={size} color={color} />
             ),
           }}
         />
@@ -63,7 +64,7 @@ export default function Layout() {
           options={{
             title: 'Settings',
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="settings" size={size} color={color} />
+              <MaterialCommunityIcons name="cog-outline" size={size} color={color} />
             ),
           }}
         />

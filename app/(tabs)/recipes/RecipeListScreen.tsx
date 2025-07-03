@@ -8,6 +8,7 @@ import HorizontalScroll, { FiltersType } from '../../../components/HorizontalScr
 import RecipeCard from '../../../components/RecipeCard';
 import { useRecipeStore } from '../../../stores/useRecipeStore';
 
+
 export default function RecipeListScreen() {
   const router = useRouter();
   const recipes = useRecipeStore((state) => state.recipes);
@@ -54,22 +55,21 @@ export default function RecipeListScreen() {
 
 
   return (
-    <SafeAreaView style={{ flex: 1 }}> 
-      
+    <SafeAreaView edges={['top']} style={{ flex: 1 }}>
       <View style={{ flex: 1 }}>
-        <HStack px={16} pt={40} pb={6} justifyContent="space-between" alignItems="center">
+        <HStack px={16} pt={15} pb={6} justifyContent="space-between" alignItems="center">
           <Text fontSize={24} color="#333" style={{ fontFamily: 'Nunito-800' }}>
             Explore Recipes
           </Text>
         </HStack>
 
-        <HStack px={16} pt={6} justifyContent="space-between" alignItems="center">
+        <HStack px={16} pt={1} justifyContent="space-between" alignItems="center">
           <Text fontSize={18} color="#666" style={{ fontFamily: 'Nunito-600' }}>
             <Text>{`${recipes.length} ${recipes.length === 1 ? 'recipe' : 'recipes'}`}</Text> 
           </Text>
         </HStack>
         
-        <Box mt={25} flex={1}>
+        <Box mt={15} flex={1}>
           <Input 
             variant="rounded" 
             size="sm" 
@@ -106,16 +106,19 @@ export default function RecipeListScreen() {
 
           <FlatList
             data={filteredRecipes}
-            numColumns={3}
+            // 3 numColumns={3}
+            numColumns={2}
             keyExtractor={(item) => item.id}
-            contentContainerStyle={{ padding: 16 }}
+            contentContainerStyle={{ paddingHorizontal: 16 }}
             columnWrapperStyle={{ justifyContent: 'flex-start' }}
             renderItem={({ item, index }) => (
               <Box
                 key={item.id}
                 style={{
-                  width: '31.5%',
-                  marginRight: (index + 1) % 3 === 0 ? 0 : '2.75%',
+                  width: '48%',
+                  marginRight: (index + 1) % 2 === 0 ? 0 : '4%',
+                  // 3 width: '31.5%',
+                  // 3 marginRight: (index + 1) % 3 === 0 ? 0 : '2.75%',
                   marginBottom: 16,
                 }}
               >

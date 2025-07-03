@@ -1,13 +1,13 @@
 import { FontAwesome } from '@expo/vector-icons';
 import { Box, Image, Pressable, Text } from '@gluestack-ui/themed';
-import React, { useState } from 'react';
+import React from 'react';
 
 type RecipeCardProps = {
   id: string;
   title: string;
   imageUrl: string;
-  source?: string; // optional just in case
-   prepTime?: string;
+  source?: string;
+  prepTime?: string;
   cookTime?: string;
   difficulty?: string;
   servingSize?: string;
@@ -15,36 +15,38 @@ type RecipeCardProps = {
   category?: string;
   favourite?: boolean;
   onPress: () => void;
-  onToggleFavourite?: () => void; 
+  onToggleFavourite?: () => void;
 };
 
-export default function RecipeCard({ title, imageUrl, source, onPress, favourite, onToggleFavourite }: RecipeCardProps) {
-  const [imageError, setImageError] = useState(false);
-
+export default function RecipeCard({
+  title,
+  imageUrl,
+  source,
+  onPress,
+  favourite,
+  onToggleFavourite,
+}: RecipeCardProps) {
   return (
-    <Box>
-      <Pressable onPress={onPress}>
-        <Box
-          mb="$2"
-          bg="$backgroundLight300"
-          borderRadius={8}
-          width="100%"
-          aspectRatio={1.2}
-          overflow="hidden"
-          justifyContent="center"
-          alignItems="center"
-          // Shadow for iOS
-          shadowColor="#000"
-          shadowOffset={{ width: 0, height: 2 }}
-          shadowOpacity={0.2}
-          shadowRadius={4}
-          // Shadow for Android
-          elevation={4}
-        >
+    <Box
+      borderRadius={8}
+      shadowColor="#000"
+      shadowOffset={{ width: 0, height: 2 }}
+      shadowOpacity={0.2}
+      shadowRadius={4}
+      elevation={5}
+      bg="#f5f5f5" // check this colour is correct
+    >
+      <Pressable
+        onPress={onPress}
+        borderRadius={8}
+        overflow="hidden"
+      >
+        {/* Image Container */}
+        <Box width="100%" aspectRatio={1.2} justifyContent="center" alignItems="center">
           {/* Heart icon overlay */}
           <Pressable
             onPress={(e) => {
-              e.stopPropagation(); // prevent card press
+              e.stopPropagation();
               onToggleFavourite?.();
             }}
             style={{
@@ -54,43 +56,25 @@ export default function RecipeCard({ title, imageUrl, source, onPress, favourite
               zIndex: 10,
             }}
           >
-            <Box
-              //bg="$backgroundLight100"   
-              bg="white"
-              p={3}                     
-              borderRadius={6}       
-              alignItems="center"
-              justifyContent="center"
-            >
+            <Box bg="white" p={3} borderRadius={6} alignItems="center" justifyContent="center">
               <FontAwesome
                 name={favourite ? 'star' : 'star-o'}
-                size={16}
+                size={19}
                 color={favourite ? '#FFC107' : '#999'}
               />
             </Box>
           </Pressable>
 
-
-
-          {!imageError ? (
-            <Image
-              source={{ uri: imageUrl }}
-              alt={title}
-              style={{ width: '100%', height: '100%' }}
-              resizeMode="cover"
-              onError={() => setImageError(true)}
-            />
-          ) : (
-            <Box
-              width="100%"
-              height="100%"
-              bg="$backgroundLight200"
-              borderRadius={20}
-            />
-          )}
+          <Image
+            source={{ uri: imageUrl }}
+            alt={title}
+            style={{ width: '100%', height: '100%' }}
+            resizeMode="cover"
+          />
         </Box>
 
-        <Box mt="$2">
+        {/* Text Container */}
+        <Box px={8} py={8}>
           <Text fontSize="$md" style={{ fontFamily: 'Nunito-800' }} color="$textLight900" numberOfLines={1}>
             {title}
           </Text>
