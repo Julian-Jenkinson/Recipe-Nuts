@@ -2,7 +2,7 @@ import { Feather, Ionicons } from '@expo/vector-icons';
 import { Box, HStack, Input, InputField, InputSlot, Pressable, Text } from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { FlatList, StatusBar, View } from 'react-native';
+import { FlatList, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import HorizontalScroll, { FiltersType } from '../../../components/HorizontalScroll';
 import RecipeCard from '../../../components/RecipeCard';
@@ -52,13 +52,20 @@ export default function RecipeListScreen() {
     router.push(`/recipes/${id}`);
   };
 
+
   return (
     <SafeAreaView style={{ flex: 1 }}> 
-      <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
+      
       <View style={{ flex: 1 }}>
-        <HStack px={16} pt={30} pb={6} justifyContent="space-between" alignItems="center">
+        <HStack px={16} pt={40} pb={6} justifyContent="space-between" alignItems="center">
           <Text fontSize={24} color="#333" style={{ fontFamily: 'Nunito-800' }}>
-            Recipes
+            Explore Recipes
+          </Text>
+        </HStack>
+
+        <HStack px={16} pt={6} justifyContent="space-between" alignItems="center">
+          <Text fontSize={18} color="#666" style={{ fontFamily: 'Nunito-600' }}>
+            <Text>{`${recipes.length} ${recipes.length === 1 ? 'recipe' : 'recipes'}`}</Text> 
           </Text>
         </HStack>
         
