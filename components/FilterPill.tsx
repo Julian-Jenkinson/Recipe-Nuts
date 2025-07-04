@@ -1,4 +1,6 @@
 // FilterPill.tsx
+import theme from '../theme';
+
 export type FiltersType = {
   sortBy: string;
   category: string[];
@@ -32,18 +34,20 @@ const pillStyles = StyleSheet.create({
     paddingHorizontal: 18,
     borderRadius: 9999,
     marginRight: 2,
-    backgroundColor: '#e3e3e3',
+    ///backgroundColor: '#e3e3e3',
+    backgroundColor: theme.colors.bgFocus,
   },
   pillPressed: {
-    backgroundColor: '#000',
+    //backgroundColor: '#000',
+    backgroundColor: theme.colors.cta,
     ///borderColor: '#000',
   },
   pillText: {
-    color: '#000',
+    color: theme.colors.text1,
     fontFamily: 'Nunito-800',
     fontSize: 14,
   },
   pillTextPressed: {
-    color: '#fff',
+    color: theme.colors.ctaText,
   },
 });

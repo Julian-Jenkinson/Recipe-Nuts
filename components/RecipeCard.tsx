@@ -1,6 +1,7 @@
 import { FontAwesome } from '@expo/vector-icons';
 import { Box, Image, Pressable, Text } from '@gluestack-ui/themed';
 import React from 'react';
+import theme from '../theme';
 
 type RecipeCardProps = {
   id: string;
@@ -34,7 +35,8 @@ export default function RecipeCard({
       shadowOpacity={0.2}
       shadowRadius={4}
       elevation={5}
-      bg="#f5f5f5" // check this colour is correct
+      //bg="#f5f5f5" // check this colour is correct
+      bg="#fff"
     >
       <Pressable
         onPress={onPress}
@@ -75,11 +77,11 @@ export default function RecipeCard({
 
         {/* Text Container */}
         <Box px={8} py={8}>
-          <Text fontSize="$md" style={{ fontFamily: 'Nunito-800' }} color="$textLight900" numberOfLines={1}>
+          <Text fontSize="$md" style={{ fontFamily: 'Nunito-800' }} color={theme.colors.text1} numberOfLines={1}>
             {title}
           </Text>
           {!!source && (
-            <Text fontSize="$sm" color="$textLight600" style={{ fontFamily: 'Nunito-400' }} numberOfLines={1}>
+            <Text fontSize="$sm" color={theme.colors.text2} style={{ fontFamily: 'Nunito-400' }} numberOfLines={1}>
               {source.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]}
             </Text>
           )}

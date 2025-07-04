@@ -1,11 +1,13 @@
 // app/_layout.tsx
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { config } from '@gluestack-ui/config';
-import { GluestackUIProvider } from '@gluestack-ui/themed';
+import { GluestackUIProvider, StatusBar } from '@gluestack-ui/themed';
 import { useFonts } from 'expo-font';
+import * as NavigationBar from 'expo-navigation-bar';
 import { Tabs } from "expo-router";
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+import theme from '../../theme';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -22,6 +24,11 @@ export default function Layout() {
   });
 
   useEffect(() => {
+    //NavigationBar.setBackgroundColorAsync(theme.colors.bg);
+    NavigationBar.setButtonStyleAsync('dark'); // Optional: dark icons on light bg
+  }, []);
+
+  useEffect(() => {
     if (loaded || error) {
       SplashScreen.hideAsync();
     }
@@ -31,14 +38,25 @@ export default function Layout() {
     return null;
   }
 
+
   return (
     <GluestackUIProvider config={config}>
+      <StatusBar
+        backgroundColor={theme.colors.bg}
+        barStyle="dark-content"
+      />
       <Tabs
         screenOptions={{
           headerShown: false,
           tabBarActiveTintColor: '#0A192F',
+          //tabBarActiveTintColor: theme.colors.cta,
           tabBarInactiveTintColor: '#999',
-          tabBarStyle: {backgroundColor: '#f2f2f2'},
+          tabBarStyle: {
+            backgroundColor: theme.colors.bg,
+            borderTopWidth: 0,
+            elevation: 0,      // shadow on Android
+            shadowOpacity: 0, // shadow on ios 
+          },
         }}
       >
         <Tabs.Screen
@@ -60,11 +78,11 @@ export default function Layout() {
           }}
         />
         <Tabs.Screen
-          name="Settings"
+          name="Menu"
           options={{
-            title: 'Settings',
+            title: 'Menu',
             tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons name="cog-outline" size={size} color={color} />
+              <MaterialCommunityIcons name="menu" size={size} color={color} />
             ),
           }}
         />

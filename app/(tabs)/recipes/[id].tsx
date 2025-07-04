@@ -6,6 +6,7 @@ import React, { useRef, useState } from 'react';
 import { Alert, Button, Dimensions, ScrollView, Share, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRecipeStore } from '../../../stores/useRecipeStore';
+import theme from '../../../theme';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -96,7 +97,7 @@ export default function RecipeDetailsScreen() {
   };
 
   return (
-    <SafeAreaView edges={['top']} style={{ flex: 1 }}>
+    <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: theme.colors.bg }}>
       <HStack pl={6} pr={18} py={14} justifyContent="space-between" alignItems="center">
         <Pressable onPress={() => router.replace('/recipes/')}>
           <Feather name="chevron-left" size={32} color="#333" />
@@ -132,41 +133,41 @@ export default function RecipeDetailsScreen() {
         </Box>
 
         <View style={styles.container}>
-          <Text fontFamily="Nunito-700" size={'3xl'} pt={8}>
+          <Text fontFamily="Nunito-700" size={'3xl'} pt={8}color={theme.colors.text1}>
             {recipe.title}
           </Text>
-          <Text fontFamily="Nunito-500" size={'md'} color="#888">
+          <Text fontFamily="Nunito-500" size={'md'} color={theme.colors.text2}>
             By {recipe.source}
           </Text>
 
-          <HStack pl={4} pr={10} pt={20} justifyContent="space-between" alignItems="flex-start" flexWrap="wrap">
+          <HStack pl={4} pr={10} pt={20} pb={14} justifyContent="space-between" alignItems="flex-start" flexWrap="wrap">
             <Box alignItems="center" flexShrink={1}>
-              <Feather name="clock" size={20} color="#333" />
+              <Feather name="clock" size={20} color="#777" />
               <Text pt={3} color="#777" fontFamily="Nunito-600" size={'sm'}>
                 {+recipe.prepTime + +recipe.cookTime || '-'} mins
               </Text>
             </Box>
             <Box alignItems="center" flexShrink={1}>
-              <MaterialCommunityIcons name="bowl-mix-outline" size={20} color="#333" />
+              <MaterialCommunityIcons name="bowl-mix-outline" size={20} color="#777" />
               <Text pt={3} color="#777" fontFamily="Nunito-600" size={'sm'}>
                 {recipe.category || 'Other'}
               </Text>
             </Box>
             <Box alignItems="center" flexShrink={1}>
-              <Feather name="bar-chart" size={20} color="#333" />
+              <Feather name="bar-chart" size={20} color="#777" />
               <Text pt={3} color="#777" fontFamily="Nunito-600" size={'sm'}>
                 {+recipe.difficulty || 'Medium'}
               </Text>
             </Box>
             <Box alignItems="center" flexShrink={1} maxWidth="25%">
-              <Feather name="user" size={20} color="#333" />
+              <Feather name="user" size={20} color="#777" />
               <Text pt={3} color="#777" fontFamily="Nunito-600" size={'sm'}>
                 Serves {+recipe.servingSize || '-'}
               </Text>
             </Box>
           </HStack>
 
-          <Box flexDirection="row" justifyContent="center" my={20}>
+          <Box  style={styles.switchBox}>
             <Pressable
               onPress={() => scrollToPage(0)}
               style={[styles.toggleButton, activeIndex === 0 && styles.toggleButtonActive]}
@@ -253,18 +254,27 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 8,
   },
+  switchBox: {
+    flexDirection: 'row', 
+    justifyContent: 'center', 
+    //marginHorizontal:, 
+    //backgroundColor: '#fff', 
+    //padding: 10, 
+    borderRadius: 17,
+  },
   toggleButton: {
+    borderRadius: 14,
+    backgroundColor: theme.colors.bgFocus,
     paddingVertical: 10,
-    paddingHorizontal: 26,
-    borderRadius: 24,
-    backgroundColor: '#ddd',
-    marginHorizontal: 8,
+    paddingHorizontal: 36,
+    marginHorizontal: 6,
+    marginVertical: 6,
   },
   toggleButtonActive: {
-    backgroundColor: '#000',
+    backgroundColor: theme.colors.cta,
   },
   toggleText: {
-    color: '#000',
+    color: theme.colors.text1,
     fontWeight: '600',
     fontSize: 16,
   },
@@ -272,7 +282,7 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   page: {
-    paddingHorizontal: 30,
+    paddingHorizontal: 8,
     paddingVertical: 8,
   },
 });

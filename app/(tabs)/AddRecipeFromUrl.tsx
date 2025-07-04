@@ -3,13 +3,14 @@ import React, { useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
-  Button,
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
-  View,
+  View
 } from 'react-native';
 import { useRecipeStore } from '../../stores/useRecipeStore';
+import theme from '../../theme';
 import { downloadAndStoreImage } from '../../utils/downloadAndStoreImage';
 
 export default function AddRecipeFromUrl() {
@@ -76,7 +77,8 @@ export default function AddRecipeFromUrl() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Import Recipe from URL</Text>
+      <Text style={styles.title}>Import Recipe</Text>
+      <Text style={styles.text}>Copy and paste a recipe link here to extract a recipe and save it to your collection.</Text>
       <TextInput
         value={inputUrl}
         onChangeText={setInputUrl}
@@ -88,9 +90,11 @@ export default function AddRecipeFromUrl() {
       />
 
       {loading ? (
-        <ActivityIndicator size="large" color="#000" style={{ marginTop: 20 }} />
+        <ActivityIndicator size="small" color="#000" style={{ marginTop: 20 }} />
       ) : (
-        <Button title="Import and Save" onPress={handleImportAndSave} />
+        <Pressable onPress={handleImportAndSave} style={styles.buttonContainer}>
+          <Text style={styles.buttonText}>Import and Save</Text>
+        </Pressable>
       )}
     </View>
   );
@@ -101,22 +105,47 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     justifyContent: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: theme.colors.bg,
+    
   },
   title: {
     fontSize: 22,
-    fontWeight: '600',
+    fontFamily: 'Nunito-700',
     marginBottom: 20,
     textAlign: 'center',
   },
+  text: {
+    fontSize: 18,
+    fontFamily: 'Nunito-400',
+    marginBottom: 20,
+    textAlign: 'center',
+    color: '#666',
+  },
   input: {
+    fontFamily: 'Nunito-400',
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 6,
+    borderColor: theme.colors.bgFocus,
+    backgroundColor: theme.colors.bgFocus,
+    borderRadius: 20,
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 16,
     marginBottom: 20,
     color: '#000',
   },
+  buttonContainer: {
+    backgroundColor: theme.colors.cta, // a nice green
+    paddingVertical: 8,
+    paddingHorizontal: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    alignSelf:'center',
+  },
+  buttonText: {
+    fontSize: 18,
+    fontFamily: 'Nunito-700',
+    color: '#fff',
+    textAlign: 'center',
+  },
+  
 });

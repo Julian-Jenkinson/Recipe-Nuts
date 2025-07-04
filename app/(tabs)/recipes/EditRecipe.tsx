@@ -1,19 +1,18 @@
 import { Feather } from '@expo/vector-icons';
-import { Box, HStack, Image, Pressable, Text, View } from '@gluestack-ui/themed';
+import { Box, HStack, Image, Pressable, Text } from '@gluestack-ui/themed';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useRef, useState } from 'react';
 import {
   Alert,
-  Button,
   ScrollView,
   StyleSheet,
   TextInput
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRecipeStore } from '../../../stores/useRecipeStore';
+import theme from '../../../theme';
 
 export default function EditRecipe() {
-  
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const scrollViewRef = useRef<ScrollView>(null);
@@ -99,21 +98,21 @@ export default function EditRecipe() {
     router.back();
   };
 
-
-
   return (
     <SafeAreaView edges={['top']} style={{ flex: 1 }}>
       {/* Header */}
-      <HStack pl={6} pr={18} py={14} justifyContent="space-between" alignItems="center">
+      <HStack 
+        pl={6} pr={18} py={14} 
+        justifyContent="space-between" 
+        alignItems="center"
+        bg={theme.colors.bg}  
+      >
         <Pressable onPress={() => router.push(`/recipes/${draftRecipe.id}`)}>
           <Feather name="chevron-left" size={32} color="#333" />
         </Pressable>
-
         <Box flexDirection="row">
-
-  
           <Pressable>
-            <Feather name="trash-2" size={20} color="#C1121F" />
+            <Feather name="trash-2" size={22} color="#C1121F" />
           </Pressable>
         </Box>
       </HStack>
@@ -123,13 +122,9 @@ export default function EditRecipe() {
         contentContainerStyle={styles.container}
         keyboardShouldPersistTaps="handled"
       >
-        {draftRecipe.imageUrl ? (
-          <Image
-            source={{ uri: draftRecipe.imageUrl }}
-            style={styles.image}
-            resizeMode="cover"
-          />
-        ) : null}
+        <Text style={[styles.headerText]}>
+          Edit Recipe
+        </Text>
 
         <Text style={styles.label}>Title</Text>
         <TextInput
@@ -137,6 +132,14 @@ export default function EditRecipe() {
           onChangeText={(text) => setDraftRecipe({ ...draftRecipe, title: text })}
           style={styles.largeInput}
         />
+
+        {draftRecipe.imageUrl ? (
+          <Image
+            source={{ uri: draftRecipe.imageUrl }}
+            style={styles.image}
+            resizeMode="cover"
+          />
+        ) : null}
 
         <Text style={styles.label}>Source</Text>
         <TextInput
@@ -204,13 +207,15 @@ export default function EditRecipe() {
           multiline
         />
 
-        <View style={{ marginVertical: 20 }}>
-          <Button title="Save Changes" onPress={handleSave} />
-        </View>
-
-        <View style={{ marginBottom: 20 }}>
-          <Button title="Cancel" onPress={handleCancel} color="red" />
-        </View>
+         {/* Buttons in HStack */}
+        <HStack justifyContent="center" space={"md"} style={{ marginTop: 16 }}>
+          <Pressable style={styles.cancelButton} onPress={handleCancel} >
+            <Text style={styles.cancelButtonText}>Cancel</Text>
+          </Pressable>
+          <Pressable style={styles.saveButton} onPress={handleSave} >
+            <Text style={styles.saveButtonText}>Save Changes</Text>
+          </Pressable>
+        </HStack>
       </ScrollView>
     </SafeAreaView>
   );
@@ -220,39 +225,48 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: theme.colors.bg,
+    //backgroundColor: 'white',
+  },
+  headerText: {
+    fontFamily: 'Nunito-800',
+    fontSize: 24,
+    color: '#333',
   },
   label: {
+    fontFamily: 'Nunito-600',
     fontSize: 16,
-    fontWeight: '500',
     marginTop: 12,
     marginBottom: 4,
     color: '#000',
   },
   input: {
+    fontFamily: 'Nunito-400',
     height: 40,
-    borderWidth: 1,
-    borderColor: '#ccc',
+    borderWidth: 0,
+    borderColor: '#ddd',
     paddingHorizontal: 8,
-    borderRadius: 6,
+    borderRadius: 8,
     backgroundColor: '#fff',
     color: '#000',
   },
   largeInput: {
+    fontFamily: 'Nunito-700',
     height: 50,
-    borderWidth: 1,
-    borderColor: '#ccc',
+    borderWidth: 0,
+    borderColor: '#ddd',
     paddingHorizontal: 10,
     fontSize: 18,
-    borderRadius: 6,
+    borderRadius: 8,
     backgroundColor: '#fff',
     color: '#000',
   },
   textArea: {
-    borderWidth: 1,
-    borderColor: '#ccc',
+    fontFamily: 'Nunito-400',
+    borderWidth: 0,
+    borderColor: '#ddd',
     padding: 10,
-    borderRadius: 6,
+    borderRadius: 8,
     minHeight: 100,
     textAlignVertical: 'top',
     backgroundColor: '#fff',
@@ -262,6 +276,30 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 200,
     borderRadius: 8,
-    marginBottom: 16,
+    marginTop: 16,
+  },
+  saveButton: {
+    flex: 1,
+    backgroundColor: theme.colors.cta,
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  saveButtonText: {
+    fontFamily: 'Nunito-700',
+    color: '#fff',
+    fontSize: 16,
+  },
+  cancelButton: {
+    flex: 1,
+    backgroundColor: '#888', // a red tone for cancel (instead of default blue)
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  cancelButtonText: {
+    fontFamily: 'Nunito-700',
+    color: '#fff',
+    fontSize: 16,
   },
 });
