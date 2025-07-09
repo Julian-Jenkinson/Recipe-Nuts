@@ -1,53 +1,61 @@
-# Welcome to your Expo app 👋
+# Recipe-Nuts
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A mobile app that...
 
-## Get started
 
-1. Install dependencies
+## Features 💥
+
+- Import, add, delete, edit, share recipes
+- API
+- built with React Native for both Android and IOS
+
+
+## Problems solved 🎯
+
+Recipe sites make it hard to save and re-find recipes. This app.....
+
+
+## Technology ✨ 
+
+**Frontend** - React Native, TypeScript, Expo
+
+
+## Release Scedule
+
+Currently in testing phase. expecting a public release in August 2025
+
+
+## Local development 🧑‍🏭
+
+Install dependencies
 
    ```bash
    npm install
    ```
 
-2. Start the app
+Start the app
 
    ```bash
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+Wipe android emulator data
+   
+   ```bash
+   emulator -avd Medium_Phone_API_36.0 -wipe-data
+   ```
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
-## Get a fresh project
 
-When you're ready, run:
 
-```bash
-npm run reset-project
-```
+## Improvments 🤔 
+- Improve Recipe Extractor Logic (ongoing) - see seperate repo
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
 
-## Learn more
 
-To learn more about developing your project with Expo, look at the following resources:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
 
-## Join the community
 
-Join our community of developers creating universal apps.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
 
-wipe android emulator data:
-emulator -avd Medium_Phone_API_36.0 -wipe-data
