@@ -1,6 +1,6 @@
 # Recipe Nuts
 
-Recipe sites often make it difficult to store and re-find recipes. Recipe Nuts is a mobile app that lets you easily save and store recipes from the web. No lengthy blog posts, personal backstories or countless open tabs - just the essential recipe details, neatly organized in one place.  
+Recipe sites often make it cumbersome to save and re-use recipes. Recipe Nuts is a mobile app that lets you easily save and store recipes from the web. No lengthy blog posts, personal backstories or countless open tabs - just the essential recipe details, neatly organized in one place.  
 
 ## Features 💥
 
