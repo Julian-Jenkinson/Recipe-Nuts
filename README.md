@@ -4,11 +4,10 @@ Recipe sites often make it cumbersome to save and re-use recipes. Recipe Nuts is
 
 ## Features 💥
 
-- Import, add, delete, edit, share recipes
-- API
-- built with React Native for both Android and IOS
-- clean ui
-- 
+- Recipe management tool: Import, create, view, edit, delete and share recipes
+- Custom built REST Recipe Extractor API
+- Built with React Native for both Android and iOS
+- Clean intuitive UI
 
 ## Technology ✨ 
 
@@ -17,7 +16,7 @@ Recipe sites often make it cumbersome to save and re-use recipes. Recipe Nuts is
 
 ## Release Scedule
 
-Currently in the testing phase. I am aiming towards a public release in August 2025
+Currently in the testing phase. I am aiming towards a public release in August 2025.
 
 
 ## Post Release Features 
