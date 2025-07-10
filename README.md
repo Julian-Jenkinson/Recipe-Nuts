@@ -20,12 +20,13 @@ Currently in the testing phase. I am aiming towards a public release in August 2
 
 
 ## Post Release Features 
-- Scale ingredients
-- Metric -> Imperial conversions
-- Cook mode toggle
-- Dark mode toggle
+
 - Shopping list
 - Meal planner
+- Scale ingredients
+- Metric & Imperial conversions
+- Cook mode toggle
+- Dark mode toggle
 
 
 ## Local development 🧑‍🏭
