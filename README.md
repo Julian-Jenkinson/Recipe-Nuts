@@ -1,18 +1,14 @@
 # Recipe Nuts
 
-Recipe sites often make it difficult to store and re-find recipes. Recipe Nuts is a mobile app that allows users to save and stores recipes found on the net without the lengthy blog posts and back story. Just the key recipe details.  
+Recipe sites often make it difficult to store and re-find recipes. Recipe Nuts is a mobile app that lets you easily save and store recipes from the web. No lengthy blog posts, personal backstories or countless open tabs - just the essential recipe details, neatly organized in one place.  
 
 ## Features 💥
 
 - Import, add, delete, edit, share recipes
 - API
 - built with React Native for both Android and IOS
-
-
-## Problems solved 🎯
-
-Recipe sites make it hard to save and re-find recipes. This app.....
-
+- clean ui
+- 
 
 ## Technology ✨ 
 
@@ -21,35 +17,27 @@ Recipe sites make it hard to save and re-find recipes. This app.....
 
 ## Release Scedule
 
-Currently in testing phase. expecting a public release in August 2025
+Currently in the testing phase. I am aiming towards a public release in August 2025
+
+
+## Post Release Features 
+- Scale ingredients
+- Metric -> Imperial conversions
+- Cook mode toggle
+- Dark mode toggle
+- Shopping list
+- Meal planner
 
 
 ## Local development 🧑‍🏭
 
-Install dependencies
+Useful commands
 
    ```bash
-   npm install
+   npm install                                      # Install dependencies
+   npx expo start                                   # Start the app
+   emulator -avd Medium_Phone_API_36.0 -wipe-data   # Wipe android emulator data
    ```
-
-Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-Wipe android emulator data
-   
-   ```bash
-   emulator -avd Medium_Phone_API_36.0 -wipe-data
-   ```
-
-
-
-
-
-## Improvments 🤔 
-- Improve Recipe Extractor Logic (ongoing) - see seperate repo
 
 
 
