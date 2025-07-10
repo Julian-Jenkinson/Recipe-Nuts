@@ -14,12 +14,12 @@ Recipe sites often make it cumbersome to save and re-use recipes. Recipe Nuts is
 **Frontend** - React Native, TypeScript, Expo
 
 
-## Release Scedule
+## Release Scedule 🚀
 
 Currently in the testing phase. I am aiming towards a public release in August 2025.
 
 
-## Post Release Features 
+## Post Release Features 📦
 
 - Shopping list
 - Meal planner
