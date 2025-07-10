@@ -31,7 +31,7 @@ Currently in the testing phase. I am aiming towards a public release in August 2
 
 ## Local development 🧑‍🏭
 
-Useful commands
+Utilising Expo managed workflow. The following commands will be useful:
 
    ```bash
    npm install                                      # Install dependencies
