@@ -41,18 +41,6 @@ Utilising Expo managed workflow. The following commands will be useful:
 
    ```
 
-   expo install @react-native-async-storage/async-storage@2.1.2 \
-expo@53.0.19 \
-expo-constants@~17.1.7 \
-expo-file-system@~18.1.11 \
-expo-font@~13.3.2 \
-expo-image@~2.3.2 \
-expo-linking@~7.1.7 \
-expo-router@~5.1.3 \
-expo-splash-screen@~0.30.10 \
-expo-system-ui@~5.0.10 \
-expo-web-browser@~14.2.0 \
-react-native@0.79.5
 
 
 
