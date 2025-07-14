@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "Recipe-Cards",
-    "slug": "Recipe-Cards",
-    "version": "1.0.0",
+    "name": "Recipe Nuts",
+    "slug": "recipenuts",
+    "version": "1.0.1-internal",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "recipecards",
+    "scheme": "recipenuts",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -17,7 +17,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.anonymous.RecipeCards"
+      "package": "com.hulio.recipenuts"
     },
     "web": {
       "bundler": "metro",
@@ -35,10 +35,17 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      "expo-font"
+      "expo-font",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "237e40d5-ae96-43b5-ad01-03847fc7e761"
+      }
     }
   }
 }

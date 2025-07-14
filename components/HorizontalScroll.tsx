@@ -13,6 +13,7 @@ type HorizontalScrollProps = {
 };
 
 const CATEGORIES = ['All', 'Favourites', 'Appetisers', 'Mains', 'Desserts', 'Breakfasts'];
+//const CATEGORIES = ['All', 'Favourites', 'Fast Cooks', 'Newest', 'Oldest', 'A-Z', 'Z-A'];
 
 export default function HorizontalScroll({ filters, setFilters }: HorizontalScrollProps) {
   return (

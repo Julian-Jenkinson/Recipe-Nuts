@@ -101,10 +101,12 @@ export default function RecipeListScreen() {
             )}
           </Input>
 
+          
           <HorizontalScroll 
             filters={filters}
             setFilters={setHorizontalFilters}
           />
+          
 
           <FlatList
             data={filteredRecipes}
