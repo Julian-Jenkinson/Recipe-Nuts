@@ -122,6 +122,7 @@ export default function RecipeDetailsScreen() {
             style={styles.image} 
             resizeMode="cover" 
             accessibilityLabel={`Image of ${recipe.title}`} 
+            alt={`Image of ${recipe.title}`} 
           />
           <Pressable
             onPress={() => toggleFavourite(recipe.id)}

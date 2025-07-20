@@ -138,7 +138,8 @@ export default function EditRecipe() {
             source={{ uri: draftRecipe.imageUrl }}
             style={styles.image}
             resizeMode="cover"
-            accessibilityLabel={`Image of ${draftRecipe.title}`} 
+            accessibilityLabel={`Image of ${draftRecipe.title}`}
+            alt={`Image of ${draftRecipe.title}`} 
           />
         ) : null}
 
