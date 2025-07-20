@@ -15,9 +15,9 @@ export default function RecipeListScreen() {
   const recipes = useRecipeStore((state) => state.recipes);
   const [searchQuery, setSearchQuery] = React.useState('');
 
+
   const [filters, setFilters] = React.useState<FiltersType>({
-    category: [] as string[],
-    favourites: false,
+    mode: 'all',
   });
 
   const setHorizontalFilters = React.useCallback((value: React.SetStateAction<FiltersType>) => {
@@ -26,29 +26,81 @@ export default function RecipeListScreen() {
 
   const query = searchQuery.trim().toLowerCase();
 
-  const isFavQuery =
-    query === 'fav' ||
-    query === 'favo' ||
-    query === 'favou' ||
-    query === 'favour' ||
-    query === 'favouri' ||
-    query === 'favourit' ||
-    query === 'favourite' || 
-    query === 'favorite';
+  // Function to convert cook time to int
+  function toMinutes(timeString?: string): number {
+    if (!timeString) return 0;
+    const match = timeString.match(/\d+/); // extract first number
+    return match ? parseInt(match[0], 10) : 0;
+  }
 
-  const filteredRecipes = recipes.filter((recipe) => {
-    if (isFavQuery) return recipe.favourite;
+  function getTimestampFromId(id: string): number {
+    // Example: "recipe-1753011024567" → 1753011024567
+    const parts = id.split("-");
+    const timestamp = parts[parts.length - 1]; // last part after dash
+    return Number(timestamp) || 0;
+  }
 
-    const matchesSearch =
-      (recipe.title || '').toLowerCase().includes(query) ||
-      (recipe.source || '').toLowerCase().includes(query) ||
-      (recipe.category || '').toLowerCase().includes(query);
 
-    const matchesCategory = filters.category.length === 0 || filters.category.includes(recipe.category);
-    const matchesFavourites = !filters.favourites || recipe.favourite;
+  // filter recipes via horizontal scroll
+  let filteredRecipes = [...recipes];
 
-    return matchesSearch && matchesCategory && matchesFavourites;
-  });
+  // 1. Apply search filtering
+  if (query.length > 0) {
+    const isFavQuery =
+      query.startsWith('fav') || query === 'favourite' || query === 'favorite';
+
+    if (isFavQuery) {
+      filteredRecipes = filteredRecipes.filter((recipe) => recipe.favourite);
+    } else {
+      filteredRecipes = filteredRecipes.filter((recipe) =>
+        (recipe.title || '').toLowerCase().includes(query) ||
+        (recipe.source || '').toLowerCase().includes(query) ||
+        (recipe.category || '').toLowerCase().includes(query)
+      );
+    }
+  }
+  // 2. Apply category mode
+  switch (filters.mode) {
+    case 'all':
+      filteredRecipes.sort(
+        (a, b) => getTimestampFromId(b.id) - getTimestampFromId(a.id)
+      );
+      break;
+    case 'favourites':
+      filteredRecipes = filteredRecipes.filter((recipe) => recipe.favourite);
+      break;
+    case 'quick-meals':
+      filteredRecipes = filteredRecipes.filter((recipe) => {
+        const totalTime = toMinutes(recipe.prepTime) + toMinutes(recipe.cookTime);
+        return totalTime > 0 && totalTime <= 30;
+      });
+      break;
+    case 'newest':
+      filteredRecipes.sort(
+        (a, b) => getTimestampFromId(b.id) - getTimestampFromId(a.id)
+      );
+      break;
+
+    case 'oldest':
+      filteredRecipes.sort(
+        (a, b) => getTimestampFromId(a.id) - getTimestampFromId(b.id)
+      );
+      break;
+    case 'a-z':
+      filteredRecipes = [...filteredRecipes].sort((a, b) =>
+        a.title.localeCompare(b.title)
+      );
+      break;
+    case 'z-a':
+      filteredRecipes = [...filteredRecipes].sort((a, b) =>
+        b.title.localeCompare(a.title)
+      );
+      break;
+    case 'all':
+    default:
+      // no extra filtering
+      break;
+  }
 
   const handlePress = (id: string) => {
     router.push(`/recipes/${id}`);

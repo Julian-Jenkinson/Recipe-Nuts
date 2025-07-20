@@ -12,6 +12,7 @@ import theme from '../../theme';
 SplashScreen.preventAutoHideAsync();
 
 export default function Layout() {
+  
   const [loaded, error] = useFonts({
     'Nunito-200': require('../../assets/fonts/Nunito-ExtraLight.ttf'),
     'Nunito-300': require('../../assets/fonts/Nunito-Light.ttf'),

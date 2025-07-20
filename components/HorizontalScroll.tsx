@@ -2,18 +2,39 @@ import { Box, ScrollView } from '@gluestack-ui/themed';
 import React from 'react';
 import { FilterPill } from '../components/FilterPill';
 
+export type FilterMode = 
+  | 'all'
+  | 'favourites'
+  | 'quick-meals'
+  | 'newest'
+  | 'oldest'
+  | 'a-z'
+  | 'z-a';
+
 export type FiltersType = {
-  category: string[];
-  favourites: boolean;
+  mode: FilterMode;
 };
+
 
 type HorizontalScrollProps = {
   filters: FiltersType;
   setFilters: React.Dispatch<React.SetStateAction<FiltersType>>;
 };
 
-const CATEGORIES = ['All', 'Favourites', 'Appetisers', 'Mains', 'Desserts', 'Breakfasts'];
-//const CATEGORIES = ['All', 'Favourites', 'Fast Cooks', 'Newest', 'Oldest', 'A-Z', 'Z-A'];
+const CATEGORIES = ['All', 'Favourites', 'Quick Meals', 'Newest', 'Oldest', 'A-Z', 'Z-A'];
+
+function mapCategoryToMode(category: string): FilterMode {
+  switch (category) {
+    case 'All': return 'all';
+    case 'Favourites': return 'favourites';
+    case 'Quick Meals': return 'quick-meals';
+    case 'Newest': return 'newest';
+    case 'Oldest': return 'oldest';
+    case 'A-Z': return 'a-z';
+    case 'Z-A': return 'z-a';
+    default: return 'all';
+  }
+}
 
 export default function HorizontalScroll({ filters, setFilters }: HorizontalScrollProps) {
   return (
@@ -31,23 +52,10 @@ export default function HorizontalScroll({ filters, setFilters }: HorizontalScro
             <FilterPill
               key={category}
               label={category}
-              isSelected={
-                category === 'All' 
-                  ? filters.category.length === 0 && !filters.favourites
-                  : category === 'Favourites'
-                  ? filters.favourites
-                  : filters.category.includes(category) && !filters.favourites
-              }
+              isSelected={filters.mode === mapCategoryToMode(category)}
               onPress={() => {
-                if (category === 'All') {
-                  setFilters((prev) => ({ ...prev, category: [], favourites: false }));
-                } else if (category === 'Favourites') {
-                  setFilters((prev) => ({ ...prev, category: [], favourites: true }));
-                } else {
-                  setFilters((prev) => ({ ...prev, category: [category], favourites: false }));
-                }
+                setFilters({ mode: mapCategoryToMode(category) });
               }}
-              
             />
           ))}
         </Box>
