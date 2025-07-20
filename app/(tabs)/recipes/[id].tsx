@@ -117,7 +117,12 @@ export default function RecipeDetailsScreen() {
 
       <ScrollView>
         <Box>
-          <Image source={{ uri: imageUri }} style={styles.image} resizeMode="cover" alt={recipe.title} />
+          <Image 
+            source={{ uri: imageUri }} 
+            style={styles.image} 
+            resizeMode="cover" 
+            accessibilityLabel={`Image of ${recipe.title}`} 
+          />
           <Pressable
             onPress={() => toggleFavourite(recipe.id)}
             style={{ position: 'absolute', top: 12, right: 12, zIndex: 10 }}
