@@ -68,6 +68,15 @@ export default function Layout() {
               <MaterialCommunityIcons name="pot-mix-outline" size={size} color={color} />
             ),
           }}
+          listeners={({ navigation }) => ({
+            tabPress: (e) => {
+              e.preventDefault(); // stop default tab behavior
+              navigation.reset({
+                index: 0,
+                routes: [{ name: 'recipes' }], // force it to reload recipes/index.tsx
+              });
+            },
+          })}
         />
         <Tabs.Screen
           name="AddRecipeFromUrl"
