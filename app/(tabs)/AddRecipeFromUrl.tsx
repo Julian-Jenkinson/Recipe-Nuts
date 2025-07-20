@@ -5,9 +5,11 @@ import React, { useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Keyboard,
   Pressable,
   StyleSheet,
   Text,
+  TouchableWithoutFeedback,
   View
 } from 'react-native';
 import { useRecipeStore } from '../../stores/useRecipeStore';
@@ -19,8 +21,10 @@ export default function AddRecipeFromUrl() {
   const [loading, setLoading] = useState(false);
   const addRecipe = useRecipeStore((state) => state.addRecipe);
   const router = useRouter();
+  const [focused, setFocused] = React.useState(false);
 
   const handleImportAndSave = async () => {
+    Keyboard.dismiss();  // Dismiss keyboard when pressing button
     if (!inputUrl.trim()) {
       Alert.alert('Missing URL', 'Please enter a recipe URL.');
       return;
@@ -78,37 +82,48 @@ export default function AddRecipeFromUrl() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Import Recipe</Text>
-      <Text style={styles.text}>Copy and paste a recipe link here to extract a recipe and save it to your collection.</Text>
-      <Input style={styles.input}
-        variant="rounded"
-        size="md"
-        borderRadius="$3xl">
-        <InputField style={styles.inputField}
-          value={inputUrl}
-          onChangeText={setInputUrl}
-          placeholder="Enter recipe URL"
-          autoCapitalize="none"
-          autoCorrect={false}
-          editable={!loading}
-        />
-        {inputUrl.length > 0 && (
-          <InputSlot pr={10}>
-            <Pressable onPress={() => setInputUrl('')}>
-              <Feather name="x" size={20} color="#888" />
-            </Pressable>
-          </InputSlot>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <View style={styles.container}>
+        <Text style={styles.title}>Import Recipe</Text>
+        <Text style={styles.text}>
+          Copy and paste a recipe link here to extract a recipe and save it to your collection.
+        </Text>
+        <Input
+          style={styles.input}
+          variant="rounded"
+          size="md"
+          borderRadius="$3xl"
+          borderWidth={focused ? 2 : 0} // ✅ Add border when focused
+          borderColor={focused ? '#999' : 'transparent'}
+        >
+          <InputField
+            style={styles.inputField}
+            value={inputUrl}
+            onChangeText={setInputUrl}
+            placeholder="Enter recipe URL"
+            autoCapitalize="none"
+            autoCorrect={false}
+            editable={!loading}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+          />
+          {inputUrl.length > 0 && (
+            <InputSlot pr={10}>
+              <Pressable onPress={() => setInputUrl('')}>
+                <Feather name="x" size={20} color="#888" />
+              </Pressable>
+            </InputSlot>
+          )}
+        </Input>
+        {loading ? (
+          <ActivityIndicator size="small" color="#000" style={{ marginTop: 20 }} />
+        ) : (
+          <Pressable onPress={handleImportAndSave} style={styles.buttonContainer}>
+            <Text style={styles.buttonText}>Import and Save</Text>
+          </Pressable>
         )}
-      </Input>
-      {loading ? (
-        <ActivityIndicator size="small" color="#000" style={{ marginTop: 20 }} />
-      ) : (
-        <Pressable onPress={handleImportAndSave} style={styles.buttonContainer}>
-          <Text style={styles.buttonText}>Import and Save</Text>
-        </Pressable>
-      )}
-    </View>
+      </View>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -134,8 +149,6 @@ const styles = StyleSheet.create({
   },
   input: {
     fontFamily: 'Nunito-400',
-    borderWidth: 0,
-    borderColor: theme.colors.bgFocus,
     backgroundColor: theme.colors.bgFocus,
     color: '#000',
   },
@@ -147,10 +160,10 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.cta,
     paddingVertical: 8,
     paddingHorizontal: 40,
-    marginTop:20,
+    marginTop: 20,
     borderRadius: 20,
     alignItems: 'center',
-    alignSelf:'center',
+    alignSelf: 'center',
   },
   buttonText: {
     fontSize: 18,
@@ -158,5 +171,4 @@ const styles = StyleSheet.create({
     color: '#fff',
     textAlign: 'center',
   },
-  
 });

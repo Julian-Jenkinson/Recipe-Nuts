@@ -1,5 +1,6 @@
 import { Box, ScrollView } from '@gluestack-ui/themed';
 import React from 'react';
+import { Keyboard } from 'react-native'; // ✅ Import
 import { FilterPill } from '../components/FilterPill';
 
 export type FilterMode = 
@@ -54,6 +55,7 @@ export default function HorizontalScroll({ filters, setFilters }: HorizontalScro
               label={category}
               isSelected={filters.mode === mapCategoryToMode(category)}
               onPress={() => {
+                Keyboard.dismiss(); // Dismiss keyboard first top avoid swallowing taps
                 setFilters({ mode: mapCategoryToMode(category) });
               }}
             />
