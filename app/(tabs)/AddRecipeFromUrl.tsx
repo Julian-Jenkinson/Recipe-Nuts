@@ -1,3 +1,5 @@
+import { Feather } from '@expo/vector-icons';
+import { Input, InputField, InputSlot } from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
@@ -6,7 +8,6 @@ import {
   Pressable,
   StyleSheet,
   Text,
-  TextInput,
   View
 } from 'react-native';
 import { useRecipeStore } from '../../stores/useRecipeStore';
@@ -65,6 +66,7 @@ export default function AddRecipeFromUrl() {
       };
 
       addRecipe(newRecipe);
+      setInputUrl(''); // Clear the field
       Alert.alert('Success', 'Recipe imported and saved!');
       router.back();
     } catch (err: any) {
@@ -79,16 +81,26 @@ export default function AddRecipeFromUrl() {
     <View style={styles.container}>
       <Text style={styles.title}>Import Recipe</Text>
       <Text style={styles.text}>Copy and paste a recipe link here to extract a recipe and save it to your collection.</Text>
-      <TextInput
-        value={inputUrl}
-        onChangeText={setInputUrl}
-        placeholder="Enter recipe URL"
-        style={styles.input}
-        autoCapitalize="none"
-        autoCorrect={false}
-        editable={!loading}
-      />
-
+      <Input style={styles.input}
+        variant="rounded"
+        size="md"
+        borderRadius="$3xl">
+        <InputField style={styles.inputField}
+          value={inputUrl}
+          onChangeText={setInputUrl}
+          placeholder="Enter recipe URL"
+          autoCapitalize="none"
+          autoCorrect={false}
+          editable={!loading}
+        />
+        {inputUrl.length > 0 && (
+          <InputSlot pr={10}>
+            <Pressable onPress={() => setInputUrl('')}>
+              <Feather name="x" size={20} color="#888" />
+            </Pressable>
+          </InputSlot>
+        )}
+      </Input>
       {loading ? (
         <ActivityIndicator size="small" color="#000" style={{ marginTop: 20 }} />
       ) : (
@@ -106,7 +118,6 @@ const styles = StyleSheet.create({
     padding: 20,
     justifyContent: 'center',
     backgroundColor: theme.colors.bg,
-    
   },
   title: {
     fontSize: 22,
@@ -123,20 +134,20 @@ const styles = StyleSheet.create({
   },
   input: {
     fontFamily: 'Nunito-400',
-    borderWidth: 1,
+    borderWidth: 0,
     borderColor: theme.colors.bgFocus,
     backgroundColor: theme.colors.bgFocus,
-    borderRadius: 20,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    fontSize: 16,
-    marginBottom: 20,
     color: '#000',
   },
+  inputField: {
+    fontSize: 18,
+    fontFamily: 'Nunito-400',
+  },
   buttonContainer: {
-    backgroundColor: theme.colors.cta, // a nice green
+    backgroundColor: theme.colors.cta,
     paddingVertical: 8,
     paddingHorizontal: 40,
+    marginTop:20,
     borderRadius: 20,
     alignItems: 'center',
     alignSelf:'center',
