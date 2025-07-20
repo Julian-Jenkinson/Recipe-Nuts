@@ -14,6 +14,7 @@ export default function RecipeListScreen() {
   const router = useRouter();
   const recipes = useRecipeStore((state) => state.recipes);
   const [searchQuery, setSearchQuery] = React.useState('');
+  const [focused, setFocused ] = React.useState(false);
 
 
   const [filters, setFilters] = React.useState<FiltersType>({
@@ -126,13 +127,14 @@ export default function RecipeListScreen() {
           <Input 
             variant="rounded" 
             size="sm" 
-            borderWidth={0}
-            borderColor="transparent"
+            borderWidth={focused ? 2 : 0} // ✅ Add border when focused
+            borderColor={focused ? '#999' : "transparent"}
             borderStyle="none"
             borderRadius="$3xl" 
             //backgroundColor='#e3e3e3'
             backgroundColor={theme.colors.bgFocus}
             mx={16}
+            
           >
             <InputSlot pl={10}>
               <Ionicons name="search" size={20} color={theme.colors.text2}/>
@@ -143,6 +145,8 @@ export default function RecipeListScreen() {
               style={{ fontFamily: 'Nunito-600' }}
               value={searchQuery}
               onChangeText={setSearchQuery}
+              onFocus={() => setFocused(true)}
+              onBlur={() => setFocused(false)}
             />
             {searchQuery.length > 0 && (
               <InputSlot pr={10}>
