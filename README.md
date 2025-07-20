@@ -9,6 +9,7 @@ Recipe sites often make it cumbersome to save and re-use recipes. Recipe Nuts is
 - Built with React Native for both Android and iOS
 - Clean intuitive UI
 
+
 ## Technology ✨ 
 
 **Frontend** - React Native, TypeScript, Expo
