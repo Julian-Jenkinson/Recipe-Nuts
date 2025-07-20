@@ -1,5 +1,14 @@
 import { Feather, Ionicons } from '@expo/vector-icons';
-import { Box, HStack, Input, InputField, InputSlot, Pressable, Text, View } from '@gluestack-ui/themed';
+import {
+  Box,
+  HStack,
+  Input,
+  InputField,
+  InputSlot,
+  Pressable,
+  Text,
+  View,
+} from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import {
@@ -18,18 +27,21 @@ import theme from '../../../theme';
 export default function RecipeListScreen() {
   const router = useRouter();
   const recipes = useRecipeStore((state) => state.recipes);
+
   const [searchQuery, setSearchQuery] = React.useState('');
   const [focused, setFocused] = React.useState(false);
 
-  const [filters, setFilters] = React.useState<FiltersType>({
-    mode: 'all',
-  });
+  // ✅ Always initialize filters properly
+  const [filters, setFilters] = React.useState<FiltersType>({ mode: 'all' });
 
   // ✅ Always dismiss keyboard before changing filters
-  const setHorizontalFilters = React.useCallback((value: React.SetStateAction<FiltersType>) => {
-    Keyboard.dismiss();
-    setFilters(value);
-  }, []);
+  const setHorizontalFilters = React.useCallback(
+    (value: React.SetStateAction<FiltersType>) => {
+      Keyboard.dismiss();
+      setFilters(value);
+    },
+    []
+  );
 
   const query = searchQuery.trim().toLowerCase();
 
@@ -161,7 +173,7 @@ export default function RecipeListScreen() {
               keyExtractor={(item) => item.id}
               contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 20 }}
               columnWrapperStyle={{ justifyContent: 'flex-start' }}
-              keyboardShouldPersistTaps="handled" // ✅ So taps on items also close keyboard
+              keyboardShouldPersistTaps="handled" // ✅ Taps on list also close keyboard
               renderItem={({ item, index }) => (
                 <Box
                   key={item.id}
