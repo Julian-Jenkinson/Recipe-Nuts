@@ -11,6 +11,7 @@ import {
   Text,
 } from "@gluestack-ui/themed";
 import React from "react";
+import { StyleSheet } from "react-native";
 
 export function TAndCModal({
   isOpen,
@@ -20,11 +21,11 @@ export function TAndCModal({
   onClose: () => void;
 }) {
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="lg">
+    <Modal isOpen={isOpen} onClose={onClose} size="lg" style={styles.container}>
       <ModalBackdrop />
-      <ModalContent>
+      <ModalContent style={{ maxHeight: "80%" }}>
         <ModalHeader>
-          <Heading size="md" className="text-typography-950">
+          <Heading style={styles.heading}>
             Terms and Conditions
           </Heading>
           <ModalCloseButton>
@@ -37,18 +38,57 @@ export function TAndCModal({
         </ModalHeader>
 
         <ModalBody>
-          <Text size="sm" className="text-typography-500">
+          <Text style={styles.text}>
             By using this app you agree to these terms:
-            1. You may use this app for personal, non-commercial purposes only.
-            2. We are not responsible for any data loss or damages caused by using this app.
-            3. Features may change without notice.
-            4. These terms may be updated occasionally.
-
+          </Text>
+          <Text style={styles.subtext}>
+            <Text style={styles.subtextBold}>1. </Text>You may use this app for personal, non-commercial purposes only.
+          </Text>
+          <Text style={styles.subtext}>
+            <Text style={styles.subtextBold}>2. </Text>We are not responsible for any data loss or damages caused by using this app.
+          </Text>
+          <Text style={styles.subtext}>
+            <Text style={styles.subtextBold}>3. </Text>Features may change without notice.
+          </Text>
+          <Text style={styles.subtext}>
+            <Text style={styles.subtextBold}>4. </Text>These terms may be updated occasionally.
+          </Text>
+          <Text style={styles.text}>
             If you do not agree with these terms, please discontinue using the app.
-
           </Text>
         </ModalBody>
       </ModalContent>
     </Modal>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    //backgroundColor: theme.colors.bg,
+    flex: 1,
+    padding: 16,
+  },
+  heading: {
+    fontSize: 20,
+    fontFamily: "Nunito-900",
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  text: {
+    fontSize: 18,
+    fontFamily: "Nunito-400",
+    paddingTop: 8,
+  },
+  subtext: {
+    fontSize: 18,
+    fontFamily: "Nunito-400",
+    paddingTop: 8,
+    paddingLeft: 16,
+  },
+  subtextBold: {
+    fontSize: 18,
+    fontFamily: "Nunito-700",
+    paddingTop: 8,
+    paddingLeft: 16,
+  },
+});

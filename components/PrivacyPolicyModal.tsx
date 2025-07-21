@@ -11,6 +11,7 @@ import {
   Text,
 } from "@gluestack-ui/themed";
 import React from "react";
+import { StyleSheet } from "react-native";
 
 export function PrivacyPolicyModal({
   isOpen,
@@ -22,9 +23,9 @@ export function PrivacyPolicyModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="lg">
       <ModalBackdrop />
-      <ModalContent>
+      <ModalContent style={{ maxHeight: "80%" }}>
         <ModalHeader>
-          <Heading size="md" className="text-typography-950">
+          <Heading style={styles.heading}>
             Privacy Policy
           </Heading>
           <ModalCloseButton>
@@ -37,16 +38,45 @@ export function PrivacyPolicyModal({
         </ModalHeader>
 
         <ModalBody>
-          <Text size="sm" className="text-typography-500">
-            We respect your privacy.  
-            This app stores recipes you save on your device.  
-            No personal data is shared with third parties.  
-            We do not track your activity or use analytics services.  
-            If you contact us, we only use your email to respond.  
-            You may delete the app at any time to remove stored data.  
+          <Text style={styles.text}>
+            We respect your privacy.
           </Text>
+          <Text style={styles.text}>
+            This app stores recipes you save on your device.
+          </Text>
+          <Text style={styles.text}>
+            No personal data is shared with third parties.
+          </Text>
+          <Text style={styles.text}>
+            We do not track your activity or use analytics services.  
+          </Text>
+          <Text style={styles.text}>
+            If you contact us, we only use your email to respond.  
+          </Text>
+          <Text style={styles.text}>
+            You may delete the app at any time to remove stored data.
+          </Text>
+          
         </ModalBody>
       </ModalContent>
     </Modal>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  heading: {
+    fontSize: 20,
+    fontFamily: "Nunito-900",
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  text: {
+    fontSize: 18,
+    fontFamily: "Nunito-400",
+    paddingTop: 8,
+  }
+});
