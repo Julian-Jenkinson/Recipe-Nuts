@@ -22,7 +22,7 @@ export function PrivacyPolicyModal({
   onClose: () => void;
 }) {
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="lg">
+    <Modal isOpen={isOpen} onClose={onClose} size="lg" style={styles.container}>
       <ModalBackdrop />
       <ModalContent style={styles.modalContent}>
         <ModalHeader>
@@ -68,10 +68,10 @@ const styles = StyleSheet.create({
   modalContent: {
       maxHeight: '80%',
       backgroundColor: theme.colors.bg,
+      paddingBottom: 20,
     },
   container: {
     flex: 1,
-    padding: 16,
   },
   heading: {
     fontSize: 20,

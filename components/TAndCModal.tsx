@@ -67,11 +67,10 @@ const styles = StyleSheet.create({
   modalContent: {
     maxHeight: '80%',
     backgroundColor: theme.colors.bg,
-    
+    paddingBottom: 20,
   },
   container: {
     flex: 1,
-    padding: 16,
   },
   heading: {
     fontSize: 20,
