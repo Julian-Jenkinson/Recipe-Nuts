@@ -208,16 +208,16 @@ const styles = StyleSheet.create({
     fontSize: 22,
   },
   submenu: {
-    paddingTop: 10,
+    //paddingTop: 10,
   },
   subtext: {
     fontSize: 19,
     fontFamily: "Nunito-700",
-    marginTop: 15,
+    marginTop: 20,
   },
   exittext: {
     fontSize: 19,
     fontFamily: "Nunito-900",
-    marginTop: 20,
+    marginTop: 25,
   },
 });
