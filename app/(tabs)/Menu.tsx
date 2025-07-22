@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
   },
   heading: {
     fontSize: 26,
-    fontFamily: "Nunito-900",
+    fontFamily: "Nunito-800",
     marginTop: 30,
     marginBottom: 10,
   },
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
   },
   exittext: {
     fontSize: 19,
-    fontFamily: "Nunito-900",
+    fontFamily: "Nunito-800",
     marginTop: 25,
   },
 });
