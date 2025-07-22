@@ -12,6 +12,7 @@ import {
 } from "@gluestack-ui/themed";
 import React from "react";
 import { StyleSheet } from "react-native";
+import theme from '../theme';
 
 export function TAndCModal({
   isOpen,
@@ -23,7 +24,7 @@ export function TAndCModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="lg" style={styles.container}>
       <ModalBackdrop />
-      <ModalContent style={{ maxHeight: "80%" }}>
+      <ModalContent style={styles.modalContent}>
         <ModalHeader>
           <Heading style={styles.heading}>
             Terms and Conditions
@@ -63,8 +64,12 @@ export function TAndCModal({
 }
 
 const styles = StyleSheet.create({
+  modalContent: {
+    maxHeight: '80%',
+    backgroundColor: theme.colors.bg,
+    
+  },
   container: {
-    //backgroundColor: theme.colors.bg,
     flex: 1,
     padding: 16,
   },

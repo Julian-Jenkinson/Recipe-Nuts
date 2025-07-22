@@ -56,7 +56,7 @@ export default function Menu() {
         <ScrollView>
           <Box>
             {/* UPGRADE */}
-            <Pressable>
+            <Pressable style={styles.menuItem}>
               <HStack style={styles.textContainer}>
                 <MaterialCommunityIcons
                   name="lock-open-outline"
@@ -76,7 +76,7 @@ export default function Menu() {
             </Pressable>
 
             {/* QUICK TOUR */}
-            <Pressable onPress={() => setShowQuickTourModal(true)}>
+            <Pressable style={styles.menuItem} onPress={() => setShowQuickTourModal(true)}>
               <HStack style={styles.textContainer}>
                 <MaterialCommunityIcons
                   name="map-marker-path"
@@ -88,7 +88,7 @@ export default function Menu() {
             </Pressable>
 
             {/* RATE */}
-            <Pressable>
+            <Pressable style={styles.menuItem}>
               <HStack style={styles.textContainer}>
                 <MaterialCommunityIcons
                   name="star-outline"
@@ -102,7 +102,7 @@ export default function Menu() {
             </Pressable>
 
             {/* SHARE */}
-            <Pressable>
+            <Pressable style={styles.menuItem}>
               <HStack style={styles.textContainer}>
                 <Feather name="share-2" style={styles.icon} />
                 <Text style={styles.text}>Share</Text>
@@ -113,7 +113,7 @@ export default function Menu() {
             </Pressable>
 
             {/* CONTACT */}
-            <Pressable>
+            <Pressable style={styles.menuItem}>
               <HStack style={styles.textContainer}>
                 <MaterialCommunityIcons
                   name="email-outline"
@@ -177,15 +177,19 @@ const styles = StyleSheet.create({
     fontSize: 26,
     fontFamily: "Nunito-900",
     marginTop: 30,
-    marginBottom: 20,
+    marginBottom: 10,
   },
   text: {
-    fontSize: 22,
+    fontSize: 18,
     fontFamily: "Nunito-800",
     marginLeft: 8,
   },
+  menuItem: {
+    paddingBottom:10,
+  },
+
   undertext: {
-    fontSize: 18,
+    fontSize: 17,
     fontFamily: "Nunito-400",
     color: theme.colors.text2,
     marginLeft: 32,
@@ -207,12 +211,12 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   subtext: {
-    fontSize: 20,
+    fontSize: 19,
     fontFamily: "Nunito-700",
     marginTop: 15,
   },
   exittext: {
-    fontSize: 20,
+    fontSize: 19,
     fontFamily: "Nunito-900",
     marginTop: 20,
   },

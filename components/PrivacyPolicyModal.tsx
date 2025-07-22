@@ -12,6 +12,7 @@ import {
 } from "@gluestack-ui/themed";
 import React from "react";
 import { StyleSheet } from "react-native";
+import theme from '../theme';
 
 export function PrivacyPolicyModal({
   isOpen,
@@ -23,7 +24,7 @@ export function PrivacyPolicyModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="lg">
       <ModalBackdrop />
-      <ModalContent style={{ maxHeight: "80%" }}>
+      <ModalContent style={styles.modalContent}>
         <ModalHeader>
           <Heading style={styles.heading}>
             Privacy Policy
@@ -64,6 +65,10 @@ export function PrivacyPolicyModal({
 }
 
 const styles = StyleSheet.create({
+  modalContent: {
+      maxHeight: '80%',
+      backgroundColor: theme.colors.bg,
+    },
   container: {
     flex: 1,
     padding: 16,
