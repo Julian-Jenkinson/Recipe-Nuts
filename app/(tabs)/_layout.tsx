@@ -2,16 +2,36 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { config } from '@gluestack-ui/config';
 import { GluestackUIProvider, StatusBar } from '@gluestack-ui/themed';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFonts } from 'expo-font';
 import * as NavigationBar from 'expo-navigation-bar';
 import { Tabs } from "expo-router";
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import React, { useEffect, useState } from "react";
+import { QuickTourModal } from "../../components/QuickTourModal";
 import theme from '../../theme';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function Layout() {
+  const [showQuickTour, setShowQuickTour] = useState(false);
+
+  useEffect(() => {
+    const checkFirstOpen = async () => {
+      try {
+        const hasSeenTour = await AsyncStorage.getItem("hasSeenQuickTour");
+        if (!hasSeenTour) {
+          // First launch → show modal
+          setShowQuickTour(true);
+          // Save flag so it won't show again
+          await AsyncStorage.setItem("hasSeenQuickTour", "true");
+        }
+      } catch (e) {
+        console.log("Error checking QuickTour flag:", e);
+      }
+    };
+    checkFirstOpen();
+  }, []);
   
   const [loaded, error] = useFonts({
     'Nunito-200': require('../../assets/fonts/Nunito-ExtraLight.ttf'),
@@ -29,11 +49,15 @@ export default function Layout() {
     NavigationBar.setButtonStyleAsync('dark'); // Optional: dark icons on light bg
   }, []);
 
-  useEffect(() => {
-    if (loaded || error) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded, error]);
+  if (loaded || error) {
+    SplashScreen.hideAsync();
+  }
+  //I swapped this over with the above but we can look into it again when debugging the package version
+  //  useEffect(() => {
+  //  if (loaded || error) {
+  //    SplashScreen.hideAsync();
+  //  }
+  //}, [loaded, error]);
 
   if (!loaded && !error) {
     return null;
@@ -97,6 +121,10 @@ export default function Layout() {
           }}
         />
       </Tabs>
+      
+      {/* QuickTour Modal (only shows once) */}
+      <QuickTourModal isOpen={showQuickTour} onClose={() => setShowQuickTour(false)} />
+
     </GluestackUIProvider>
   );
 }

@@ -10,9 +10,10 @@ import {
 import React, { useState } from "react";
 import { Alert, BackHandler, Platform, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { PrivacyPolicyModal } from "../../components/PrivacyPolicyModal"; // ✅ NEW
+import { PrivacyPolicyModal } from "../../components/PrivacyPolicyModal";
+import { QuickTourModal } from "../../components/QuickTourModal";
 import { RecipeBar } from "../../components/RecipeBar";
-import { TAndCModal } from "../../components/TAndCModal"; // ✅ NEW
+import { TAndCModal } from "../../components/TAndCModal";
 import { useRecipeStore } from "../../stores/useRecipeStore";
 import theme from "../../theme";
 
@@ -20,8 +21,10 @@ export default function Menu() {
   const recipes = useRecipeStore((state) => state.recipes);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false); // Modal state
   const [showTAndCModal, setShowTAndCModal] = useState(false); // Modal state
+  const [showQuickTourModal, setShowQuickTourModal] = useState(false); // Modal state
 
   // Exit button logic (android only)
+  // Potentially conditionaly render the exit button if android device
   const handleExit = () => {
     Alert.alert(
       "Exit App",
@@ -73,7 +76,7 @@ export default function Menu() {
             </Pressable>
 
             {/* QUICK TOUR */}
-            <Pressable>
+            <Pressable onPress={() => setShowQuickTourModal(true)}>
               <HStack style={styles.textContainer}>
                 <MaterialCommunityIcons
                   name="map-marker-path"
@@ -142,6 +145,12 @@ export default function Menu() {
           </Box>
         </ScrollView>
       </View>
+
+      {/* Quick Tour Modal */}
+      <QuickTourModal
+        isOpen={showQuickTourModal}
+        onClose={() => setShowQuickTourModal(false)}
+      />
 
       {/* Terms and Conditions Modal */}
       <TAndCModal
