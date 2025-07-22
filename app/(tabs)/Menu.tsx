@@ -8,7 +8,7 @@ import {
   View,
 } from "@gluestack-ui/themed";
 import React, { useState } from "react";
-import { StyleSheet } from "react-native";
+import { Alert, BackHandler, Platform, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { PrivacyPolicyModal } from "../../components/PrivacyPolicyModal"; // ✅ NEW
 import { RecipeBar } from "../../components/RecipeBar";
@@ -20,6 +20,29 @@ export default function Menu() {
   const recipes = useRecipeStore((state) => state.recipes);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false); // Modal state
   const [showTAndCModal, setShowTAndCModal] = useState(false); // Modal state
+
+  // Exit button logic (android only)
+  const handleExit = () => {
+    Alert.alert(
+      "Exit App",
+      "Are you sure you want to exit?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Exit",
+          style: "destructive",
+          onPress: () => {
+            if (Platform.OS === "android") {
+              BackHandler.exitApp(); // ✅ Only works on Android
+            } else {
+              console.log("iOS does not allow programmatic exit");
+            }
+          },
+        },
+      ]
+    );
+  };
+
 
   return (
     <SafeAreaView edges={["top"]} style={{ flex: 1 }}>
@@ -102,7 +125,7 @@ export default function Menu() {
           </Box>
 
           {/* SUB MENU */}
-          <Box flex={1}>
+          <Box flex={1} style={styles.submenu}>
             {/* TERMS AND CONDITIONS BUTTON */}
             <Pressable onPress={() => setShowTAndCModal(true)}>
               <Text style={styles.subtext}>Terms and Conditions</Text>
@@ -113,7 +136,7 @@ export default function Menu() {
               <Text style={styles.subtext}>Privacy Policy</Text>
             </Pressable>
 
-            <Pressable>
+            <Pressable onPress={handleExit}>
               <Text style={styles.exittext}>Exit</Text>
             </Pressable>
           </Box>
@@ -171,15 +194,17 @@ const styles = StyleSheet.create({
     color: theme.colors.cta,
     fontSize: 22,
   },
+  submenu: {
+    paddingTop: 10,
+  },
   subtext: {
     fontSize: 20,
     fontFamily: "Nunito-700",
-    marginBottom: 10,
+    marginTop: 15,
   },
   exittext: {
     fontSize: 20,
     fontFamily: "Nunito-900",
-    marginBottom: 15,
-    marginTop: 15,
+    marginTop: 20,
   },
 });
