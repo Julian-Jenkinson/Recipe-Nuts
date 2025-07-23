@@ -1,4 +1,3 @@
-// app/_layout.tsx
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { config } from '@gluestack-ui/config';
 import { GluestackUIProvider, StatusBar } from '@gluestack-ui/themed';
@@ -8,10 +7,15 @@ import * as NavigationBar from 'expo-navigation-bar';
 import { Tabs } from "expo-router";
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useEffect, useState } from "react";
+import { Pressable, PressableProps, Text, View } from "react-native";
 import { QuickTourModal } from "../../components/QuickTourModal";
 import theme from '../../theme';
 
 SplashScreen.preventAutoHideAsync();
+
+function NoRippleButton(props: PressableProps) {
+  return <Pressable {...props} android_ripple={null} />;
+}
 
 export default function Layout() {
   const [showQuickTour, setShowQuickTour] = useState(false);
@@ -21,9 +25,7 @@ export default function Layout() {
       try {
         const hasSeenTour = await AsyncStorage.getItem("hasSeenQuickTour");
         if (!hasSeenTour) {
-          // First launch → show modal
           setShowQuickTour(true);
-          // Save flag so it won't show again
           await AsyncStorage.setItem("hasSeenQuickTour", "true");
         }
       } catch (e) {
@@ -45,24 +47,16 @@ export default function Layout() {
   });
 
   useEffect(() => {
-    //NavigationBar.setBackgroundColorAsync(theme.colors.bg);
-    NavigationBar.setButtonStyleAsync('dark'); // Optional: dark icons on light bg
+    NavigationBar.setButtonStyleAsync('dark'); 
   }, []);
 
   if (loaded || error) {
     SplashScreen.hideAsync();
   }
-  //I swapped this over with the above but we can look into it again when debugging the package version
-  //  useEffect(() => {
-  //  if (loaded || error) {
-  //    SplashScreen.hideAsync();
-  //  }
-  //}, [loaded, error]);
 
   if (!loaded && !error) {
     return null;
   }
-
 
   return (
     <GluestackUIProvider config={config}>
@@ -70,34 +64,81 @@ export default function Layout() {
         backgroundColor={theme.colors.bg}
         barStyle="dark-content"
       />
+
       <Tabs
-        screenOptions={{
+        screenOptions={({ route }) => ({
           headerShown: false,
-          tabBarActiveTintColor: '#0A192F',
-          //tabBarActiveTintColor: theme.colors.cta,
-          tabBarInactiveTintColor: '#999',
+          tabBarButton: (props) => <NoRippleButton {...props} />,
+          tabBarPressColor: 'transparent',
           tabBarStyle: {
             backgroundColor: theme.colors.bg,
+            //backgroundColor: 'white',
             borderTopWidth: 0,
-            elevation: 0,      // shadow on Android
-            shadowOpacity: 0, // shadow on ios 
+            elevation: 0,
+            shadowOpacity: 0,
+            height:58,
+
           },
-        }}
+          tabBarIcon: ({ focused }) => {
+            const iconName =
+              route.name === 'recipes'
+                ? 'pot-mix-outline'
+                : route.name === 'AddRecipeFromUrl'
+                ? 'plus-circle-outline'
+                : 'menu';
+
+            const label =
+              route.name === 'recipes'
+                ? 'Recipes'
+                : route.name === 'AddRecipeFromUrl'
+                ? 'Add'
+                : 'Menu';
+
+            const circleSize = 52;
+
+            return (
+              <View
+                style={{
+                  width: circleSize,
+                  height: circleSize,
+                  borderRadius: circleSize / 2,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: focused ? theme.colors.cta : 'transparent',
+                  paddingBottom:2,
+                  marginBottom:-26,
+                }}
+              >
+                <MaterialCommunityIcons
+                  name={iconName}
+                  size={24}
+                  color={focused ? '#fff' : '#999'}
+                />
+                <Text
+                  style={{
+                    fontSize: 10,
+                    color: focused ? '#fff' : '#999',
+                    fontWeight: focused ? '600' : '400',
+                  }}
+                >
+                  {label}
+                </Text>
+              </View>
+            );
+          },
+        })}
       >
         <Tabs.Screen
           name="recipes"
           options={{
-            title: 'Recipes',
-            tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons name="pot-mix-outline" size={size} color={color} />
-            ),
+            title: '',
           }}
           listeners={({ navigation }) => ({
             tabPress: (e) => {
-              e.preventDefault(); // stop default tab behavior
+              e.preventDefault();
               navigation.reset({
                 index: 0,
-                routes: [{ name: 'recipes' }], // force it to reload recipes/index.tsx
+                routes: [{ name: 'recipes' }],
               });
             },
           })}
@@ -105,26 +146,18 @@ export default function Layout() {
         <Tabs.Screen
           name="AddRecipeFromUrl"
           options={{
-            title: 'Add',
-            tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons name="plus-circle-outline" size={size} color={color} />
-            ),
+            title: '',
           }}
         />
         <Tabs.Screen
           name="Menu"
           options={{
-            title: 'Menu',
-            tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons name="menu" size={size} color={color} />
-            ),
+            title: '',
           }}
         />
       </Tabs>
       
-      {/* QuickTour Modal (only shows once) */}
       <QuickTourModal isOpen={showQuickTour} onClose={() => setShowQuickTour(false)} />
-
     </GluestackUIProvider>
   );
 }

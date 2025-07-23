@@ -48,7 +48,7 @@ export default function Menu() {
 
 
   return (
-    <SafeAreaView edges={["top"]} style={{ flex: 1 }}>
+    <SafeAreaView edges={["top", "bottom"]} style={{ flex: 1 }}>
       <View style={styles.container}>
         {/* Headings */}
         <Text style={styles.heading}>Menu</Text>
@@ -124,6 +124,9 @@ export default function Menu() {
               <Text style={styles.undertext}>
                 Leave feedback or get in touch for support
               </Text>
+              <Text style={styles.undertext}>
+                Leave feedback or get in touch for support
+              </Text>
             </Pressable>
           </Box>
 
@@ -171,7 +174,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: theme.colors.bg,
     flex: 1,
-    padding: 16,
+    paddingHorizontal: 16,
   },
   heading: {
     fontSize: 26,
@@ -218,6 +221,7 @@ const styles = StyleSheet.create({
   exittext: {
     fontSize: 19,
     fontFamily: "Nunito-800",
-    marginTop: 25,
+    marginTop: 20,
+    marginBottom: 20,
   },
 });
