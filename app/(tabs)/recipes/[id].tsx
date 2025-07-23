@@ -106,15 +106,14 @@ export default function RecipeDetailsScreen() {
 
     setActiveSection(section);
 
-    const OFFSET = -260; // Adjust this number as needed
+    const OFFSET = -260; // Offset in pixels
 
     let y = section === 'ingredients' ? ingredientsY : instructionsY;
     y = y - OFFSET;
-    if (y < 0) y = 0;
+    if (y < 0) y = 0; // Don't scroll to negative offset
 
     scrollView.scrollTo({ y, animated: true });
   };
-
 
   return (
     <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: theme.colors.bg }}>
@@ -259,41 +258,43 @@ export default function RecipeDetailsScreen() {
       </ScrollView>
 
       {/* Floating buttons fixed near bottom */}
-      <View style={styles.floatingButtonsContainer}>
-        <HStack justifyContent="center" space="md">
-          <Pressable
-            onPress={() => scrollToSection('ingredients')}
-            style={[
-              styles.toggleButton,
-              activeSection === 'ingredients' && styles.toggleButtonActive,
-            ]}
-          >
-            <Text
+      <View style={styles.floatingButtonsWrapper}>
+        <Box style={styles.outerBox}>
+          <HStack justifyContent="center">
+            <Pressable
+              onPress={() => scrollToSection('ingredients')}
               style={[
-                styles.toggleText,
-                activeSection === 'ingredients' && styles.toggleTextActive,
+                styles.toggleButton,
+                activeSection === 'ingredients' && styles.toggleButtonActive,
               ]}
             >
-              Ingredients
-            </Text>
-          </Pressable>
-          <Pressable
-            onPress={() => scrollToSection('instructions')}
-            style={[
-              styles.toggleButton,
-              activeSection === 'instructions' && styles.toggleButtonActive,
-            ]}
-          >
-            <Text
+              <Text
+                style={[
+                  styles.toggleText,
+                  activeSection === 'ingredients' && styles.toggleTextActive,
+                ]}
+              >
+                INGREDIENTS
+              </Text>
+            </Pressable>
+            <Pressable
+              onPress={() => scrollToSection('instructions')}
               style={[
-                styles.toggleText,
-                activeSection === 'instructions' && styles.toggleTextActive,
+                styles.toggleButton,
+                activeSection === 'instructions' && styles.toggleButtonActive,
               ]}
             >
-              Instructions
-            </Text>
-          </Pressable>
-        </HStack>
+              <Text
+                style={[
+                  styles.toggleText,
+                  activeSection === 'instructions' && styles.toggleTextActive,
+                ]}
+              >
+                INSTRUCTIONS
+              </Text>
+            </Pressable>
+          </HStack>
+        </Box>
       </View>
     </SafeAreaView>
   );
@@ -324,9 +325,8 @@ const styles = StyleSheet.create({
   },
   toggleButton: {
     borderRadius: 14,
-    backgroundColor: theme.colors.bgFocus,
     paddingVertical: 10,
-    paddingHorizontal: 36,
+    paddingHorizontal: 20,
   },
   toggleButtonActive: {
     backgroundColor: theme.colors.cta,
@@ -339,18 +339,24 @@ const styles = StyleSheet.create({
   toggleTextActive: {
     color: '#fff',
   },
-  floatingButtonsContainer: {
+  floatingButtonsWrapper: {
     position: 'absolute',
-    bottom: 20,
+    bottom: 15,
     left: 0,
     right: 0,
     paddingHorizontal: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 5,
-    backgroundColor: 'transparent',
     zIndex: 100,
+    alignItems: 'center',
+  },
+  outerBox: {
+    backgroundColor: '#dddddd', // Slightly darker background
+    borderRadius: 18,
+    paddingVertical: 6,
+    paddingHorizontal: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 7,
   },
 });
