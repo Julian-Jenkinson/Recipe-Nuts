@@ -46,9 +46,18 @@ export default function Layout() {
     'Nunito-900': require('../../assets/fonts/Nunito-Black.ttf'),
   });
 
+  
+
   useEffect(() => {
-    NavigationBar.setButtonStyleAsync('dark'); 
-  }, []);
+  const setNavBar = async () => {
+    // Make nav bar solid (not overlay), use this order
+    await NavigationBar.setBehaviorAsync('inset-swipe'); 
+    await NavigationBar.setBackgroundColorAsync(theme.colors.bg);
+    await NavigationBar.setButtonStyleAsync('dark'); 
+  };
+
+  setNavBar();
+}, []);
 
   if (loaded || error) {
     SplashScreen.hideAsync();
