@@ -68,23 +68,37 @@ export default function RecipeCard({
           </Pressable>
 
           <Image
-            source={{ uri: imageUrl }}
-            alt={title}
-            style={{ width: '100%', height: '100%' }}
+            source={
+              imageUrl && (imageUrl.startsWith("http") || imageUrl.startsWith("file"))
+                ? { uri: imageUrl }
+                : require("../assets/images/error.png")
+            }
+            accessibilityLabel={title ? `Image of ${title}` : "Recipe image"}
+            style={{ width: "100%", height: "100%" }}
             resizeMode="cover"
           />
         </Box>
 
         {/* Text Container */}
         <Box px={8} py={8}>
-          <Text fontSize="$md" style={{ fontFamily: 'Nunito-800' }} color={theme.colors.text1} numberOfLines={1}>
+          <Text 
+            fontSize="$md" 
+            style={{ fontFamily: 'Nunito-800' }} 
+            color={theme.colors.text1} 
+            numberOfLines={1}
+          >
             {title}
           </Text>
-          {!!source && (
-            <Text fontSize="$sm" color={theme.colors.text2} style={{ fontFamily: 'Nunito-400' }} numberOfLines={1}>
-              {source.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]}
-            </Text>
-          )}
+          <Text
+            fontSize="$sm"
+            color={theme.colors.text2}
+            style={{ fontFamily: "Nunito-400" }}
+            numberOfLines={1}
+          >
+            {source
+              ? source.replace(/^https?:\/\/(www\.)?/, "").split("/")[0]
+              : " "} {/* <-- non-breaking space keeps height */}
+          </Text>
         </Box>
       </Pressable>
     </Box>

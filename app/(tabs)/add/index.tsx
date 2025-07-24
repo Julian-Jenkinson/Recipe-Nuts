@@ -24,14 +24,17 @@ export default function AddRecipeScreen() {
   const [focused, setFocused] = React.useState(false);
 
   const handleImportAndSave = async () => {
-    Keyboard.dismiss();  // Dismiss keyboard when pressing button
+    Keyboard.dismiss();
+
     if (!inputUrl.trim()) {
       Alert.alert('Missing URL', 'Please enter a recipe URL.');
       return;
     }
 
     setLoading(true);
+
     try {
+      // ✅ 1. Fetch recipe data
       const response = await fetch(
         `https://recipe-extractor-api.fly.dev/extract?url=${encodeURIComponent(inputUrl)}`
       );
@@ -43,21 +46,18 @@ export default function AddRecipeScreen() {
         throw new Error('Incomplete recipe data');
       }
 
+      // ✅ 2. Download image (still part of ONE loading phase)
       let localImageUri = '';
       if (data.image) {
         localImageUri = (await downloadAndStoreImage(data.image)) || '';
       }
 
-      // Build the new recipe object
+      // ✅ 3. Build recipe
       const newRecipe = {
         id: `recipe-${Date.now()}`,
         title: data.title,
-        ingredients: Array.isArray(data.ingredients)
-          ? data.ingredients.map(String)
-          : [],
-        instructions: Array.isArray(data.instructions)
-          ? data.instructions.map(String)
-          : [],
+        ingredients: Array.isArray(data.ingredients) ? data.ingredients.map(String) : [],
+        instructions: Array.isArray(data.instructions) ? data.instructions.map(String) : [],
         imageUrl: localImageUri,
         source: data.source || '',
         category: data.category || '',
@@ -69,10 +69,20 @@ export default function AddRecipeScreen() {
         favourite: false,
       };
 
+      // ✅ 4. Save recipe
       addRecipe(newRecipe);
-      setInputUrl(''); // Clear the field
-      Alert.alert('Success', 'Recipe imported and saved!');
+
+      // ✅ 5. Reset input
+      setInputUrl('');
+
+      // ✅ 6. Navigate back *after everything is done*
       router.back();
+
+      // ✅ 7. Show quick success toast/alert AFTER navigation
+      setTimeout(() => {
+        Alert.alert('Success', 'Recipe imported and saved!');
+      }, 300); // tiny delay to avoid blocking transition
+
     } catch (err: any) {
       console.error('Import error:', err);
       Alert.alert('Error', 'Failed to import recipe from URL.');
@@ -81,21 +91,11 @@ export default function AddRecipeScreen() {
     }
   };
 
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={styles.container}>
         <Text style={styles.title}>Add Recipe</Text>
-        
-        {/* Button to create blank recipe */}
-        <Pressable 
-          onPress={() => router.push('/add/AddBlankRecipe')} 
-          style={[styles.buttonContainer, { marginBottom: 30 }]}
-        >
-          <Feather name="edit-3" size={20} color="#fff" style={{ marginRight: 8 }} />
-          <Text style={styles.buttonText}>Create New Recipe</Text>
-        </Pressable>
-
-        <Text style={styles.text}>OR</Text>
         
         <Text style={styles.text}>
           Copy and paste a recipe link here to extract a recipe and save it to your collection.
@@ -135,6 +135,20 @@ export default function AddRecipeScreen() {
             <Text style={styles.buttonText}>Import from URL</Text>
           </Pressable>
         )}
+
+
+        {/* Button to create blank recipe */}
+        <Text style={styles.orText}>OR</Text>
+        <Pressable 
+          onPress={() => router.push('/add/AddBlankRecipe')} 
+          style={[styles.buttonContainer, { marginBottom: 30 }]}
+        >
+          <Feather name="edit-3" size={20} color="#fff" style={{ marginRight: 8 }} />
+          <Text style={styles.buttonText}>Create New Recipe</Text>
+        </Pressable>
+
+        
+
       </View>
     </TouchableWithoutFeedback>
   );
@@ -160,6 +174,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#666',
   },
+  orText: {
+    fontSize: 18,
+    fontFamily: 'Nunito-400',
+    marginTop: 30,
+    marginBottom: 10,
+    textAlign: 'center',
+    color: '#666',
+  },
   input: {
     fontFamily: 'Nunito-400',
     backgroundColor: theme.colors.bgFocus,
@@ -177,6 +199,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: 'center',
     alignSelf: 'center',
+    flexDirection: 'row',
   },
   buttonText: {
     fontSize: 18,

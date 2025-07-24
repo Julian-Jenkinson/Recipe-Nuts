@@ -1,10 +1,11 @@
 import * as FileSystem from 'expo-file-system';
 
-export async function downloadAndStoreImage(remoteUrl: string): Promise<string | null> {
+export async function downloadAndStoreImage(remoteUrl: string): Promise<string> {
   try {
     console.log("downloadAndStoreImage: starting for URL", remoteUrl);
 
-    const filename = remoteUrl.split('/').pop()?.split('?')[0] || `image_${Date.now()}.jpg`;
+    const filename =
+      remoteUrl.split("/").pop()?.split("?")[0] || `image_${Date.now()}.jpg`;
     const fileUri = `${FileSystem.documentDirectory}${filename}`;
 
     console.log("downloadAndStoreImage: will save to", fileUri);
@@ -13,9 +14,10 @@ export async function downloadAndStoreImage(remoteUrl: string): Promise<string |
 
     console.log("downloadAndStoreImage: downloadAsync result", result);
 
-    return result.uri;
+    return result.uri; // should be file://...
   } catch (error) {
     console.error("downloadAndStoreImage: error", error);
-    return null;
+    // fallback to empty string, never null
+    return "";
   }
 }

@@ -49,8 +49,8 @@ export default function Layout() {
   useEffect(() => {
     const setNavBar = async () => {
       // Make nav bar solid (not overlay), use this order
-      //await NavigationBar.setBehaviorAsync('inset-swipe'); 
-      //await NavigationBar.setBackgroundColorAsync(theme.colors.bg);
+      await NavigationBar.setBehaviorAsync('inset-swipe'); 
+      await NavigationBar.setBackgroundColorAsync(theme.colors.bg);
       await NavigationBar.setButtonStyleAsync('dark'); 
     };
 
@@ -83,7 +83,8 @@ export default function Layout() {
             borderTopWidth: 0,
             elevation: 0,
             shadowOpacity: 0,
-            height: 58,
+            height: 100, //added extra to avoid hiding under android nav bar
+            //height: 58, // this is good
           },
           tabBarIcon: ({ focused }) => {
             const iconName =
