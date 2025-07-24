@@ -9,23 +9,32 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 import { Alert, ScrollView, StyleSheet, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Recipe } from "../stores/useRecipeStore"; // ✅ only 1 level up
-import theme from "../theme"; // ✅ only 1 level up
+import { Recipe } from "../stores/useRecipeStore";
+import theme from "../theme";
+
+// ✅ Fallback placeholder when no valid image
+const fallbackImage = require("../assets/images/error.png");
 
 export type RecipeFormMode = "edit" | "create";
 
 interface RecipeFormProps {
-  initialRecipe: Partial<Recipe>;         // comes from store or blank
-  onSubmit: (recipe: Recipe) => void;     //always returns a full Recipe
+  initialRecipe: Partial<Recipe>;         
+  onSubmit: (recipe: Recipe) => void;    
   onCancel: () => void;
   mode?: RecipeFormMode;
 }
 
-// Form-friendly version of Recipe (strings for multi-line fields)
+// Form-friendly version of Recipe
 type RecipeFormDraft = Omit<Recipe, "ingredients" | "instructions" | "notes"> & {
   ingredients: string;
   instructions: string;
   notes: string;
+};
+
+// ✅ Helper: Only consider URLs starting with http(s) or file:// valid for <Image />
+const isValidImageUrl = (url?: string) => {
+  if (!url) return false;
+  return url.startsWith("http") || url.startsWith("file");
 };
 
 export const RecipeForm: React.FC<RecipeFormProps> = ({
@@ -36,12 +45,12 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
 }) => {
   const scrollViewRef = useRef<ScrollView>(null);
 
-  // Convert store recipe (arrays) into form-friendly draft (strings)
+  // ✅ Form-friendly draft state
   const [draftRecipe, setDraftRecipe] = useState<RecipeFormDraft>(() => ({
     id: initialRecipe.id ?? "",
     title: initialRecipe.title ?? "",
-    imageUrl: initialRecipe.imageUrl ?? "",
-    source: initialRecipe.source ?? "",
+    imageUrl: initialRecipe.imageUrl ?? "",      // ✅ Only actual image URL
+    source: initialRecipe.source ?? "",          // ✅ Website/source (not for <Image />)
     category: initialRecipe.category ?? "",
     difficulty: initialRecipe.difficulty ?? "",
     servingSize: initialRecipe.servingSize ?? "",
@@ -50,13 +59,13 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
     favourite: initialRecipe.favourite ?? false,
     ingredients: Array.isArray(initialRecipe.ingredients)
       ? initialRecipe.ingredients.join("\n")
-      : (initialRecipe.ingredients as unknown as string) ?? "",
+      : (initialRecipe.ingredients as unknown as string) || "",
     instructions: Array.isArray(initialRecipe.instructions)
       ? initialRecipe.instructions.join("\n\n")
-      : (initialRecipe.instructions as unknown as string) ?? "",
+      : (initialRecipe.instructions as unknown as string) || "",
     notes: Array.isArray(initialRecipe.notes)
       ? initialRecipe.notes.join("\n")
-      : (initialRecipe.notes as unknown as string) ?? "",
+      : (initialRecipe.notes as unknown as string) || "",
   }));
 
   useEffect(() => {
@@ -69,30 +78,36 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
       return;
     }
 
-    // Convert back into a proper Recipe (arrays for multi-fields)
+    // ✅ Always produce a safe Recipe
     const finalRecipe: Recipe = {
-      id: draftRecipe.id || String(Date.now()), // generate id if missing
-      title: draftRecipe.title,
-      imageUrl: draftRecipe.imageUrl,
-      source: draftRecipe.source,
-      category: draftRecipe.category,
-      difficulty: draftRecipe.difficulty,
-      servingSize: draftRecipe.servingSize,
-      prepTime: draftRecipe.prepTime,
-      cookTime: draftRecipe.cookTime,
-      favourite: draftRecipe.favourite,
+      id: draftRecipe.id || `recipe-${Date.now()}`,
+      title: draftRecipe.title.trim(),
+      imageUrl: draftRecipe.imageUrl?.trim() || "",   // ✅ only actual image url
+      source: draftRecipe.source?.trim() || "",       // ✅ just stored as text
+      category: draftRecipe.category?.trim() || "",
+      difficulty: draftRecipe.difficulty?.trim() || "",
+      servingSize: draftRecipe.servingSize?.trim() || "",
+      prepTime: draftRecipe.prepTime?.trim() || "",
+      cookTime: draftRecipe.cookTime?.trim() || "",
+      favourite: draftRecipe.favourite ?? false,
       ingredients: draftRecipe.ingredients
-        .split("\n")
-        .map((i) => i.trim())
-        .filter(Boolean),
+        ? draftRecipe.ingredients
+            .split("\n")
+            .map((i) => i.trim())
+            .filter(Boolean)
+        : [],
       instructions: draftRecipe.instructions
-        .split(/\n{2,}/)
-        .map((s) => s.trim())
-        .filter(Boolean),
+        ? draftRecipe.instructions
+            .split(/\n{2,}/)
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : [],
       notes: draftRecipe.notes
-        .split("\n")
-        .map((n) => n.trim())
-        .filter(Boolean),
+        ? draftRecipe.notes
+            .split("\n")
+            .map((n) => n.trim())
+            .filter(Boolean)
+        : [],
     };
 
     onSubmit(finalRecipe);
@@ -123,6 +138,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
         contentContainerStyle={styles.container}
         keyboardShouldPersistTaps="handled"
       >
+        {/* Title */}
         <Text style={styles.label}>Title</Text>
         <TextInput
           value={draftRecipe.title}
@@ -132,16 +148,20 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
           style={styles.largeInput}
         />
 
-        {draftRecipe.imageUrl ? (
-          <Image
-            source={{ uri: draftRecipe.imageUrl }}
-            style={styles.image}
-            resizeMode="cover"
-            accessibilityLabel={`Image of ${draftRecipe.title}`}
-            alt={`Image of ${draftRecipe.title}`}
-          />
-        ) : null}
+        {/* ✅ Only imageUrl goes to <Image /> */}
+        <Image
+          source={
+            isValidImageUrl(draftRecipe.imageUrl)
+              ? { uri: draftRecipe.imageUrl }
+              : fallbackImage
+          }
+          style={styles.image}
+          resizeMode="cover"
+          accessibilityLabel={`Image of ${draftRecipe.title || "placeholder"}`}
+          alt={`Image of ${draftRecipe.title || "placeholder"}`}
+        />
 
+        {/* Source (just text info, never used as image) */}
         <Text style={styles.label}>Source</Text>
         <TextInput
           value={draftRecipe.source}
@@ -149,8 +169,10 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
             setDraftRecipe({ ...draftRecipe, source: text })
           }
           style={styles.input}
+          placeholder="e.g. www.jamieoliver.com"
         />
 
+        {/* Category */}
         <Text style={styles.label}>Category</Text>
         <TextInput
           value={draftRecipe.category}
@@ -160,6 +182,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
           style={styles.input}
         />
 
+        {/* Difficulty */}
         <Text style={styles.label}>Difficulty</Text>
         <TextInput
           value={draftRecipe.difficulty}
@@ -169,6 +192,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
           style={styles.input}
         />
 
+        {/* Serving Size */}
         <Text style={styles.label}>Serving Size</Text>
         <TextInput
           value={draftRecipe.servingSize}
@@ -178,6 +202,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
           style={styles.input}
         />
 
+        {/* Prep Time */}
         <Text style={styles.label}>Prep Time</Text>
         <TextInput
           value={draftRecipe.prepTime}
@@ -187,6 +212,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
           style={styles.input}
         />
 
+        {/* Cook Time */}
         <Text style={styles.label}>Cook Time</Text>
         <TextInput
           value={draftRecipe.cookTime}
@@ -196,6 +222,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
           style={styles.input}
         />
 
+        {/* Ingredients */}
         <Text style={styles.label}>Ingredients</Text>
         <TextInput
           value={draftRecipe.ingredients}
@@ -206,6 +233,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
           multiline
         />
 
+        {/* Instructions */}
         <Text style={styles.label}>Instructions</Text>
         <TextInput
           value={draftRecipe.instructions}
@@ -216,6 +244,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
           multiline
         />
 
+        {/* Notes */}
         <Text style={styles.label}>Notes</Text>
         <TextInput
           value={draftRecipe.notes}

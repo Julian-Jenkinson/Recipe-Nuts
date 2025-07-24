@@ -16,7 +16,7 @@ import { useRecipeStore } from '../../../stores/useRecipeStore';
 import theme from '../../../theme';
 import { downloadAndStoreImage } from '../../../utils/downloadAndStoreImage';
 
-export default function AddRecipeFromUrl() {
+export default function AddRecipeScreen() {
   const [inputUrl, setInputUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const addRecipe = useRecipeStore((state) => state.addRecipe);
@@ -84,7 +84,19 @@ export default function AddRecipeFromUrl() {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={styles.container}>
-        <Text style={styles.title}>Import Recipe</Text>
+        <Text style={styles.title}>Add Recipe</Text>
+        
+        {/* Button to create blank recipe */}
+        <Pressable 
+          onPress={() => router.push('/add/AddBlankRecipe')} 
+          style={[styles.buttonContainer, { marginBottom: 30 }]}
+        >
+          <Feather name="edit-3" size={20} color="#fff" style={{ marginRight: 8 }} />
+          <Text style={styles.buttonText}>Create New Recipe</Text>
+        </Pressable>
+
+        <Text style={styles.text}>OR</Text>
+        
         <Text style={styles.text}>
           Copy and paste a recipe link here to extract a recipe and save it to your collection.
         </Text>
@@ -119,7 +131,8 @@ export default function AddRecipeFromUrl() {
           <ActivityIndicator size="small" color="#000" style={{ marginTop: 20 }} />
         ) : (
           <Pressable onPress={handleImportAndSave} style={styles.buttonContainer}>
-            <Text style={styles.buttonText}>Import and Save</Text>
+            <Feather name="download" size={20} color="#fff" style={{ marginRight: 8 }} />
+            <Text style={styles.buttonText}>Import from URL</Text>
           </Pressable>
         )}
       </View>
