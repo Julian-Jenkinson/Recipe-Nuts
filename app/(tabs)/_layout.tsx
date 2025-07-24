@@ -46,18 +46,16 @@ export default function Layout() {
     'Nunito-900': require('../../assets/fonts/Nunito-Black.ttf'),
   });
 
-  
-
   useEffect(() => {
-  const setNavBar = async () => {
-    // Make nav bar solid (not overlay), use this order
-    await NavigationBar.setBehaviorAsync('inset-swipe'); 
-    await NavigationBar.setBackgroundColorAsync(theme.colors.bg);
-    await NavigationBar.setButtonStyleAsync('dark'); 
-  };
+    const setNavBar = async () => {
+      // Make nav bar solid (not overlay), use this order
+      await NavigationBar.setBehaviorAsync('inset-swipe'); 
+      await NavigationBar.setBackgroundColorAsync(theme.colors.bg);
+      await NavigationBar.setButtonStyleAsync('dark'); 
+    };
 
-  setNavBar();
-}, []);
+    setNavBar();
+  }, []);
 
   if (loaded || error) {
     SplashScreen.hideAsync();
@@ -85,21 +83,20 @@ export default function Layout() {
             borderTopWidth: 0,
             elevation: 0,
             shadowOpacity: 0,
-            height:58,
-
+            height: 58,
           },
           tabBarIcon: ({ focused }) => {
             const iconName =
               route.name === 'recipes'
                 ? 'pot-mix-outline'
-                : route.name === 'AddRecipeFromUrl'
+                : route.name === 'add'
                 ? 'plus-circle-outline'
                 : 'menu';
 
             const label =
               route.name === 'recipes'
                 ? 'Recipes'
-                : route.name === 'AddRecipeFromUrl'
+                : route.name === 'add'
                 ? 'Add'
                 : 'Menu';
 
@@ -114,8 +111,8 @@ export default function Layout() {
                   justifyContent: 'center',
                   alignItems: 'center',
                   backgroundColor: focused ? theme.colors.cta : 'transparent',
-                  paddingBottom:2,
-                  marginBottom:-26,
+                  paddingBottom: 2,
+                  marginBottom: -26,
                 }}
               >
                 <MaterialCommunityIcons
@@ -153,7 +150,7 @@ export default function Layout() {
           })}
         />
         <Tabs.Screen
-          name="AddRecipeFromUrl"
+          name="add"
           options={{
             title: '',
           }}

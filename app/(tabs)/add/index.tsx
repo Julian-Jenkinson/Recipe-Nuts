@@ -12,9 +12,9 @@ import {
   TouchableWithoutFeedback,
   View
 } from 'react-native';
-import { useRecipeStore } from '../../stores/useRecipeStore';
-import theme from '../../theme';
-import { downloadAndStoreImage } from '../../utils/downloadAndStoreImage';
+import { useRecipeStore } from '../../../stores/useRecipeStore';
+import theme from '../../../theme';
+import { downloadAndStoreImage } from '../../../utils/downloadAndStoreImage';
 
 export default function AddRecipeFromUrl() {
   const [inputUrl, setInputUrl] = useState('');

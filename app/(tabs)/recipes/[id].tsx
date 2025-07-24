@@ -28,6 +28,7 @@ const { width: screenWidth } = Dimensions.get('window');
 const BUTTON_WIDTH = screenWidth / 2 - 40; // half width minus padding
 
 export default function RecipeDetailsScreen() {
+  // Move ALL hooks to the top of the component
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
 
@@ -36,17 +37,16 @@ export default function RecipeDetailsScreen() {
   const recipe = useRecipeStore((state) => (id ? state.getRecipeById(id) : undefined));
 
   const scrollViewRef = useRef<ScrollView>(null);
-
   const [ingredientsY, setIngredientsY] = useState(0);
   const [instructionsY, setInstructionsY] = useState(0);
-
   const [activeSection, setActiveSection] = useState<'ingredients' | 'instructions'>('ingredients');
-
-  // Flag to ignore onScroll during programmatic scroll
   const isScrollingProgrammatically = useRef(false);
-
-  // Animated shared value for sliding highlight
   const highlightX = useSharedValue(0);
+
+  // Animated highlight style
+  const highlightStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: highlightX.value }],
+  }));
 
   const animateHighlight = (section: 'ingredients' | 'instructions') => {
     const targetX = section === 'ingredients' ? 0 : BUTTON_WIDTH;
@@ -62,6 +62,7 @@ export default function RecipeDetailsScreen() {
     animateHighlight(activeSection);
   }, []);
 
+  // NOW do your conditional logic and early returns AFTER all hooks
   if (!id) {
     return (
       <View style={styles.centered}>
@@ -186,11 +187,6 @@ export default function RecipeDetailsScreen() {
       }
     }
   };
-
-  // Animated highlight style
-  const highlightStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: highlightX.value }],
-  }));
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
