@@ -21,7 +21,7 @@ export default function AddBlankRecipe() {
       Alert.alert('Success', 'Recipe created successfully!', [
         {
           text: 'OK',
-          onPress: () => router.back(),
+          onPress: () => router.replace('/recipes'),
         },
       ]);
     } catch (error) {

@@ -73,8 +73,8 @@ export default function AddRecipeScreen() {
       setInputUrl('');
 
       // ✅ 6. Navigate back *after everything is done*
-      router.back();
-
+      router.replace('/recipes');
+      
       // ✅ 7. Show quick success toast/alert AFTER navigation
       setTimeout(() => {
         Alert.alert('Success', 'Recipe imported and saved!');

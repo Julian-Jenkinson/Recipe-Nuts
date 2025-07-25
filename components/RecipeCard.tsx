@@ -74,6 +74,7 @@ export default function RecipeCard({
                 : require("../assets/images/error.png")
             }
             accessibilityLabel={title ? `Image of ${title}` : "Recipe image"}
+            alt={title}
             style={{ width: "100%", height: "100%" }}
             resizeMode="cover"
           />

@@ -32,7 +32,7 @@ export default function Menu() {
 
   const handleUpgrade = () => {
     if (isPro) {
-      Alert.alert("Already Pro!", "You already have unlimited recipes 🚀");
+      //Alert.alert("Already Pro!", "You already have unlimited recipes 🚀");
       return;
     }
     // For now just simulate upgrade
@@ -45,7 +45,7 @@ export default function Menu() {
           text: "Upgrade",
           onPress: () => {
             upgradeToPro(); // ✅ mark user as Pro
-            Alert.alert("✅ Success", "You are now Pro! Unlimited recipes unlocked.");
+            Alert.alert("Success", "You have upgraded to Pro! Unlimited recipes unlocked.");
           },
         },
       ]
@@ -111,7 +111,7 @@ export default function Menu() {
               ) : (
                 <Box>
                 <Text style={styles.undertext}>
-                  ✅ Unlimited recipes unlocked
+                  Unlimited recipes unlocked
                 </Text>
                   <Pressable onPress={togglePro} style={styles.undertext}>
                     <Text>{isPro ? 'Downgrade to Free' : 'Upgrade to Pro'}</Text>
