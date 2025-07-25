@@ -19,9 +19,38 @@ import theme from "../../theme";
 
 export default function Menu() {
   const recipes = useRecipeStore((state) => state.recipes);
+  const isPro = useRecipeStore((state) => state.isPro);
+  const setPro = useRecipeStore((state) => state.setPro);          // NEW
+  const upgradeToPro = useRecipeStore((state) => state.upgradeToPro); // NEW
+
+
   const [showPrivacyModal, setShowPrivacyModal] = useState(false); // Modal state
   const [showTAndCModal, setShowTAndCModal] = useState(false); // Modal state
   const [showQuickTourModal, setShowQuickTourModal] = useState(false); // Modal state
+
+  const togglePro = () => setPro(!isPro);
+
+  const handleUpgrade = () => {
+    if (isPro) {
+      Alert.alert("Already Pro!", "You already have unlimited recipes 🚀");
+      return;
+    }
+    // For now just simulate upgrade
+    Alert.alert(
+      "Upgrade to Pro",
+      "This will unlock unlimited recipe storage.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Upgrade",
+          onPress: () => {
+            upgradeToPro(); // ✅ mark user as Pro
+            Alert.alert("✅ Success", "You are now Pro! Unlimited recipes unlocked.");
+          },
+        },
+      ]
+    );
+  };
 
   // Exit button logic (android only)
   // Potentially conditionaly render the exit button if android device
@@ -55,25 +84,43 @@ export default function Menu() {
 
         <ScrollView>
           <Box>
-            {/* UPGRADE */}
-            <Pressable style={styles.menuItem}>
+            {/* UPGRADE TO PRO */}
+            <Pressable style={styles.menuItem} onPress={handleUpgrade}>
               <HStack style={styles.textContainer}>
                 <MaterialCommunityIcons
-                  name="lock-open-outline"
+                  name={isPro ? "lock-open-check-outline" : "lock-open-outline"} // ✅ different icon if Pro
                   style={styles.icon}
                 />
-                <Text style={styles.text}>Upgrade to Pro</Text>
+                <Text style={styles.text}>
+                  {isPro ? "You’re Pro!" : "Upgrade to Pro"}
+                </Text>
               </HStack>
-              <Text style={styles.undertext}>
-                Upgrade to unlock unlimited recipe storage
-              </Text>
-              <Text style={styles.undertext}>
-                {recipes.length} of 10 recipes stored
-              </Text>
-              <Box style={styles.recipebar}>
-                <RecipeBar />
-              </Box>
+
+              {!isPro ? (
+                <>
+                  <Text style={styles.undertext}>
+                    Upgrade to unlock unlimited recipe storage
+                  </Text>
+                  <Text style={styles.undertext}>
+                    {recipes.length} of 10 recipes stored
+                  </Text>
+                  <Box style={styles.recipebar}>
+                    <RecipeBar />
+                  </Box>
+                </>
+              ) : (
+                <Box>
+                <Text style={styles.undertext}>
+                  ✅ Unlimited recipes unlocked
+                </Text>
+                  <Pressable onPress={togglePro} style={styles.undertext}>
+                    <Text>{isPro ? 'Downgrade to Free' : 'Upgrade to Pro'}</Text>
+                  </Pressable>
+                </Box>
+              )}
             </Pressable>
+            
+
 
             {/* QUICK TOUR */}
             <Pressable style={styles.menuItem} onPress={() => setShowQuickTourModal(true)}>

@@ -2,26 +2,23 @@ import { Feather } from '@expo/vector-icons';
 import { Input, InputField, InputSlot } from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  Keyboard,
-  Pressable,
-  StyleSheet,
-  Text,
-  TouchableWithoutFeedback,
-  View
-} from 'react-native';
+import { ActivityIndicator, Alert, Keyboard, Pressable, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
+import { FreeTierLimitReached } from '../../../components/FreeTierLimitReached';
 import { useRecipeStore } from '../../../stores/useRecipeStore';
 import theme from '../../../theme';
 import { downloadAndStoreImage } from '../../../utils/downloadAndStoreImage';
 
+
 export default function AddRecipeScreen() {
+  const recipes = useRecipeStore((state) => state.recipes);
+  const isPro = useRecipeStore((state) => state.isPro);
   const [inputUrl, setInputUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const addRecipe = useRecipeStore((state) => state.addRecipe);
   const router = useRouter();
   const [focused, setFocused] = React.useState(false);
+
+  console.log('isPro:', isPro, 'recipes.length:', recipes.length);
 
   const handleImportAndSave = async () => {
     Keyboard.dismiss();
@@ -91,6 +88,23 @@ export default function AddRecipeScreen() {
     }
   };
 
+  const handleCreateBlank = () => {
+    router.push('/add/AddBlankRecipe');
+  };
+
+  const hasReachedLimit = !isPro && recipes.length >= 10;
+
+  if (hasReachedLimit) {
+    return (
+      <FreeTierLimitReached 
+        currentCount={recipes.length} 
+        maxFree={10} 
+        onUpgrade={() => router.push('/Menu')} // navigate to menu/upgrade - change this later to specific screen after payment
+      />
+    );
+  }
+
+
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -139,10 +153,7 @@ export default function AddRecipeScreen() {
 
         {/* Button to create blank recipe */}
         <Text style={styles.orText}>OR</Text>
-        <Pressable 
-          onPress={() => router.push('/add/AddBlankRecipe')} 
-          style={[styles.buttonContainer, { marginBottom: 30 }]}
-        >
+        <Pressable onPress={handleCreateBlank} style={[styles.buttonContainer, { marginBottom: 30 }]}>
           <Feather name="edit-3" size={20} color="#fff" style={{ marginRight: 8 }} />
           <Text style={styles.buttonText}>Create New Recipe</Text>
         </Pressable>

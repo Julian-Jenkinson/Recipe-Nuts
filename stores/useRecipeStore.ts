@@ -20,17 +20,25 @@ export type Recipe = {
 
 type RecipeState = {
   recipes: Recipe[];
+  isPro: boolean;             // ✅ NEW → Pro user flag
+  purchaseDate: string | null; // ✅ NEW → When they upgraded (if any)
+  setPro: (value: boolean) => void; // add setter
+
   addRecipe: (recipe: Recipe) => void;
   getRecipeById: (id: string) => Recipe | undefined;
   deleteRecipe: (id: string) => void;
   toggleFavourite: (id: string) => void;
-  updateRecipe: (updatedRecipe: Recipe) => void;  // <-- Added
+  updateRecipe: (updatedRecipe: Recipe) => void;
+
+  upgradeToPro: () => void;    // ✅ NEW → Action to simulate upgrade
 };
 
 export const useRecipeStore = create<RecipeState>()(
   persist(
     (set, get) => ({
       recipes: [],
+      isPro: false,            // ✅ default = free user
+      purchaseDate: null,      // ✅ no purchase initially
 
       addRecipe: (recipe) =>
         set((state) => ({
@@ -57,7 +65,19 @@ export const useRecipeStore = create<RecipeState>()(
             r.id === updatedRecipe.id ? updatedRecipe : r
           ),
         })),
+
+      // ✅ Upgrade to Pro simulation
+      upgradeToPro: () =>
+        set(() => ({
+          isPro: true,
+          purchaseDate: new Date().toISOString(),
+        })),
+      
+      // Add this setter function:
+      setPro: (value: boolean) => set({ isPro: value }),
+      
     }),
+
     {
       name: 'recipe-storage',
       storage: createJSONStorage(() => AsyncStorage),
