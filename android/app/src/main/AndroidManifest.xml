@@ -25,6 +25,7 @@
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
         <data android:scheme="recipenuts"/>
+        <data android:scheme="exp+recipenuts"/>
       </intent-filter>
     </activity>
   </application>
