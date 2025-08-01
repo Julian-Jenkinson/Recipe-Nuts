@@ -1,26 +1,26 @@
-import React from "react";
-import { Text } from "react-native";
-
-{/*
-SplashScreen.preventAutoHideAsync().then(() => {
-  console.log("🟡 SplashScreen.preventAutoHideAsync() called");
-}).catch((e) => {
-  console.warn("⚠️ SplashScreen.preventAutoHideAsync failed:", e);
-});
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { config } from '@gluestack-ui/config';
+import { GluestackUIProvider, StatusBar } from '@gluestack-ui/themed';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFonts } from 'expo-font';
+import * as NavigationBar from 'expo-navigation-bar';
+import { Tabs } from "expo-router";
+import * as SplashScreen from 'expo-splash-screen';
+import React, { useEffect, useState } from "react";
+import { Pressable, PressableProps, Text, View } from "react-native";
+import { QuickTourModal } from "../../components/QuickTourModal";
+import theme from '../../theme';
 
 function NoRippleButton(props: PressableProps) {
   console.log("🟡 no ripple about to be called");
   return <Pressable {...props} android_ripple={null} />;
 }
-*/}
 
 export default function Layout() {
   console.log("🟡 Layout started");
 
-  {/*
   const [showQuickTour, setShowQuickTour] = useState(false);
 
-  
   const [loaded, error] = useFonts({
     'Nunito-200': require('../../assets/fonts/Nunito-ExtraLight.ttf'),
     'Nunito-300': require('../../assets/fonts/Nunito-Light.ttf'),
@@ -33,6 +33,11 @@ export default function Layout() {
   });
 
   useEffect(() => {
+    // Prevent splash screen from auto-hiding
+    SplashScreen.preventAutoHideAsync()
+      .then(() => console.log("🟡 SplashScreen prevented"))
+      .catch((e) => console.warn("⚠️ SplashScreen.preventAutoHideAsync failed:", e));
+
     const setNavBar = async () => {
       try {
         await NavigationBar.setButtonStyleAsync('dark');
@@ -61,7 +66,17 @@ export default function Layout() {
 
   useEffect(() => {
     console.log("🔄 useEffect: Font load state -> loaded:", loaded, "| error:", error);
+    
+    // Set a timeout to force hide splash screen after reasonable time
+    const timeout = setTimeout(() => {
+      console.log("⏰ Font loading timeout - hiding splash screen anyway");
+      SplashScreen.hideAsync()
+        .then(() => console.log("✅ SplashScreen hidden (timeout)"))
+        .catch((e) => console.warn("⚠️ Error hiding SplashScreen (timeout):", e));
+    }, 5000); // 5 second timeout
+
     if (loaded || error) {
+      clearTimeout(timeout);
       SplashScreen.hideAsync()
         .then(() => {
           console.log("✅ SplashScreen hidden");
@@ -70,21 +85,16 @@ export default function Layout() {
           console.warn("⚠️ Error hiding SplashScreen:", e);
         });
     }
+
+    return () => clearTimeout(timeout);
   }, [loaded, error]);
 
   if (error) {
     console.error("❌ Font loading error:", error);
   }
-  
-  if (!loaded && !error) {
-    console.log("⏳ Fonts still loading...");
-    return (
-      <View style={{ flex: 1, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Loading fonts...</Text>
-      </View>
-    );
-  }
 
+  // Removed the hanging loading screen - just render main UI
+  // Fonts will load progressively and app won't hang
 
   return (
     <GluestackUIProvider config={config}>
@@ -173,11 +183,5 @@ export default function Layout() {
 
       <QuickTourModal isOpen={showQuickTour} onClose={() => setShowQuickTour(false)} />
     </GluestackUIProvider>
-    
-
-  );
-  */}
-  return (
-    <Text>testing</Text>
   );
 }
