@@ -1,11 +1,14 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { config } from '@gluestack-ui/config';
 import { GluestackUIProvider, StatusBar } from '@gluestack-ui/themed';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFonts } from 'expo-font';
 import * as NavigationBar from 'expo-navigation-bar';
+import { Tabs } from "expo-router";
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useEffect, useState } from "react";
 import { Pressable, PressableProps, Text, View } from "react-native";
+import { QuickTourModal } from "../../components/QuickTourModal";
 import theme from '../../theme';
 
 SplashScreen.preventAutoHideAsync().then(() => {
@@ -24,14 +27,14 @@ export default function Layout() {
   const [showQuickTour, setShowQuickTour] = useState(false);
 
   const [loaded, error] = useFonts({
-    //'Nunito-200': require('../../assets/fonts/Nunito-ExtraLight.ttf'),
-    //'Nunito-300': require('../../assets/fonts/Nunito-Light.ttf'),
-    //'Nunito-400': require('../../assets/fonts/Nunito-Regular.ttf'),
-    //'Nunito-500': require('../../assets/fonts/Nunito-Medium.ttf'),
-    //'Nunito-600': require('../../assets/fonts/Nunito-SemiBold.ttf'),
-    //'Nunito-700': require('../../assets/fonts/Nunito-Bold.ttf'),
-    //'Nunito-800': require('../../assets/fonts/Nunito-ExtraBold.ttf'),
-    //'Nunito-900': require('../../assets/fonts/Nunito-Black.ttf'),
+    'Nunito-200': require('../../assets/fonts/Nunito-ExtraLight.ttf'),
+    'Nunito-300': require('../../assets/fonts/Nunito-Light.ttf'),
+    'Nunito-400': require('../../assets/fonts/Nunito-Regular.ttf'),
+    'Nunito-500': require('../../assets/fonts/Nunito-Medium.ttf'),
+    'Nunito-600': require('../../assets/fonts/Nunito-SemiBold.ttf'),
+    'Nunito-700': require('../../assets/fonts/Nunito-Bold.ttf'),
+    'Nunito-800': require('../../assets/fonts/Nunito-ExtraBold.ttf'),
+    'Nunito-900': require('../../assets/fonts/Nunito-Black.ttf'),
   });
 
   useEffect(() => {
@@ -94,7 +97,7 @@ export default function Layout() {
         backgroundColor={theme.colors.bg}
         barStyle="dark-content"
       />
-      {/* 
+
       <Tabs
         screenOptions={({ route }) => ({
           headerShown: false,
@@ -174,8 +177,6 @@ export default function Layout() {
       </Tabs>
 
       <QuickTourModal isOpen={showQuickTour} onClose={() => setShowQuickTour(false)} />
-      */}
-      <Text>testing</Text>
     </GluestackUIProvider>
   );
 }

@@ -42,6 +42,7 @@ Utilising Expo managed workflow. The following commands will be useful:
    eas build --profile preview --platform android   # Test build preview
    eas build --profile preview --platform android --clear-cache   # Test Preview build with a clean cache
    npx react-native log-android                     # view logs on connected device
+   adb logcat | grep recipenuts                     # detailed logs
 
    ```
 
