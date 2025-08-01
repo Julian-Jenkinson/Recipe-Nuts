@@ -39,6 +39,10 @@ Utilising Expo managed workflow. The following commands will be useful:
    npx expo start                                   # Start the app
    emulator -avd Medium_Phone_API_36.0 -wipe-data   # Wipe android emulator data
    npx expo-doctor
+   eas build --profile preview --platform android   # Test build preview
+   eas build --profile preview --platform android --clear-cache   # Test Preview build with a clean cache
+   npx react-native log-android                     # view logs on connected device
+
    ```
 
 

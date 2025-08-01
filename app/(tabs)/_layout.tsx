@@ -1,69 +1,92 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { config } from '@gluestack-ui/config';
 import { GluestackUIProvider, StatusBar } from '@gluestack-ui/themed';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFonts } from 'expo-font';
 import * as NavigationBar from 'expo-navigation-bar';
-import { Tabs } from "expo-router";
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useEffect, useState } from "react";
 import { Pressable, PressableProps, Text, View } from "react-native";
-import { QuickTourModal } from "../../components/QuickTourModal";
 import theme from '../../theme';
 
-SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync().then(() => {
+  console.log("🟡 SplashScreen.preventAutoHideAsync() called");
+}).catch((e) => {
+  console.warn("⚠️ SplashScreen.preventAutoHideAsync failed:", e);
+});
 
 function NoRippleButton(props: PressableProps) {
   return <Pressable {...props} android_ripple={null} />;
 }
 
 export default function Layout() {
+  console.log("🟡 Layout started");
+
   const [showQuickTour, setShowQuickTour] = useState(false);
 
+  const [loaded, error] = useFonts({
+    //'Nunito-200': require('../../assets/fonts/Nunito-ExtraLight.ttf'),
+    //'Nunito-300': require('../../assets/fonts/Nunito-Light.ttf'),
+    //'Nunito-400': require('../../assets/fonts/Nunito-Regular.ttf'),
+    //'Nunito-500': require('../../assets/fonts/Nunito-Medium.ttf'),
+    //'Nunito-600': require('../../assets/fonts/Nunito-SemiBold.ttf'),
+    //'Nunito-700': require('../../assets/fonts/Nunito-Bold.ttf'),
+    //'Nunito-800': require('../../assets/fonts/Nunito-ExtraBold.ttf'),
+    //'Nunito-900': require('../../assets/fonts/Nunito-Black.ttf'),
+  });
+
   useEffect(() => {
+    const setNavBar = async () => {
+      try {
+        await NavigationBar.setButtonStyleAsync('dark');
+        console.log("✅ NavigationBar button style set to dark");
+      } catch (e) {
+        console.warn("⚠️ Failed to set NavigationBar style:", e);
+      }
+    };
+
     const checkFirstOpen = async () => {
       try {
         const hasSeenTour = await AsyncStorage.getItem("hasSeenQuickTour");
+        console.log("📦 AsyncStorage.hasSeenQuickTour =", hasSeenTour);
         if (!hasSeenTour) {
           setShowQuickTour(true);
           await AsyncStorage.setItem("hasSeenQuickTour", "true");
         }
       } catch (e) {
-        console.log("Error checking QuickTour flag:", e);
+        console.warn("⚠️ Error checking QuickTour flag:", e);
       }
-    };
-    checkFirstOpen();
-  }, []);
-  
-  const [loaded, error] = useFonts({
-    'Nunito-200': require('../../assets/fonts/Nunito-ExtraLight.ttf'),
-    'Nunito-300': require('../../assets/fonts/Nunito-Light.ttf'),
-    'Nunito-400': require('../../assets/fonts/Nunito-Regular.ttf'),
-    'Nunito-500': require('../../assets/fonts/Nunito-Medium.ttf'),
-    'Nunito-600': require('../../assets/fonts/Nunito-SemiBold.ttf'),
-    'Nunito-700': require('../../assets/fonts/Nunito-Bold.ttf'),
-    'Nunito-800': require('../../assets/fonts/Nunito-ExtraBold.ttf'),
-    'Nunito-900': require('../../assets/fonts/Nunito-Black.ttf'),
-  });
-
-  useEffect(() => {
-    const setNavBar = async () => {
-      // Make nav bar solid (not overlay), use this order
-      //await NavigationBar.setBehaviorAsync('inset-swipe'); 
-      //await NavigationBar.setBackgroundColorAsync(theme.colors.bg);
-      await NavigationBar.setButtonStyleAsync('dark'); 
     };
 
     setNavBar();
+    checkFirstOpen();
   }, []);
 
-  if (loaded || error) {
-    SplashScreen.hideAsync();
+  useEffect(() => {
+    console.log("🔄 useEffect: Font load state -> loaded:", loaded, "| error:", error);
+    if (loaded || error) {
+      SplashScreen.hideAsync()
+        .then(() => {
+          console.log("✅ SplashScreen hidden");
+        })
+        .catch((e) => {
+          console.warn("⚠️ Error hiding SplashScreen:", e);
+        });
+    }
+  }, [loaded, error]);
+
+  if (error) {
+    console.error("❌ Font loading error:", error);
+  }
+  
+  if (!loaded && !error) {
+    console.log("⏳ Fonts still loading...");
+    return (
+      <View style={{ flex: 1, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Loading fonts...</Text>
+      </View>
+    );
   }
 
-  if (!loaded && !error) {
-    return null;
-  }
 
   return (
     <GluestackUIProvider config={config}>
@@ -71,7 +94,7 @@ export default function Layout() {
         backgroundColor={theme.colors.bg}
         barStyle="dark-content"
       />
-
+      {/* 
       <Tabs
         screenOptions={({ route }) => ({
           headerShown: false,
@@ -79,12 +102,10 @@ export default function Layout() {
           tabBarPressColor: 'transparent',
           tabBarStyle: {
             backgroundColor: theme.colors.bg,
-            //backgroundColor: 'white',
             borderTopWidth: 0,
             elevation: 0,
             shadowOpacity: 0,
-            height: 100, //added extra to avoid hiding under android nav bar
-            //height: 58, // this is good
+            height: 100,
           },
           tabBarIcon: ({ focused }) => {
             const iconName =
@@ -137,9 +158,7 @@ export default function Layout() {
       >
         <Tabs.Screen
           name="recipes"
-          options={{
-            title: '',
-          }}
+          options={{ title: '' }}
           listeners={({ navigation }) => ({
             tabPress: (e) => {
               e.preventDefault();
@@ -150,21 +169,13 @@ export default function Layout() {
             },
           })}
         />
-        <Tabs.Screen
-          name="add"
-          options={{
-            title: '',
-          }}
-        />
-        <Tabs.Screen
-          name="Menu"
-          options={{
-            title: '',
-          }}
-        />
+        <Tabs.Screen name="add" options={{ title: '' }} />
+        <Tabs.Screen name="Menu" options={{ title: '' }} />
       </Tabs>
-      
+
       <QuickTourModal isOpen={showQuickTour} onClose={() => setShowQuickTour(false)} />
+      */}
+      <Text>testing</Text>
     </GluestackUIProvider>
   );
 }

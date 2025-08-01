@@ -27,6 +27,7 @@ import theme from '../../../theme';
 export default function RecipeListScreen() {
   const router = useRouter();
   const recipes = useRecipeStore((state) => state.recipes);
+  console.log(recipes);
 
   const [searchQuery, setSearchQuery] = React.useState('');
   const [focused, setFocused] = React.useState(false);
