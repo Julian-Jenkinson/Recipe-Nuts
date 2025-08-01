@@ -1,16 +1,7 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { config } from '@gluestack-ui/config';
-import { GluestackUIProvider, StatusBar } from '@gluestack-ui/themed';
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useFonts } from 'expo-font';
-import * as NavigationBar from 'expo-navigation-bar';
-import { Tabs } from "expo-router";
-import * as SplashScreen from 'expo-splash-screen';
-import React, { useEffect, useState } from "react";
-import { Pressable, PressableProps, Text, View } from "react-native";
-import { QuickTourModal } from "../../components/QuickTourModal";
-import theme from '../../theme';
+import React from "react";
+import { Text } from "react-native";
 
+{/*
 SplashScreen.preventAutoHideAsync().then(() => {
   console.log("🟡 SplashScreen.preventAutoHideAsync() called");
 }).catch((e) => {
@@ -18,14 +9,18 @@ SplashScreen.preventAutoHideAsync().then(() => {
 });
 
 function NoRippleButton(props: PressableProps) {
+  console.log("🟡 no ripple about to be called");
   return <Pressable {...props} android_ripple={null} />;
 }
+*/}
 
 export default function Layout() {
   console.log("🟡 Layout started");
 
+  {/*
   const [showQuickTour, setShowQuickTour] = useState(false);
 
+  
   const [loaded, error] = useFonts({
     'Nunito-200': require('../../assets/fonts/Nunito-ExtraLight.ttf'),
     'Nunito-300': require('../../assets/fonts/Nunito-Light.ttf'),
@@ -178,5 +173,11 @@ export default function Layout() {
 
       <QuickTourModal isOpen={showQuickTour} onClose={() => setShowQuickTour(false)} />
     </GluestackUIProvider>
+    
+
+  );
+  */}
+  return (
+    <Text>testing</Text>
   );
 }
