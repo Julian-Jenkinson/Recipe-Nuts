@@ -1,21 +1,21 @@
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import {
-  Box,
-  HStack,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
+    Box,
+    HStack,
+    Pressable,
+    ScrollView,
+    Text,
+    View,
 } from "@gluestack-ui/themed";
 import React, { useState } from "react";
 import { Alert, BackHandler, Platform, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { PrivacyPolicyModal } from "../../components/PrivacyPolicyModal";
-import { QuickTourModal } from "../../components/QuickTourModal";
-import { RecipeBar } from "../../components/RecipeBar";
-import { TAndCModal } from "../../components/TAndCModal";
-import { useRecipeStore } from "../../stores/useRecipeStore";
-import theme from "../../theme";
+import { PrivacyPolicyModal } from "../../../components/PrivacyPolicyModal";
+import { QuickTourModal } from "../../../components/QuickTourModal";
+import { RecipeBar } from "../../../components/RecipeBar";
+import { TAndCModal } from "../../../components/TAndCModal";
+import { useRecipeStore } from "../../../stores/useRecipeStore";
+import theme from "../../../theme";
 
 export default function Menu() {
   const recipes = useRecipeStore((state) => state.recipes);
