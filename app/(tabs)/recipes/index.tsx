@@ -110,6 +110,8 @@ export default function RecipeListScreen() {
     router.push(`/recipes/${id}`);
   };
 
+  console.log('recipes.length:', recipes.length, 'type:', typeof recipes.length);
+
   return (
     <SafeAreaView edges={['top','bottom']} style={{ flex: 1 }}>
       <KeyboardAvoidingView
