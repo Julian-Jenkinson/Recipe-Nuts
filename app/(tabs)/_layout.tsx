@@ -104,6 +104,7 @@ export default function Layout() {
       />
 
       <Tabs
+        //initialRouteName="recipes"
         screenOptions={({ route }) => ({
           headerShown: false,
           tabBarButton: (props) => <NoRippleButton {...props} />,
@@ -167,9 +168,22 @@ export default function Layout() {
         <Tabs.Screen
           name="recipes"
           options={{ title: '' }}
+          listeners={({ navigation }) => ({
+            tabPress: (e) => {
+              // Only prevent default and reset if we're already on recipes
+              // This allows normal initial navigation to work
+              if (navigation.isFocused()) {
+                e.preventDefault();
+                navigation.reset({
+                  index: 0,
+                  routes: [{ name: 'recipes' }],
+                });
+              }
+            },
+          })}
         />
         <Tabs.Screen name="add" options={{ title: '' }} />
-        <Tabs.Screen name="Menu" options={{ title: '' }} />
+        <Tabs.Screen name="menu" options={{ title: '' }} />
       </Tabs>
 
       <QuickTourModal isOpen={showQuickTour} onClose={() => setShowQuickTour(false)} />
