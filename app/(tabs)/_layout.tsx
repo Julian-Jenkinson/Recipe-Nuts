@@ -104,7 +104,7 @@ export default function Layout() {
       />
 
       <Tabs
-        //initialRouteName="recipes"
+        initialRouteName="recipes"
         screenOptions={({ route }) => ({
           headerShown: false,
           tabBarButton: (props) => <NoRippleButton {...props} />,
