@@ -17,6 +17,15 @@
       "bundleIdentifier": "com.hulio.recipenuts"
     },
     "android": {
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": {
+            "scheme": "recipenuts"
+          },
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -55,5 +64,6 @@
     "assetBundlePatterns": [
       "**/*"
     ]
+    
   }
 }
