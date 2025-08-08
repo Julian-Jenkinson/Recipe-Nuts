@@ -4,6 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFonts } from 'expo-font';
 import { Stack } from "expo-router";
 import * as SplashScreen from 'expo-splash-screen';
+import * as SystemUI from 'expo-system-ui';
 import React, { useEffect, useState } from "react";
 import { Pressable, PressableProps } from "react-native";
 import { QuickTourModal } from "../components/QuickTourModal";
@@ -59,6 +60,7 @@ export default function Layout() {
         //await NavigationBar.setEdgeToEdgeEnabledAsync(false); // disable edge-to-edge
         //await NavigationBar.setBackgroundColorAsync("fff");
         //await NavigationBar.setButtonStyleAsync('dark');
+        SystemUI.setBackgroundColorAsync(theme.colors.bg)
         console.log("✅ NavigationBar customized");
       } catch (e) {
         console.warn("⚠️ Failed to set NavigationBar style:", e);
@@ -124,12 +126,8 @@ export default function Layout() {
       <Stack
         screenOptions={{
           headerShown: false,
-        }}>     
-        <Stack.Screen name="recipes/index" />
-        <Stack.Screen name="add/index" />
-        <Stack.Screen name="menu/index" />
-      </Stack>
-      
+        }} 
+      />     
 
       <QuickTourModal isOpen={showQuickTour} onClose={() => setShowQuickTour(false)} />
     </GluestackUIProvider>

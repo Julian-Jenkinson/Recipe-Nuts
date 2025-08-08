@@ -1,5 +1,5 @@
 import { Feather } from '@expo/vector-icons';
-import { Input, InputField, InputSlot } from '@gluestack-ui/themed';
+import { HStack, Input, InputField, InputSlot } from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { ActivityIndicator, Alert, Keyboard, Pressable, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
@@ -104,11 +104,15 @@ export default function AddRecipeScreen() {
     );
   }
 
-
-
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      
       <View style={styles.container}>
+        <HStack pl={6} pr={18} py={14} justifyContent="space-between" alignItems="center">
+          <Pressable onPress={() => router.replace('/recipes/')}>
+            <Feather name="chevron-left" size={32} color="#333" />
+          </Pressable>
+        </HStack>
         <Text style={styles.title}>Add Recipe</Text>
         
         <Text style={styles.text}>
@@ -149,17 +153,6 @@ export default function AddRecipeScreen() {
             <Text style={styles.buttonText}>Import from URL</Text>
           </Pressable>
         )}
-
-
-        {/* Button to create blank recipe */}
-        <Text style={styles.orText}>OR</Text>
-        <Pressable onPress={handleCreateBlank} style={[styles.buttonContainer, { marginBottom: 30 }]}>
-          <Feather name="edit-3" size={20} color="#fff" style={{ marginRight: 8 }} />
-          <Text style={styles.buttonText}>Create New Recipe</Text>
-        </Pressable>
-
-        
-
       </View>
     </TouchableWithoutFeedback>
   );
@@ -174,33 +167,34 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 22,
-    fontFamily: 'Nunito-700',
+    fontFamily: 'body-700',
     marginBottom: 20,
     textAlign: 'center',
   },
   text: {
     fontSize: 18,
-    fontFamily: 'Nunito-400',
+    fontFamily: 'body-400',
     marginBottom: 20,
     textAlign: 'center',
     color: '#666',
   },
   orText: {
     fontSize: 18,
-    fontFamily: 'Nunito-400',
+    fontFamily: 'body-400',
     marginTop: 30,
     marginBottom: 10,
     textAlign: 'center',
     color: '#666',
   },
   input: {
-    fontFamily: 'Nunito-400',
+    fontFamily: 'body-400',
     backgroundColor: theme.colors.bgFocus,
     color: '#000',
+
   },
   inputField: {
     fontSize: 18,
-    fontFamily: 'Nunito-400',
+    fontFamily: 'body-400',
   },
   buttonContainer: {
     backgroundColor: theme.colors.cta,
@@ -214,7 +208,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 18,
-    fontFamily: 'Nunito-700',
+    fontFamily: 'body-700',
     color: '#fff',
     textAlign: 'center',
   },

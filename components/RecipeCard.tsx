@@ -33,11 +33,16 @@ export default function RecipeCard({
     >
       <Pressable
         onPress={onPress}
-        //borderRadius={8}
-        overflow="hidden"
       >
         {/* Image Container */}
-        <Box width="100%" aspectRatio={1.2} justifyContent="center" alignItems="center">
+        <Box 
+          width="100%" 
+          aspectRatio={1.2} 
+          justifyContent="center" 
+          alignItems="center"
+          
+          
+        >
           {/* Heart icon overlay */}
           <Pressable
             onPress={(e) => {
@@ -51,7 +56,7 @@ export default function RecipeCard({
               zIndex: 10,
             }}
           >
-            <Box bg="white" p={3} borderRadius={0} alignItems="center" justifyContent="center">
+            <Box bg="white" p={3} borderRadius={4} alignItems="center" justifyContent="center">
               <FontAwesome
                 name={favourite ? 'star' : 'star-o'}
                 size={19}
@@ -70,6 +75,7 @@ export default function RecipeCard({
             alt={title}
             style={{ width: "100%", height: "100%" }}
             resizeMode="cover"
+            borderRadius={6}
           />
         </Box>
 

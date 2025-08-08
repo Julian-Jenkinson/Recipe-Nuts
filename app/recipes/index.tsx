@@ -21,7 +21,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AddRecipeButton from '../../components/AddRecipeButton';
 import AddRecipeDrawer from '../../components/AddRecipeDrawer';
-import HorizontalScroll, { FiltersType } from '../../components/HorizontalScroll';
+// import HorizontalScroll, { FiltersType } from '../../components/HorizontalScroll';  // Commented out
 import RecipeCard from '../../components/RecipeCard';
 import { useRecipeStore } from '../../stores/useRecipeStore';
 import theme from '../../theme';
@@ -35,17 +35,17 @@ export default function RecipeListScreen() {
   const [searchQuery, setSearchQuery] = React.useState('');
   const [focused, setFocused] = React.useState(false);
 
-  // ✅ Always initialize filters properly
-  const [filters, setFilters] = React.useState<FiltersType>({ mode: 'all' });
+  // // ✅ Always initialize filters properly
+  // const [filters, setFilters] = React.useState<FiltersType>({ mode: 'all' }); // Commented out
 
-  // ✅ Always dismiss keyboard before changing filters
-  const setHorizontalFilters = React.useCallback(
-    (value: React.SetStateAction<FiltersType>) => {
-      Keyboard.dismiss();
-      setFilters(value);
-    },
-    []
-  );
+  // // ✅ Always dismiss keyboard before changing filters
+  // const setHorizontalFilters = React.useCallback(
+  //   (value: React.SetStateAction<FiltersType>) => {
+  //     Keyboard.dismiss();
+  //     setFilters(value);
+  //   },
+  //   []
+  // );
 
   const query = searchQuery.trim().toLowerCase();
 
@@ -60,61 +60,69 @@ export default function RecipeListScreen() {
     const timestamp = parts[parts.length - 1];
     return Number(timestamp) || 0;
   }
-  
-  // ✅ Filtering logic
-  let filteredRecipes = [...recipes];
 
-  if (query.length > 0) {
-    const isFavQuery =
-      query.startsWith('fav') || query === 'favourite' || query === 'favorite';
+  // // ✅ Filtering logic
+  // let filteredRecipes = [...recipes];
 
-    if (isFavQuery) {
-      filteredRecipes = filteredRecipes.filter((recipe) => recipe.favourite);
-    } else {
-      filteredRecipes = filteredRecipes.filter(
-        (recipe) =>
-          (recipe.title || '').toLowerCase().includes(query) ||
-          (recipe.source || '').toLowerCase().includes(query) ||
-          (recipe.category || '').toLowerCase().includes(query)
-      );
-    }
-  }
+  // if (query.length > 0) {
+  //   const isFavQuery =
+  //     query.startsWith('fav') || query === 'favourite' || query === 'favorite';
 
-  switch (filters.mode) {
-    case 'all':
-      filteredRecipes.sort((a, b) => getTimestampFromId(b.id) - getTimestampFromId(a.id));
-      break;
-    case 'favourites':
-      filteredRecipes = filteredRecipes.filter((recipe) => recipe.favourite);
-      break;
-    case 'quick-meals':
-      filteredRecipes = filteredRecipes.filter((recipe) => {
-        const totalTime = toMinutes(recipe.prepTime) + toMinutes(recipe.cookTime);
-        return totalTime > 0 && totalTime <= 30;
-      });
-      break;
-    case 'newest':
-      filteredRecipes.sort((a, b) => getTimestampFromId(b.id) - getTimestampFromId(a.id));
-      break;
-    case 'oldest':
-      filteredRecipes.sort((a, b) => getTimestampFromId(a.id) - getTimestampFromId(b.id));
-      break;
-    case 'a-z':
-      filteredRecipes = [...filteredRecipes].sort((a, b) => a.title.localeCompare(b.title));
-      break;
-    case 'z-a':
-      filteredRecipes = [...filteredRecipes].sort((a, b) => b.title.localeCompare(a.title));
-      break;
-    default:
-      break;
-  }
-  
+  //   if (isFavQuery) {
+  //     filteredRecipes = filteredRecipes.filter((recipe) => recipe.favourite);
+  //   } else {
+  //     filteredRecipes = filteredRecipes.filter(
+  //       (recipe) =>
+  //         (recipe.title || '').toLowerCase().includes(query) ||
+  //         (recipe.source || '').toLowerCase().includes(query) ||
+  //         (recipe.category || '').toLowerCase().includes(query)
+  //     );
+  //   }
+  // } else {
+  //   filteredRecipes = [...recipes]; // show all if no search query
+  // }
+
+  // // Apply filters (disabled)
+  // switch (filters.mode) {
+  //   case 'all':
+  //     filteredRecipes.sort((a, b) => getTimestampFromId(b.id) - getTimestampFromId(a.id));
+  //     break;
+  //   case 'favourites':
+  //     filteredRecipes = filteredRecipes.filter((recipe) => recipe.favourite);
+  //     break;
+  //   case 'quick-meals':
+  //     filteredRecipes = filteredRecipes.filter((recipe) => {
+  //       const totalTime = toMinutes(recipe.prepTime) + toMinutes(recipe.cookTime);
+  //       return totalTime > 0 && totalTime <= 30;
+  //     });
+  //     break;
+  //   case 'newest':
+  //     filteredRecipes.sort((a, b) => getTimestampFromId(b.id) - getTimestampFromId(a.id));
+  //     break;
+  //   case 'oldest':
+  //     filteredRecipes.sort((a, b) => getTimestampFromId(a.id) - getTimestampFromId(b.id));
+  //     break;
+  //   case 'a-z':
+  //     filteredRecipes = [...filteredRecipes].sort((a, b) => a.title.localeCompare(b.title));
+  //     break;
+  //   case 'z-a':
+  //     filteredRecipes = [...filteredRecipes].sort((a, b) => b.title.localeCompare(a.title));
+  //     break;
+  //   default:
+  //     break;
+  // }
+
+  // For now, filteredRecipes is just recipes filtered by search query or all
+  const filteredRecipes = query.length > 0
+    ? recipes.filter((recipe) =>
+        (recipe.title || '').toLowerCase().includes(query) ||
+        (recipe.source || '').toLowerCase().includes(query)
+      )
+    : recipes;
 
   const handlePress = (id: string) => {
     router.push(`/recipes/${id}`);
   };
-
-  console.log('recipes.length:', recipes.length, 'type:', typeof recipes.length);
 
   return (
     <>
@@ -125,7 +133,14 @@ export default function RecipeListScreen() {
         >
           <View style={{ flex: 1 }} bg={theme.colors.bg}>
             {/* ✅ Header */}
-            <HStack px={16} pt={15} pb={6} justifyContent="space-between" alignItems="center">
+            
+            <Pressable onPress={() => router.push('/menu')} hitSlop={10}>
+              <Box ml={0} mt={8} mb={8}>
+                <Feather name="menu" size={28} color="#000" />
+              </Box>
+            </Pressable>
+
+            <HStack px={16} pt={0} pb={6} justifyContent="space-between" alignItems="center">
               <Text 
                 fontSize={24} 
                 color={theme.colors.text1} 
@@ -136,17 +151,9 @@ export default function RecipeListScreen() {
                 All Recipes
               </Text>
             </HStack>
-            
-            {/*
-            <HStack px={16} pt={1} justifyContent="space-between" alignItems="center">
-              <Text fontSize={18} color={theme.colors.text2} style={{ fontFamily: 'Nunito-600' }}>
-                {`${recipes.length} ${recipes.length === 1 ? 'recipe' : 'recipes'}`}
-              </Text>
-            </HStack>
-            */}
 
             {/* ✅ Search Input */}
-            <Box mt={15} mx={16}>
+            <Box my={15} mx={16}>
               <Input
                 variant="rounded"
                 size="sm"
@@ -181,8 +188,8 @@ export default function RecipeListScreen() {
               </Input>
             </Box>
 
-            {/* ✅ Pills OUTSIDE dismiss wrapper */}
-            <HorizontalScroll filters={filters} setFilters={setHorizontalFilters} />
+            {/* // HorizontalScroll component commented out */}
+            {/* <HorizontalScroll filters={filters} setFilters={setHorizontalFilters} /> */}
             
             {/* ✅ Only FlatList wrapped with dismiss touch */}
             <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -223,8 +230,6 @@ export default function RecipeListScreen() {
                 )}
               />
             </TouchableWithoutFeedback>
-            
-            
 
             <Box position='absolute' bottom={30} right={30} >
               <Pressable 

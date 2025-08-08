@@ -15,8 +15,8 @@ export default function AddRecipeButton({ onPress }: Props) {
         borderRadius={999}
         borderColor="#777"
         borderWidth={0}
-        height={52}
-        width={52}
+        height={50}
+        width={50}
         justifyContent="center"
         alignItems="center"
         //shadowColor="#000"
