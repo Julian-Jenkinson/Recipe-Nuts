@@ -3,10 +3,10 @@ import { Input, InputField, InputSlot } from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { ActivityIndicator, Alert, Keyboard, Pressable, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
-import { FreeTierLimitReached } from '../../../components/FreeTierLimitReached';
-import { useRecipeStore } from '../../../stores/useRecipeStore';
-import theme from '../../../theme';
-import { downloadAndStoreImage } from '../../../utils/downloadAndStoreImage';
+import { FreeTierLimitReached } from '../../components/FreeTierLimitReached';
+import { useRecipeStore } from '../../stores/useRecipeStore';
+import theme from '../../theme';
+import { downloadAndStoreImage } from '../../utils/downloadAndStoreImage';
 
 
 export default function AddRecipeScreen() {
@@ -99,7 +99,7 @@ export default function AddRecipeScreen() {
       <FreeTierLimitReached 
         currentCount={recipes.length} 
         maxFree={10} 
-        onUpgrade={() => router.push('/Menu')} // navigate to menu/upgrade - change this later to specific screen after payment
+        onUpgrade={() => router.push('/menu')} // navigate to menu/upgrade - change this later to specific screen after payment
       />
     );
   }

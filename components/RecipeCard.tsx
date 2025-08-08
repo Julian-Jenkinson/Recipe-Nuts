@@ -29,18 +29,11 @@ export default function RecipeCard({
 }: RecipeCardProps) {
   return (
     <Box
-      borderRadius={8}
-      shadowColor="#000"
-      shadowOffset={{ width: 0, height: 2 }}
-      shadowOpacity={0.2}
-      shadowRadius={4}
-      elevation={5}
-      //bg="#f5f5f5" // check this colour is correct
       bg="#fff"
     >
       <Pressable
         onPress={onPress}
-        borderRadius={8}
+        //borderRadius={8}
         overflow="hidden"
       >
         {/* Image Container */}
@@ -58,7 +51,7 @@ export default function RecipeCard({
               zIndex: 10,
             }}
           >
-            <Box bg="white" p={3} borderRadius={6} alignItems="center" justifyContent="center">
+            <Box bg="white" p={3} borderRadius={0} alignItems="center" justifyContent="center">
               <FontAwesome
                 name={favourite ? 'star' : 'star-o'}
                 size={19}
@@ -81,19 +74,19 @@ export default function RecipeCard({
         </Box>
 
         {/* Text Container */}
-        <Box px={8} py={8}>
+        <Box py={4}>
           <Text 
-            fontSize="$md" 
-            style={{ fontFamily: 'Nunito-800' }} 
+            fontSize={16} 
+            style={{ fontFamily: 'body-800' }} 
             color={theme.colors.text1} 
-            numberOfLines={1}
+            numberOfLines={2}
           >
             {title}
           </Text>
           <Text
             fontSize="$sm"
             color={theme.colors.text2}
-            style={{ fontFamily: "Nunito-400" }}
+            style={{ fontFamily: "body-400" }}
             numberOfLines={1}
           >
             {source

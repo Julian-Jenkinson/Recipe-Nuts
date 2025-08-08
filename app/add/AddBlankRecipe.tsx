@@ -1,8 +1,8 @@
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Alert } from 'react-native';
-import { RecipeForm } from '../../../components/RecipeForm';
-import { Recipe, useRecipeStore } from '../../../stores/useRecipeStore';
+import { RecipeForm } from '../../components/RecipeForm';
+import { Recipe, useRecipeStore } from '../../stores/useRecipeStore';
 
 export default function AddBlankRecipe() {
   const router = useRouter();

@@ -14,8 +14,8 @@ import {
   StyleSheet,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRecipeStore } from '../../../stores/useRecipeStore';
-import theme from '../../../theme';
+import { useRecipeStore } from '../../stores/useRecipeStore';
+import theme from '../../theme';
 
 import { GestureHandlerRootView, PanGestureHandler } from 'react-native-gesture-handler';
 import Animated, {

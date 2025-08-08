@@ -32,7 +32,7 @@ const pillStyles = StyleSheet.create({
     //borderColor: '#ccc',
     paddingVertical: 8,
     paddingHorizontal: 18,
-    borderRadius: 9999,
+    borderRadius: 0,
     marginRight: 2,
     ///backgroundColor: '#e3e3e3',
     backgroundColor: theme.colors.bgFocus,
@@ -44,8 +44,9 @@ const pillStyles = StyleSheet.create({
   },
   pillText: {
     color: theme.colors.text1,
-    fontFamily: 'Nunito-800',
+    fontFamily: 'body-800',
     fontSize: 14,
+    flex:1,
   },
   pillTextPressed: {
     color: theme.colors.ctaText,

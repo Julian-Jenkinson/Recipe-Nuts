@@ -9,8 +9,8 @@ import {
   TextInput
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRecipeStore } from '../../../stores/useRecipeStore';
-import theme from '../../../theme';
+import { useRecipeStore } from '../../stores/useRecipeStore';
+import theme from '../../theme';
 
 export default function EditRecipe() {
   const router = useRouter();
