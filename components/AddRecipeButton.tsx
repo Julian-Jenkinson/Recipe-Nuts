@@ -1,3 +1,4 @@
+import theme from '@/theme';
 import { Ionicons } from '@expo/vector-icons';
 import { Box } from '@gluestack-ui/themed';
 import React from 'react';
@@ -11,7 +12,7 @@ export default function AddRecipeButton({ onPress }: Props) {
   return (
     <Pressable onPress={onPress}>
       <Box
-        bg="#222"
+        bg={theme.colors.cta}
         borderRadius={999}
         borderColor="#777"
         borderWidth={0}

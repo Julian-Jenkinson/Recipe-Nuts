@@ -82,11 +82,13 @@ export default function Menu() {
   return (
     <SafeAreaView edges={["top", "bottom"]} style={{ flex: 1 }}>
       <View style={styles.container}>
-        <HStack pl={6} pr={18} py={14} justifyContent="space-between" alignItems="center">
-            <Pressable onPress={() => router.replace('/recipes/')}>
+        
+        <Box ml={0} mt={8} alignSelf="flex-start">
+          <Pressable onPress={() => router.replace('/recipes/')}>
             <Feather name="chevron-left" size={32} color="#333" />
           </Pressable>
-        </HStack>
+        </Box>
+        
         {/* Headings */}
         <Text style={styles.heading}>Menu</Text>
 

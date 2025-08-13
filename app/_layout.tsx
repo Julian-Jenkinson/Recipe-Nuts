@@ -34,14 +34,18 @@ export default function Layout() {
     //'OpenSans-800': require('../assets/fonts/OpenSans-Bold.ttf'),
 
     //Heading
-    'heading-800': require('../assets/fonts/PlayfairDisplay-Bold.ttf'),
+    //'heading-800': require('../assets/fonts/PlayfairDisplay-Bold.ttf'),
+    'heading-800': require('../assets/fonts/Mulish-ExtraBold.ttf'),
     
     //Body
-    'body-400': require('../assets/fonts/Montserrat-Regular.ttf'),
-    'body-800': require('../assets/fonts/Montserrat-Bold.ttf'),
+    //'body-400': require('../assets/fonts/Montserrat-Regular.ttf'),
+    //'body-800': require('../assets/fonts/Montserrat-Bold.ttf'),
 
     //'body-400': require('../assets/fonts/OpenSans-Regular.ttf'),
     //'body-800': require('../assets/fonts/OpenSans-Bold.ttf'),
+
+    'body-400': require('../assets/fonts/Mulish-Light.ttf'),
+    'body-800': require('../assets/fonts/Mulish-ExtraBold.ttf'),
     
 
 
