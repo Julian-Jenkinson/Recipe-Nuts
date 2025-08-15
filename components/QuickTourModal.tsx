@@ -26,7 +26,6 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import theme from "../theme";
 
-
 const { width, height } = Dimensions.get("window");
 
 export function QuickTourModal({
@@ -60,17 +59,27 @@ export function QuickTourModal({
     }
   }, [isOpen]);
 
-  return (
-    <Modal isOpen={isOpen} onClose={onClose} size="full">
-      <ModalBackdrop />
-      <ModalContent style={{ flex: 1 }}>
-        <SafeAreaView edges={['top', 'bottom']} style={{ flex: 1 }}>
+  const handleNext = () => {
+    if (currentPage < pages.length - 1) {
+      scrollRef.current?.scrollTo({
+        x: (currentPage + 1) * width,
+        animated: true,
+      });
+    } else {
+      onClose();
+    }
+  };
 
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} size="full" animationDuration="0" >
+      <ModalBackdrop />
+      <ModalContent style={styles.modal}>
+        <SafeAreaView edges={["top", "bottom"]} style={{ flex: 1 }}>
           {/* Header */}
           <ModalHeader>
             <Heading size="md" style={styles.headerTitle}></Heading>
             <ModalCloseButton>
-              <Icon as={CloseIcon} size="md" color='#777' />
+              <Icon as={CloseIcon} size='lg' color="#777" />
             </ModalCloseButton>
           </ModalHeader>
 
@@ -91,13 +100,28 @@ export function QuickTourModal({
                   <Text style={styles.pageText}>{page.text}</Text>
 
                   {page.showUpgrade && (
-                    <Button mt="$4" style={{ backgroundColor: theme.colors.cta, borderRadius: 8, paddingHorizontal: 20 }}>
+                    <Button
+                      mt="$4"
+                      style={{
+                        backgroundColor: theme.colors.cta,
+                        borderRadius: 8,
+                        paddingHorizontal: 20,
+                      }}
+                    >
                       <ButtonText style={styles.buttonText}>Upgrade</ButtonText>
                     </Button>
                   )}
 
                   {page.isLast && (
-                    <Button mt="$4" style={{ backgroundColor: theme.colors.cta, borderRadius: 8, paddingHorizontal: 20 }} onPress={onClose}>
+                    <Button
+                      mt="$4"
+                      style={{
+                        backgroundColor: theme.colors.cta,
+                        borderRadius: 8,
+                        paddingHorizontal: 20,
+                      }}
+                      onPress={onClose}
+                    >
                       <ButtonText style={styles.buttonText}>Got it!</ButtonText>
                     </Button>
                   )}
@@ -106,8 +130,14 @@ export function QuickTourModal({
             ))}
           </ScrollView>
 
-          {/* Dot indicators */}
-          <HStack justifyContent="center" space="sm" mb="$2">
+          {/* Footer */}
+          <HStack justifyContent="space-between" alignItems="center" px="$6" mb="$4">
+            <Pressable onPress={onClose}>
+              <Text style={styles.skipText}>SKIP</Text>
+            </Pressable>
+
+            {/* Dot indicators */}
+          <HStack justifyContent="center" space="sm">
             {pages.map((_, index) => (
               <View
                 key={index}
@@ -119,10 +149,10 @@ export function QuickTourModal({
             ))}
           </HStack>
 
-          {/* Bottom Skip */}
-          <HStack justifyContent="center" mb="$4">
-            <Pressable onPress={onClose}>
-              <Text style={styles.skipText}>Skip</Text>
+            <Pressable onPress={handleNext}>
+              <Text style={styles.skipText}>
+                {currentPage === pages.length - 1 ? "DONE" : "NEXT"}
+              </Text>
             </Pressable>
           </HStack>
 
@@ -132,10 +162,14 @@ export function QuickTourModal({
   );
 }
 
-
 const styles = StyleSheet.create({
+  modal: {
+    flex: 1,
+    backgroundColor: theme.colors.bg,
+    borderRadius: 0,
+  },
   headerTitle: {
-    fontFamily: "Nunito-900",
+    fontFamily: "body-400",
     fontSize: 20,
   },
   page: {
@@ -146,14 +180,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   pageTitle: {
-    fontFamily: "Nunito-900",
+    fontFamily: "body-800",
     fontSize: 24,
     textAlign: "center",
     marginBottom: 10,
   },
   pageText: {
-    fontFamily: "Nunito-400",
-    fontSize: 18,
+    fontFamily: "body-400",
+    fontSize: 20,
     textAlign: "center",
     color: theme.colors.text2,
     paddingHorizontal: 10,
@@ -170,13 +204,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#ccc",
   },
   buttonText: {
-    fontFamily: "Nunito-800",
+    fontFamily: "body-800",
     fontSize: 18,
     color: "white",
   },
   skipText: {
-    fontFamily: "Nunito-400",
-    fontSize: 18,
+    fontFamily: "body-700",
+    fontSize: 16,
     color: "#777",
     paddingVertical: 3,
   },

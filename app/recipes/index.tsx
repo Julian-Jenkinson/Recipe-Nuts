@@ -91,7 +91,7 @@ export default function RecipeListScreen() {
                     variant="rounded"
                     size="lg"
                     borderWidth={focused ? 2 : 1.5}
-                    borderColor={focused ? '#000' : '#000'}
+                    borderColor={focused ? '#666' : '#bbb'}
                     borderStyle="none"
                     borderRadius={8}
                   >

@@ -6,11 +6,11 @@ export const RecipeBar = () => {
   const count = Math.min(recipes.length, 10);
 
   return (
-    <HStack space="xs" alignItems="center">
+    <HStack space="xs" alignItems="center" flex={1} w="100%">
       {Array.from({ length: 10 }, (_, i) => (
         <Box
           key={i}
-          w="$4"
+          flex={1} // each box takes equal share of width
           h="$2"
           bg={i < count ? '$primary500' : '$coolGray300'}
           rounded="$full"

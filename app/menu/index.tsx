@@ -92,7 +92,10 @@ export default function Menu() {
         {/* Headings */}
         <Text style={styles.heading}>Menu</Text>
 
+
+
         <ScrollView>
+
           <Box>
             {/* UPGRADE TO PRO */}
             <Pressable style={styles.menuItem} onPress={handleUpgrade}>
@@ -130,7 +133,7 @@ export default function Menu() {
               )}
             </Pressable>
             
-
+            <View style={styles.pagebreak} />
 
             {/* QUICK TOUR */}
             <Pressable style={styles.menuItem} onPress={() => setShowQuickTourModal(true)}>
@@ -143,6 +146,8 @@ export default function Menu() {
               </HStack>
               <Text style={styles.undertext}>Take a tour of the app</Text>
             </Pressable>
+
+            <View style={styles.pagebreak} />
 
             {/* RATE */}
             <Pressable style={styles.menuItem}>
@@ -158,6 +163,8 @@ export default function Menu() {
               </Text>
             </Pressable>
 
+            <View style={styles.pagebreak} />
+
             {/* SHARE */}
             <Pressable style={styles.menuItem}>
               <HStack style={styles.textContainer}>
@@ -168,6 +175,8 @@ export default function Menu() {
                 Share with your friends and family
               </Text>
             </Pressable>
+
+            <View style={styles.pagebreak} />
 
             {/* CONTACT */}
             <Pressable style={styles.menuItem}>
@@ -181,11 +190,10 @@ export default function Menu() {
               <Text style={styles.undertext}>
                 Leave feedback or get in touch for support
               </Text>
-              <Text style={styles.undertext}>
-                Leave feedback or get in touch for support
-              </Text>
             </Pressable>
           </Box>
+
+          <View style={styles.pagebreak} />
 
           {/* SUB MENU */}
           <Box flex={1} style={styles.submenu}>
@@ -198,6 +206,8 @@ export default function Menu() {
             <Pressable onPress={() => setShowPrivacyModal(true)}>
               <Text style={styles.subtext}>Privacy Policy</Text>
             </Pressable>
+
+            <View style={styles.pagebreak} />
 
             <Pressable onPress={handleExit}>
               <Text style={styles.exittext}>Exit</Text>
@@ -235,14 +245,15 @@ const styles = StyleSheet.create({
   },
   heading: {
     fontSize: 26,
-    fontFamily: "Nunito-800",
+    fontFamily: "body-800",
     marginTop: 30,
-    marginBottom: 10,
+    marginBottom: 15,
+    marginLeft:40,
   },
   text: {
     fontSize: 18,
-    fontFamily: "Nunito-800",
-    marginLeft: 8,
+    fontFamily: "body-800",
+    marginLeft: 18,
   },
   menuItem: {
     paddingBottom:10,
@@ -250,13 +261,16 @@ const styles = StyleSheet.create({
 
   undertext: {
     fontSize: 17,
-    fontFamily: "Nunito-400",
+    fontFamily: "body-400",
     color: theme.colors.text2,
-    marginLeft: 32,
+    marginLeft: 42,
+    marginTop: 4,
   },
   recipebar: {
-    marginLeft: 32,
-    marginTop: 6,
+    marginLeft: 42,
+    marginRight:42,
+    marginTop: 10,
+    marginBottom: 5,
   },
   textContainer: {
     marginTop: 12,
@@ -268,17 +282,26 @@ const styles = StyleSheet.create({
     fontSize: 22,
   },
   submenu: {
-    //paddingTop: 10,
+    
   },
   subtext: {
     fontSize: 19,
-    fontFamily: "Nunito-700",
-    marginTop: 20,
+    fontFamily: "body-700",
+    marginVertical: 8,
+    marginLeft: 42,
   },
   exittext: {
     fontSize: 19,
-    fontFamily: "Nunito-800",
-    marginTop: 20,
-    marginBottom: 20,
+    fontFamily: "body-800",
+    marginTop: 10,
+    marginBottom: 40,
+    marginLeft: 42,
+  },
+  pagebreak: {
+    height: 1, 
+    backgroundColor: '#ddd', 
+    marginVertical: 15,
+    marginLeft: 42,
+    marginRight: 42,
   },
 });

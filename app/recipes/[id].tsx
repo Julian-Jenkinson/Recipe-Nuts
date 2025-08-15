@@ -5,7 +5,6 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Alert,
-  Dimensions,
   NativeScrollEvent,
   NativeSyntheticEvent,
   View as RNView,
@@ -18,17 +17,9 @@ import { useRecipeStore } from '../../stores/useRecipeStore';
 import theme from '../../theme';
 
 import { GestureHandlerRootView, PanGestureHandler } from 'react-native-gesture-handler';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
-
-const { width: screenWidth } = Dimensions.get('window');
-const BUTTON_WIDTH = screenWidth / 2 - 40; // half width minus padding
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 export default function RecipeDetailsScreen() {
-  // Move ALL hooks to the top of the component
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
 
@@ -40,35 +31,31 @@ export default function RecipeDetailsScreen() {
   const [ingredientsY, setIngredientsY] = useState(0);
   const [instructionsY, setInstructionsY] = useState(0);
   const [activeSection, setActiveSection] = useState<'ingredients' | 'instructions'>('ingredients');
+  const [containerWidth, setContainerWidth] = useState(0);
   const isScrollingProgrammatically = useRef(false);
   const highlightX = useSharedValue(0);
 
-  // Animated highlight style
+  const buttonWidth = containerWidth / 2;
+
   const highlightStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: highlightX.value }],
   }));
 
   const animateHighlight = (section: 'ingredients' | 'instructions') => {
-    const targetX = section === 'ingredients' ? 0 : BUTTON_WIDTH;
-    highlightX.value = withSpring(targetX, {
-      stiffness: 175,
-      damping: 22,
-      mass: 1,
-    });
+    const targetX = section === 'ingredients' ? 0 : buttonWidth;
+    highlightX.value = withSpring(targetX, { stiffness: 175, damping: 22, mass: 1 });
   };
 
   useEffect(() => {
-    // initial highlight position
     animateHighlight(activeSection);
-  }, []);
+  }, [buttonWidth]);
 
-  // NOW do your conditional logic and early returns AFTER all hooks
   if (!id) {
     return (
       <View style={styles.centered}>
-        <Text>Invalid Recipe ID</Text>
+        <Text style={styles.body400}>Invalid Recipe ID</Text>
         <Pressable onPress={() => router.replace('/recipes/')}>
-          <Text style={{ color: 'blue', marginTop: 10 }}>Go Back</Text>
+          <Text style={[styles.body400, { color: 'blue', marginTop: 10 }]}>Go Back</Text>
         </Pressable>
       </View>
     );
@@ -77,9 +64,9 @@ export default function RecipeDetailsScreen() {
   if (!recipe) {
     return (
       <View style={styles.centered}>
-        <Text>Recipe not found</Text>
+        <Text style={styles.body400}>Recipe not found</Text>
         <Pressable onPress={() => router.replace('/recipes/')}>
-          <Text style={{ color: 'blue', marginTop: 10 }}>Go Back</Text>
+          <Text style={[styles.body400, { color: 'blue', marginTop: 10 }]}>Go Back</Text>
         </Pressable>
       </View>
     );
@@ -88,7 +75,6 @@ export default function RecipeDetailsScreen() {
   const instructions = Array.isArray(recipe.instructions) ? recipe.instructions : [];
   const ingredients = Array.isArray(recipe.ingredients) ? recipe.ingredients.map(String) : [];
   const notes = Array.isArray(recipe.notes) ? recipe.notes.map(String) : [];
-
   const imageUri = recipe.imageUrl?.length ? recipe.imageUrl : 'https://via.placeholder.com/400';
 
   const handleDelete = () => {
@@ -144,36 +130,27 @@ export default function RecipeDetailsScreen() {
 
     scrollView.scrollTo({ y, animated: true });
 
-    // Allow a delay before re-enabling onScroll handler
     setTimeout(() => {
       isScrollingProgrammatically.current = false;
-    }, 400); // adjust duration to match scroll animation timing
+    }, 400);
   };
 
-  // Handle swipe gesture
   const onGestureEvent = (event: any) => {
     const { translationX } = event.nativeEvent;
 
     if (translationX > 50 && activeSection !== 'instructions') {
-      // swipe right → Instructions
       scrollToSection('instructions');
     }
-
     if (translationX < -50 && activeSection !== 'ingredients') {
-      // swipe left → Ingredients
       scrollToSection('ingredients');
     }
   };
 
-  // Scroll handler to update toggle on manual scroll
   const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    if (isScrollingProgrammatically.current) {
-      // Ignore scroll events triggered by programmatic scroll
-      return;
-    }
+    if (isScrollingProgrammatically.current) return;
 
     const yOffset = event.nativeEvent.contentOffset.y;
-    const OFFSET = -180; // tweak this to fit your layout/behavior
+    const OFFSET = -180;
 
     if (yOffset + OFFSET >= instructionsY) {
       if (activeSection !== 'instructions') {
@@ -191,6 +168,7 @@ export default function RecipeDetailsScreen() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: theme.colors.bg }}>
+        {/* Header */}
         <HStack pl={6} pr={18} py={14} justifyContent="space-between" alignItems="center">
           <Pressable onPress={() => router.replace('/recipes/')}>
             <Feather name="chevron-left" size={32} color="#333" />
@@ -216,14 +194,9 @@ export default function RecipeDetailsScreen() {
           onScroll={onScroll}
           scrollEventThrottle={16}
         >
+          {/* Recipe Image & Favorite */}
           <Box>
-            <Image
-              source={{ uri: imageUri }}
-              style={styles.image}
-              resizeMode="cover"
-              accessibilityLabel={`Image of ${recipe.title}`}
-              alt={`Image of ${recipe.title}`}
-            />
+            <Image source={{ uri: imageUri }} style={styles.image} resizeMode="cover" />
             <Pressable
               onPress={() => toggleFavourite(recipe.id)}
               style={{ position: 'absolute', top: 12, right: 12, zIndex: 10 }}
@@ -239,86 +212,64 @@ export default function RecipeDetailsScreen() {
           </Box>
 
           <View style={styles.container}>
-            <Text fontFamily="Nunito-700" size="3xl" pt={8} color={theme.colors.text1}>
-              {recipe.title}
-            </Text>
-            <Text fontFamily="Nunito-500" size="md" color={theme.colors.text2}>
-              By {recipe.source}
-            </Text>
-
+            <Text style={styles.heading3xl}>{recipe.title}</Text>
+            <Text style={styles.headingMd}>By {recipe.source}</Text>
+            
+            {/* Recipe Stats */}
             <HStack
               pl={4}
               pr={10}
-              pt={20}
-              pb={14}
+              pt={30}
+              pb={0}
               justifyContent="space-between"
               alignItems="flex-start"
               flexWrap="wrap"
             >
               <Box alignItems="center" flexShrink={1}>
                 <Feather name="clock" size={20} color="#777" />
-                <Text pt={3} color="#777" fontFamily="Nunito-600" size="sm">
-                  {+recipe.prepTime + +recipe.cookTime || '-'} mins
-                </Text>
+                <Text style={styles.hstackItemText}>{+recipe.prepTime + +recipe.cookTime || '-'} mins</Text>
               </Box>
               <Box alignItems="center" flexShrink={1}>
                 <MaterialCommunityIcons name="bowl-mix-outline" size={20} color="#777" />
-                <Text pt={3} color="#777" fontFamily="Nunito-600" size="sm">
-                  {recipe.category || 'Other'}
-                </Text>
+                <Text style={styles.hstackItemText}>{recipe.category || 'Other'}</Text>
               </Box>
               <Box alignItems="center" flexShrink={1}>
                 <Feather name="bar-chart" size={20} color="#777" />
-                <Text pt={3} color="#777" fontFamily="Nunito-600" size="sm">
-                  {+recipe.difficulty || 'Medium'}
-                </Text>
+                <Text style={styles.hstackItemText}>{+recipe.difficulty || 'Medium'}</Text>
               </Box>
               <Box alignItems="center" flexShrink={1} maxWidth="25%">
                 <Feather name="user" size={20} color="#777" />
-                <Text pt={3} color="#777" fontFamily="Nunito-600" size="sm">
-                  Serves {+recipe.servingSize || '-'}
-                </Text>
+                <Text style={styles.hstackItemText}>Serves {+recipe.servingSize || '-'}</Text>
               </Box>
             </HStack>
 
-            {/* Ingredients heading */}
-            <Text
-              fontFamily="Nunito-700"
-              size="2xl"
-              style={{ marginBottom: 10 }}
-              onLayout={(e) => setIngredientsY(e.nativeEvent.layout.y)}
-            >
-              Ingredients
+            <View style={styles.pageBreak} />
+
+            {/* Ingredients */}
+            <Text style={styles.heading2xl} onLayout={(e) => setIngredientsY(e.nativeEvent.layout.y)}>
+              INGREDIENTS
             </Text>
+            {ingredients.length > 0
+              ? ingredients.map((item, index) => (
+                  <Text key={`ing-${index}`} style={styles.itemText}>
+                    {item}
+                  </Text>
+                ))
+              : <Text style={styles.itemText}>No ingredients available.</Text>}
 
-            {/* Ingredients section */}
-            {ingredients.length > 0 ? (
-              ingredients.map((item, index) => (
-                <Text key={`ing-${index}`} style={styles.itemText}>
-                  • {item}
-                </Text>
-              ))
-            ) : (
-              <Text style={styles.itemText}>No ingredients available.</Text>
-            )}
+            <View style={styles.pageBreak} />
 
-            {/* Instructions heading */}
-            <Text
-              fontFamily="Nunito-700"
-              size="2xl"
-              style={{ marginTop: 30, marginBottom: 10 }}
-              onLayout={(e) => setInstructionsY(e.nativeEvent.layout.y)}
-            >
-              Instructions
+            {/* Instructions */}
+            <Text style={styles.heading2xl} onLayout={(e) => setInstructionsY(e.nativeEvent.layout.y)}>
+              INSTRUCTIONS
             </Text>
-
-            {/* Instructions section */}
             <RNView>
               {instructions.length > 0 ? (
                 instructions.map((step, index) => (
-                  <Text key={`step-${index}`} style={styles.instructionParagraph}>
-                    {index + 1}. {step}
-                  </Text>
+                  <View key={`step-${index}`} style={{ marginBottom: 16 }}>
+                    <Text style={styles.stepHeading}>Step {index + 1}</Text>
+                    <Text style={styles.instructionParagraph}>{step}</Text>
+                  </View>
                 ))
               ) : (
                 <Text style={styles.itemText}>No instructions available.</Text>
@@ -328,9 +279,10 @@ export default function RecipeDetailsScreen() {
             {/* Notes */}
             {notes.length > 0 && (
               <>
-                <Text fontFamily="Nunito-700" size="2xl" style={{ marginTop: 20 }}>
-                  Notes:
-                </Text>
+                
+                <View style={styles.pageBreak} />
+
+                <Text style={styles.heading2xl}>Notes:</Text>
                 {notes.map((note, idx) => (
                   <Text key={`note-${idx}`} style={styles.itemText}>
                     • {note}
@@ -341,26 +293,30 @@ export default function RecipeDetailsScreen() {
           </View>
         </ScrollView>
 
-        {/* Floating buttons fixed near bottom with swipe + animation */}
-        <View style={styles.floatingButtonsWrapper}>
+        {/* Floating toggle buttons */}
+        <View
+          style={styles.floatingButtonsWrapper}
+          onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width)}
+        >
           <Box style={styles.outerBox}>
             <PanGestureHandler onGestureEvent={onGestureEvent}>
               <Animated.View style={{ flexDirection: 'row', position: 'relative' }}>
-                {/* Sliding Highlight */}
                 <Animated.View
                   style={[
                     {
                       position: 'absolute',
                       height: '100%',
-                      width: BUTTON_WIDTH,
+                      width: buttonWidth,
                       backgroundColor: theme.colors.cta,
                       borderRadius: 14,
                     },
                     highlightStyle,
                   ]}
                 />
-                {/* Buttons */}
-                <Pressable style={styles.toggleButton} onPress={() => scrollToSection('ingredients')}>
+                <Pressable
+                  style={[styles.toggleButton, { width: buttonWidth }]}
+                  onPress={() => scrollToSection('ingredients')}
+                >
                   <Text
                     style={[
                       styles.toggleText,
@@ -370,7 +326,10 @@ export default function RecipeDetailsScreen() {
                     INGREDIENTS
                   </Text>
                 </Pressable>
-                <Pressable style={styles.toggleButton} onPress={() => scrollToSection('instructions')}>
+                <Pressable
+                  style={[styles.toggleButton, { width: buttonWidth }]}
+                  onPress={() => scrollToSection('instructions')}
+                >
                   <Text
                     style={[
                       styles.toggleText,
@@ -390,63 +349,26 @@ export default function RecipeDetailsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 16,
-  },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 16,
-  },
-  instructionParagraph: {
+  container: { paddingHorizontal: 16 },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 16 },
+  image: { width: '100%', height: 300 },
+  itemText: { fontSize: 16, marginBottom: 8, lineHeight: 22, fontFamily: 'body-400', color: theme.colors.text1 },
+  instructionParagraph: { fontSize: 16, marginBottom: 12, lineHeight: 22, fontFamily: 'body-400', color: theme.colors.text1 },
+  stepHeading: {
+    fontFamily: 'body-700',
     fontSize: 16,
-    marginBottom: 12,
-    lineHeight: 22,
-  },
-  image: {
-    width: '100%',
-    height: 270,
-  },
-  itemText: {
-    fontSize: 16,
-    marginBottom: 8,
-  },
-  toggleButton: {
-    borderRadius: 14,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    // width: BUTTON_WIDTH,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  toggleText: {
+    marginBottom: 4,
     color: theme.colors.text1,
-    fontWeight: '600',
-    fontSize: 16,
-  },
-  toggleTextActive: {
-    color: theme.colors.ctaText,
-  },
-  floatingButtonsWrapper: {
-    position: 'absolute',
-    bottom: 15,
-    left: 0,
-    right: 0,
-    paddingHorizontal: 16,
-    zIndex: 100,
-    alignItems: 'center',
-  },
-  outerBox: {
-    //backgroundColor: '#ddd',
-    backgroundColor: theme.colors.bg,
-    borderRadius: 18,
-    paddingVertical: 6,
-    paddingHorizontal: 6,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 4,
-  },
+},
+  heading2xl: { fontSize: 20, fontFamily: 'body-700', marginBottom: 10, marginTop: 0, color: theme.colors.text1 },
+  heading3xl: { fontSize: 28, fontFamily: 'body-700', paddingTop: 14, color: theme.colors.text1 },
+  headingMd: { fontSize: 16, fontFamily: 'body-500', marginTop: 10, color: theme.colors.text2 },
+  hstackItemText: { fontSize: 14, fontFamily: 'body-500', color: '#777', paddingTop: 3, textAlign: 'center' },
+  body400: { fontFamily: 'body-400' },
+  toggleButton: { borderRadius: 14, paddingVertical: 10, alignItems: 'center', justifyContent: 'center' },
+  toggleText: { fontFamily: 'body-700', fontSize: 16, color: theme.colors.text1 },
+  toggleTextActive: { color: theme.colors.ctaText },
+  floatingButtonsWrapper: { position: 'absolute', bottom: 55, left: 40, right: 40, paddingHorizontal: 16, zIndex: 100, alignItems: 'center' },
+  outerBox: { backgroundColor: theme.colors.bg, borderRadius: 18, paddingVertical: 6, paddingHorizontal: 6, elevation: 4 },
+  pageBreak: {height: 1, backgroundColor: '#ddd', marginVertical: 30},
 });

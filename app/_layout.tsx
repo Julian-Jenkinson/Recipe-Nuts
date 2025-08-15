@@ -45,6 +45,10 @@ export default function Layout() {
     //'body-800': require('../assets/fonts/OpenSans-Bold.ttf'),
 
     'body-400': require('../assets/fonts/Mulish-Light.ttf'),
+    //'body-400': require('../assets/fonts/Mulish-Light.ttf'),
+    'body-500': require('../assets/fonts/Mulish-Regular.ttf'),
+    'body-600': require('../assets/fonts/Mulish-Medium.ttf'),
+    'body-700': require('../assets/fonts/Mulish-Bold.ttf'),
     'body-800': require('../assets/fonts/Mulish-ExtraBold.ttf'),
     
 
