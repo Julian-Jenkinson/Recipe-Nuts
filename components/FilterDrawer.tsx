@@ -1,4 +1,4 @@
-import { Feather } from '@expo/vector-icons';
+import { Feather, MaterialIcons } from '@expo/vector-icons';
 import {
   Box,
   HStack,
@@ -21,10 +21,21 @@ import theme from '../theme';
 type Props = {
   isOpen: boolean;
   onClose: () => void;
+   onFilterSelect: (filterKey: string) => void;
 };
 
-export default function AddRecipeDrawer({ isOpen, onClose }: Props) {
+export default function FilterDrawer({ isOpen, onClose, onFilterSelect }: Props) {
+
+  //use this to show which filter is selected
+  //const [selectedFilter, setSelectedFilter] = useState('newest');
   
+  const filters = [
+      { key: 'newest', label: 'Newest', icon: <Feather name="clock" size={20} color="#000" /> },
+      { key: 'oldest', label: 'Oldest', icon: <Feather name="clock" size={20} color="#000" /> },
+      { key: 'aToZ', label: 'A - Z', icon: <MaterialIcons name="sort-by-alpha" size={20} color="#000" /> },
+      { key: 'zToA', label: 'Z - A', icon: <MaterialIcons name="sort-by-alpha" size={20} color="#000" style={{ transform: [{ rotate: '180deg' }] }} /> },
+    ];
+
   const slideAnim = React.useRef(new Animated.Value(0)).current;
   const translateY = React.useRef(new Animated.Value(0)).current;
   const backdropOpacity = React.useRef(new Animated.Value(0)).current;
@@ -237,33 +248,39 @@ export default function AddRecipeDrawer({ isOpen, onClose }: Props) {
               </HStack>
 
               {/* Body */}
-              <VStack gap={20}>
-                  
-                    <Pressable
-                      style={styles.actionPressable}
-                    >
-                      <HStack alignItems="center">
-                        <Feather name="link" size={20} color="#000" />
-                        <Text style={styles.actionText}>
-                          Newest
-                        </Text>
-                      </HStack>
-                    </Pressable>
-                    
-                    
-                    <Pressable
-                      style={[styles.actionPressable, { paddingTop: 0 }]}
-                    >
-                      <HStack alignItems="center">
-                        <Feather name="plus" size={20} color="#000" />
-                        <Text style={styles.actionText}>
-                          Oldest
-                        </Text>
-                      </HStack>
-                    </Pressable>
-                
-                
-  
+                            
+              <VStack gap={15}>
+                {filters.map(f => (
+                  <Pressable
+                    key={f.key}
+                    style={styles.actionPressable}
+                    onPress={() => {
+                      onFilterSelect(f.key); // update filters first
+                      // Animate drawer closing
+                      Animated.parallel([
+                        Animated.timing(backdropOpacity, {
+                          toValue: 0,
+                          duration: 200,
+                          useNativeDriver: true,
+                        }),
+                        Animated.timing(slideAnim, {
+                          toValue: 0,
+                          duration: 300,
+                          useNativeDriver: true,
+                          easing: Easing.bezier(0.55, 0.06, 0.68, 0.19),
+                        }),
+                      ]).start(() => {
+                        // After animation close modal
+                        onClose();
+                      });
+                    }}
+                  >
+                    <HStack alignItems="center" gap={10}>
+                      {f.icon}
+                      <Text style={styles.actionText}>{f.label}</Text>
+                    </HStack>
+                  </Pressable>
+                ))}
               </VStack>
             </Box>
           </Pressable>

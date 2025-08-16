@@ -2,9 +2,10 @@ import { config } from '@gluestack-ui/config';
 import { GluestackUIProvider, StatusBar } from '@gluestack-ui/themed';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFonts } from 'expo-font';
+import * as NavigationBar from "expo-navigation-bar";
 import { Stack } from "expo-router";
 import * as SplashScreen from 'expo-splash-screen';
-import * as SystemUI from 'expo-system-ui';
+//import * as SystemUI from 'expo-system-ui';
 import React, { useEffect, useState } from "react";
 import { Pressable, PressableProps } from "react-native";
 import { QuickTourModal } from "../components/QuickTourModal";
@@ -50,8 +51,6 @@ export default function Layout() {
     'body-600': require('../assets/fonts/Mulish-Medium.ttf'),
     'body-700': require('../assets/fonts/Mulish-Bold.ttf'),
     'body-800': require('../assets/fonts/Mulish-ExtraBold.ttf'),
-    
-
 
   });
 
@@ -63,12 +62,13 @@ export default function Layout() {
 
     const setNavBar = async () => {
       try {
+
+        // Adjust button (icon) style for contrast
+        await NavigationBar.setButtonStyleAsync("dark"); // "light" or "dark"
+        // Show or hide nav bar
+        await NavigationBar.setVisibilityAsync("visible"); // or "hidden"
         
-        // @ts-ignore
-        //await NavigationBar.setEdgeToEdgeEnabledAsync(false); // disable edge-to-edge
-        //await NavigationBar.setBackgroundColorAsync("fff");
-        //await NavigationBar.setButtonStyleAsync('dark');
-        SystemUI.setBackgroundColorAsync(theme.colors.bg)
+        //SystemUI.setBackgroundColorAsync(theme.colors.bg)
         console.log("✅ NavigationBar customized");
       } catch (e) {
         console.warn("⚠️ Failed to set NavigationBar style:", e);
@@ -87,7 +87,6 @@ export default function Layout() {
         console.warn("⚠️ Error checking QuickTour flag:", e);
       }
     };
-
     setNavBar();
     checkFirstOpen();
   }, []);
@@ -113,7 +112,6 @@ export default function Layout() {
           console.warn("⚠️ Error hiding SplashScreen:", e);
         });
     }
-
     return () => clearTimeout(timeout);
   }, [loaded, error]);
 
@@ -121,22 +119,17 @@ export default function Layout() {
     console.error("❌ Font loading error:", error);
   }
 
-  // Removed the hanging loading screen - just render main UI
-  // Fonts will load progressively and app won't hang
-
   return (
     <GluestackUIProvider config={config}>
       <StatusBar
         backgroundColor={theme.colors.bg}
         barStyle="dark-content"
       />
-      
       <Stack
         screenOptions={{
           headerShown: false,
         }} 
       />     
-
       <QuickTourModal isOpen={showQuickTour} onClose={() => setShowQuickTour(false)} />
     </GluestackUIProvider>
   );

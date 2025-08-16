@@ -219,7 +219,7 @@ export default function RecipeDetailsScreen() {
             <HStack
               pl={4}
               pr={10}
-              pt={30}
+              pt={20}
               pb={0}
               justifyContent="space-between"
               alignItems="flex-start"
@@ -352,23 +352,33 @@ const styles = StyleSheet.create({
   container: { paddingHorizontal: 16 },
   centered: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 16 },
   image: { width: '100%', height: 300 },
-  itemText: { fontSize: 16, marginBottom: 8, lineHeight: 22, fontFamily: 'body-400', color: theme.colors.text1 },
-  instructionParagraph: { fontSize: 16, marginBottom: 12, lineHeight: 22, fontFamily: 'body-400', color: theme.colors.text1 },
+  itemText: { fontSize: 16, marginBottom: 10, lineHeight: 22, fontFamily: 'body-400', color: theme.colors.text1 },
+  instructionParagraph: { fontSize: 16, marginBottom: 12, lineHeight: 28, fontFamily: 'body-400', color: theme.colors.text1 },
   stepHeading: {
     fontFamily: 'body-700',
     fontSize: 16,
     marginBottom: 4,
     color: theme.colors.text1,
 },
-  heading2xl: { fontSize: 20, fontFamily: 'body-700', marginBottom: 10, marginTop: 0, color: theme.colors.text1 },
+  heading2xl: { fontSize: 20, fontFamily: 'body-700', marginBottom: 15, marginTop: 20, color: theme.colors.text1 },
   heading3xl: { fontSize: 28, fontFamily: 'body-700', paddingTop: 14, color: theme.colors.text1 },
   headingMd: { fontSize: 16, fontFamily: 'body-500', marginTop: 10, color: theme.colors.text2 },
-  hstackItemText: { fontSize: 14, fontFamily: 'body-500', color: '#777', paddingTop: 3, textAlign: 'center' },
+  hstackItemText: { 
+    fontSize: 14, 
+    fontFamily: 'body-500', 
+    color: '#777', 
+    paddingTop: 6, 
+    textAlign: 'center' 
+  },
   body400: { fontFamily: 'body-400' },
   toggleButton: { borderRadius: 14, paddingVertical: 10, alignItems: 'center', justifyContent: 'center' },
   toggleText: { fontFamily: 'body-700', fontSize: 16, color: theme.colors.text1 },
   toggleTextActive: { color: theme.colors.ctaText },
   floatingButtonsWrapper: { position: 'absolute', bottom: 55, left: 40, right: 40, paddingHorizontal: 16, zIndex: 100, alignItems: 'center' },
   outerBox: { backgroundColor: theme.colors.bg, borderRadius: 18, paddingVertical: 6, paddingHorizontal: 6, elevation: 4 },
-  pageBreak: {height: 1, backgroundColor: '#ddd', marginVertical: 30},
+  pageBreak: {
+    height: 1, 
+    backgroundColor: '#ddd',
+    marginTop: 20,
+  },
 });
