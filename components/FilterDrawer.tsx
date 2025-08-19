@@ -1,10 +1,11 @@
-import { Feather, MaterialIcons } from '@expo/vector-icons';
+import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import {
   Box,
   HStack,
   Pressable,
   Text,
-  VStack
+  VStack,
+  View
 } from '@gluestack-ui/themed';
 import React from 'react';
 import {
@@ -21,19 +22,17 @@ import theme from '../theme';
 type Props = {
   isOpen: boolean;
   onClose: () => void;
-   onFilterSelect: (filterKey: string) => void;
+  onFilterSelect: (filterKey: string) => void;
+  selectedFilter?: string; // Add this prop to track the currently selected filter
 };
 
-export default function FilterDrawer({ isOpen, onClose, onFilterSelect }: Props) {
+export default function FilterDrawer({ isOpen, onClose, onFilterSelect, selectedFilter = 'newest' }: Props) {
 
-  //use this to show which filter is selected
-  //const [selectedFilter, setSelectedFilter] = useState('newest');
-  
   const filters = [
-      { key: 'newest', label: 'Newest', icon: <Feather name="clock" size={20} color="#000" /> },
-      { key: 'oldest', label: 'Oldest', icon: <Feather name="clock" size={20} color="#000" /> },
-      { key: 'aToZ', label: 'A - Z', icon: <MaterialIcons name="sort-by-alpha" size={20} color="#000" /> },
-      { key: 'zToA', label: 'Z - A', icon: <MaterialIcons name="sort-by-alpha" size={20} color="#000" style={{ transform: [{ rotate: '180deg' }] }} /> },
+      { key: 'newest', label: 'Newest', icon: <MaterialIcons name="calendar-today" size={22} color="#000" /> },
+      { key: 'oldest', label: 'Oldest', icon: <MaterialIcons name="calendar-today" size={22} color="#000" /> },
+      { key: 'aToZ', label: 'A - Z', icon: <FontAwesome name="sort-alpha-asc" size={22} color="#000" /> },
+      { key: 'zToA', label: 'Z - A', icon: <FontAwesome name="sort-alpha-desc" size={22} color="#000" /> },
     ];
 
   const slideAnim = React.useRef(new Animated.Value(0)).current;
@@ -221,31 +220,14 @@ export default function FilterDrawer({ isOpen, onClose, onFilterSelect }: Props)
               </Box>
 
               {/* Header */}
-              <HStack justifyContent="space-between" alignItems="center" mb={20}>
+              <Box mb={15}>
                 <Text style={styles.headerText}>
-                  Filters
+                  Sort by
                 </Text>
-                <Pressable onPress={() => {
-                  // Simple close animation
-                  Animated.parallel([
-                    Animated.timing(backdropOpacity, {
-                      toValue: 0,
-                      duration: 200,
-                      useNativeDriver: true,
-                    }),
-                    Animated.timing(slideAnim, {
-                      toValue: 0,
-                      duration: 300,
-                      useNativeDriver: true,
-                      easing: Easing.bezier(0.55, 0.06, 0.68, 0.19),
-                    }),
-                  ]).start(() => {
-                    onClose();
-                  });
-                }} hitSlop={10}>
-                  <Feather name="x" size={24} color="#999" />
-                </Pressable>
-              </HStack>
+              </Box>
+
+              {/* Page Break */}
+              <View style={{ height: 1, backgroundColor: '#E5E5E5', marginBottom: 20 }} />
 
               {/* Body */}
                             
@@ -275,9 +257,20 @@ export default function FilterDrawer({ isOpen, onClose, onFilterSelect }: Props)
                       });
                     }}
                   >
-                    <HStack alignItems="center" gap={10}>
-                      {f.icon}
-                      <Text style={styles.actionText}>{f.label}</Text>
+                    <HStack alignItems="center" gap={10} justifyContent="space-between">
+                      <HStack alignItems="center" gap={10}>
+                        {f.icon}
+                        <Text style={styles.actionText}>{f.label}</Text>
+                      </HStack>
+                      {/* Checkbox */}
+                      <Box style={[
+                        styles.checkbox,
+                        selectedFilter === f.key && styles.checkboxSelected
+                      ]}>
+                        {selectedFilter === f.key && (
+                          <Box style={styles.checkDot} />
+                        )}
+                      </Box>
                     </HStack>
                   </Pressable>
                 ))}
@@ -313,7 +306,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     paddingHorizontal: 20,
     paddingTop: 8,
-    paddingBottom: 40,
+    paddingBottom: 55,
     minHeight: 250,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -2 },
@@ -329,8 +322,9 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontFamily: 'body-800',
-    fontSize: 24,
+    fontSize: 22,
     color: '#000',
+    paddingTop: 5,
   },
   limitText: {
     fontFamily: 'body-600',
@@ -340,13 +334,33 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   actionPressable: {
-    paddingVertical: 10,
+    paddingVertical: 4,
   },
   actionText: {
     fontFamily: 'body-600',
     fontSize: 20,
     paddingLeft: 12,
     color: '#000',
+  },
+  checkbox: {
+    width: 19,
+    height: 19,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#E5E5E5',
+    backgroundColor: 'transparent',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkboxSelected: {
+    backgroundColor: '#fff',
+    borderColor: '#333',
+  },
+  checkDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 12,
+    backgroundColor: '#000',
   },
   upgradePressable: {
     alignSelf: 'center',

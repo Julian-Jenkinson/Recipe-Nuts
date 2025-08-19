@@ -14,6 +14,7 @@ import theme from '../../theme';
 export default function RecipeListScreen() {
   const router = useRouter();
   const recipes = useRecipeStore((state) => state.recipes);
+  const [selectedFilter, setSelectedFilter] = useState('newest');
 
   const [localRecipes, setLocalRecipes] = useState(recipes); // Local filtered/sorted recipes
   const [searchQuery, setSearchQuery] = useState('');
@@ -21,13 +22,33 @@ export default function RecipeListScreen() {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  // Sync localRecipes if store updates
+  // Function to apply sorting based on filter
+  const applySorting = (recipesToSort: any[], filterKey: string) => {
+    let sorted = [...recipesToSort];
+
+    switch(filterKey) {
+      case 'newest':
+        sorted.sort((a, b) => getTimestampFromId(b.id) - getTimestampFromId(a.id));
+        break;
+      case 'oldest':
+        sorted.sort((a, b) => getTimestampFromId(a.id) - getTimestampFromId(b.id));
+        break;
+      case 'aToZ':
+        sorted.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+        break;
+      case 'zToA':
+        sorted.sort((a, b) => (b.title || '').localeCompare(a.title || ''));
+        break;
+    }
+
+    return sorted;
+  };
+
+  // Sync localRecipes if store updates and apply current filter
   useEffect(() => {
-    const sortedNewest = [...recipes].sort(
-      (a, b) => getTimestampFromId(b.id) - getTimestampFromId(a.id)
-    );
-    setLocalRecipes(sortedNewest);
-  }, [recipes]);
+    const sortedRecipes = applySorting(recipes, selectedFilter);
+    setLocalRecipes(sortedRecipes);
+  }, [recipes, selectedFilter]);
 
   const query = searchQuery.trim().toLowerCase();
   const filteredRecipes = query.length > 0
@@ -48,25 +69,9 @@ export default function RecipeListScreen() {
   };
 
   const handleFilterSelect = (filterKey: string) => {
-    let sorted = [...localRecipes];
-
-    switch(filterKey) {
-      case 'newest':
-        sorted.sort((a, b) => getTimestampFromId(b.id) - getTimestampFromId(a.id));
-        break;
-      case 'oldest':
-        sorted.sort((a, b) => getTimestampFromId(a.id) - getTimestampFromId(b.id));
-        break;
-      case 'aToZ':
-        sorted.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
-        break;
-      case 'zToA':
-        sorted.sort((a, b) => (b.title || '').localeCompare(a.title || ''));
-        break;
-    }
-
+    setSelectedFilter(filterKey); // Update selected filter state
+    const sorted = applySorting(localRecipes, filterKey);
     setLocalRecipes(sorted);
-    //setIsFilterOpen(false); // Close drawer automatically
   };
 
   return (
@@ -180,7 +185,8 @@ export default function RecipeListScreen() {
       <FilterDrawer 
         isOpen={isFilterOpen} 
         onClose={() => setIsFilterOpen(false)} 
-        onFilterSelect={handleFilterSelect} 
+        onFilterSelect={handleFilterSelect}
+        selectedFilter={selectedFilter}
       />
     </>
   );

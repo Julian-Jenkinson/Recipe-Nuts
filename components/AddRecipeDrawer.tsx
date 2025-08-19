@@ -4,7 +4,8 @@ import {
   HStack,
   Pressable,
   Text,
-  VStack
+  VStack,
+  View,
 } from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
 import React from 'react';
@@ -220,31 +221,14 @@ export default function AddRecipeDrawer({ isOpen, onClose }: Props) {
               </Box>
 
               {/* Header */}
-              <HStack justifyContent="space-between" alignItems="center" mb={20}>
-                <Text style={styles.headerText}>
-                  Add Recipe
-                </Text>
-                <Pressable onPress={() => {
-                  // Simple close animation
-                  Animated.parallel([
-                    Animated.timing(backdropOpacity, {
-                      toValue: 0,
-                      duration: 200,
-                      useNativeDriver: true,
-                    }),
-                    Animated.timing(slideAnim, {
-                      toValue: 0,
-                      duration: 300,
-                      useNativeDriver: true,
-                      easing: Easing.bezier(0.55, 0.06, 0.68, 0.19),
-                    }),
-                  ]).start(() => {
-                    onClose();
-                  });
-                }} hitSlop={10}>
-                  <Feather name="x" size={24} color="#999" />
-                </Pressable>
-              </HStack>
+      
+              <Text style={styles.headerText}>
+                Add Recipe
+              </Text>
+    
+
+              {/* Page Break */}
+              <View style={{ height: 1, backgroundColor: '#E5E5E5', marginBottom: 20 }} />
 
               {/* Body */}
               <VStack gap={20}>
@@ -333,7 +317,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     paddingHorizontal: 20,
     paddingTop: 8,
-    paddingBottom: 40,
+    paddingBottom: 55,
     minHeight: 250,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -2 },
@@ -349,8 +333,10 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontFamily: 'body-800',
-    fontSize: 24,
+    fontSize: 22,
     color: '#000',
+    paddingTop:10,
+    paddingBottom:20,
   },
   limitText: {
     fontFamily: 'body-600',
@@ -360,7 +346,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   actionPressable: {
-    paddingVertical: 10,
+    paddingVertical: 4,
   },
   actionText: {
     fontFamily: 'body-600',
