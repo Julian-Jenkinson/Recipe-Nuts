@@ -2,7 +2,8 @@ const theme = {
   colors: {
     bg:'#fff',
     bgFocus: '#fff',
-    cta: '#f2973c',
+    //cta: '#f2973c',
+    cta: '#FFBE3C',
     ctaText: '#ffffff',
     text1: '#444',
     text2: '#777',

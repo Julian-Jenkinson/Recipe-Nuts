@@ -1,5 +1,5 @@
 import { Feather, Ionicons } from '@expo/vector-icons';
-import { Box, HStack, Input, InputField, InputSlot, Pressable, Text, View } from '@gluestack-ui/themed';
+import { Box, HStack, Input, InputField, InputSlot, Pressable, StatusBar, Text, View } from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { FlatList, Keyboard, KeyboardAvoidingView, Platform, TouchableWithoutFeedback } from 'react-native';
@@ -90,65 +90,82 @@ export default function RecipeListScreen() {
           >
             <View style={{ flex: 1 }} bg={theme.colors.bg}>
               {/* Header */}
-              <HStack px={16} pt={20} pb={6} justifyContent="space-between" alignItems="center">
-                <Box pr={10}>
-                  <Pressable onPress={() => router.push('/menu')} hitSlop={10}>
-                    <Ionicons name="menu-sharp" size={32} color={theme.colors.text1} />
-                  </Pressable>
-                </Box>
-                <Text 
-                  fontSize={24} 
-                  color={theme.colors.text1} 
-                  style={{ flex:1, fontFamily: 'heading-800'}}
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
-                >
-                  Recipe Nuts
-                </Text>
-              </HStack>
+              <StatusBar
+                backgroundColor={theme.colors.cta}
+                barStyle="light-content"
+              />
+              <View 
+                bg={theme.colors.cta}
+                borderBottomLeftRadius={20}
+                borderBottomRightRadius={20}
+                mb={15}
+              >
+                <HStack px={22} pt={5} pb={0} justifyContent="space-between" alignItems="center">
+                  <Box p={0}>
+                    <Pressable onPress={() => router.push('/menu')} hitSlop={10}>
+                      <Ionicons name="menu" size={38} color={theme.colors.bgFocus} />
+                    </Pressable>
+                  </Box>
+            
+                  <Box alignSelf="flex-start">
+                    <Pressable onPress={() => setIsFilterOpen(true)}>
+                      <Box pt={6}>
+                        <Ionicons name="funnel-outline" size={26} color={theme.colors.bgFocus} />
+                      </Box>
+                    </Pressable>
+                  </Box>
+                </HStack>
 
-              {/* Search Input */}
-              <HStack my={15} mx={16} alignItems="center" gap={8}>
-                <Box flex={1}>
-                  <Input
-                    variant="rounded"
-                    size="lg"
-                    borderWidth={focused ? 2 : 1.5}
-                    borderColor={focused ? '#666' : '#bbb'}
-                    borderStyle="none"
-                    borderRadius={8}
-                  >
-                    <InputSlot pl={8}>
-                      <Ionicons name="search" size={22} color={theme.colors.text1} />
-                    </InputSlot>
-                    <InputField
-                      placeholder="Search recipes"
-                      selectionColor={theme.colors.cta}
-                      fontSize={18}
-                      style={{ fontFamily: 'body-400' }}
-                      value={searchQuery}
-                      onChangeText={setSearchQuery}
-                      onFocus={() => setFocused(true)}
-                      onBlur={() => setFocused(false)}
-                    />
-                    {searchQuery.length > 0 && (
+                {/* Search Input */}
+                <HStack mt={10} mb={16} mx={16} alignItems="center" gap={8}>
+                  <Box flex={1}>
+                    <Input
+                      variant="rounded"
+                      size="lg"
+                      //borderWidth={focused ? 2 : 1.5}
+                      borderWidth={focused ? 0 : 0}
+                      //borderColor={focused ? '#666' : '#bbb'}
+                      borderStyle="none"
+                      borderRadius={16}
+                      bg={theme.colors.bgFocus}
+                    >
+                      <InputField
+                        placeholder="Search recipes"
+                        selectionColor={theme.colors.cta}
+                        fontSize={19}
+                        style={{ fontFamily: 'body-400' }}
+                        value={searchQuery}
+                        onChangeText={setSearchQuery}
+                        onFocus={() => setFocused(true)}
+                        onBlur={() => setFocused(false)}
+                      />
+                      {searchQuery.length > 0 && (
+                        <InputSlot pr={10}>
+                          <Pressable onPress={() => setSearchQuery('')}>
+                            <Feather name="x" size={20} color="#888" />
+                          </Pressable>
+                        </InputSlot>
+                      )}
                       <InputSlot pr={10}>
-                        <Pressable onPress={() => setSearchQuery('')}>
-                          <Feather name="x" size={20} color="#888" />
-                        </Pressable>
+                        <Ionicons name="search" size={20} color="#888" />
                       </InputSlot>
-                    )}
-                  </Input>
-                </Box>
+                    </Input>
+                  </Box>
+                </HStack>
+              </View>
 
-                <Box alignSelf="flex-start">
-                  <Pressable onPress={() => setIsFilterOpen(true)}>
-                    <Box p={6} alignItems="center" justifyContent="center">
-                      <Ionicons name="options" size={30} color="#000" />
-                    </Box>
-                  </Pressable>
-                </Box>
+              <HStack pl={16} pb={12} pt={4}>
+                <Text 
+                    fontSize={24} 
+                    color={theme.colors.text1} 
+                    style={{ flex:1, fontFamily: 'heading-900'}}
+                    numberOfLines={1}
+                    ellipsizeMode="tail" //stops cutoff text sometimes
+                  >
+                    Recipes
+                  </Text>
               </HStack>
+              
 
               {/* Recipes List */}
               <FlatList

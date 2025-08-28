@@ -1,5 +1,5 @@
 import { Feather } from '@expo/vector-icons';
-import { HStack, Input, InputField, InputSlot } from '@gluestack-ui/themed';
+import { HStack, Input, InputField, InputSlot, StatusBar } from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { ActivityIndicator, Alert, Keyboard, Pressable, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
@@ -106,8 +106,8 @@ export default function AddRecipeScreen() {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      
       <View style={styles.container}>
+        <StatusBar backgroundColor={theme.colors.bg} barStyle="dark-content" />
         <HStack pl={6} pr={18} py={14} justifyContent="space-between" alignItems="center">
           <Pressable onPress={() => router.replace('/recipes/')}>
             <Feather name="chevron-left" size={32} color="#333" />

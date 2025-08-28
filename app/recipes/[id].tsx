@@ -1,12 +1,10 @@
 import { Feather, FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
-import { Box, HStack, Image, Pressable, Text, View } from '@gluestack-ui/themed';
+import { Box, HStack, Image, Pressable, StatusBar, Text, View } from '@gluestack-ui/themed';
 import * as FileSystem from 'expo-file-system';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import {
   Alert,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
   View as RNView,
   ScrollView,
   Share,
@@ -15,9 +13,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRecipeStore } from '../../stores/useRecipeStore';
 import theme from '../../theme';
-
-import { GestureHandlerRootView, PanGestureHandler } from 'react-native-gesture-handler';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 export default function RecipeDetailsScreen() {
   const router = useRouter();
@@ -28,27 +23,6 @@ export default function RecipeDetailsScreen() {
   const recipe = useRecipeStore((state) => (id ? state.getRecipeById(id) : undefined));
 
   const scrollViewRef = useRef<ScrollView>(null);
-  const [ingredientsY, setIngredientsY] = useState(0);
-  const [instructionsY, setInstructionsY] = useState(0);
-  const [activeSection, setActiveSection] = useState<'ingredients' | 'instructions'>('ingredients');
-  const [containerWidth, setContainerWidth] = useState(0);
-  const isScrollingProgrammatically = useRef(false);
-  const highlightX = useSharedValue(0);
-
-  const buttonWidth = containerWidth / 2;
-
-  const highlightStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: highlightX.value }],
-  }));
-
-  const animateHighlight = (section: 'ingredients' | 'instructions') => {
-    const targetX = section === 'ingredients' ? 0 : buttonWidth;
-    highlightX.value = withSpring(targetX, { stiffness: 175, damping: 22, mass: 1 });
-  };
-
-  useEffect(() => {
-    animateHighlight(activeSection);
-  }, [buttonWidth]);
 
   if (!id) {
     return (
@@ -115,236 +89,127 @@ export default function RecipeDetailsScreen() {
     }
   };
 
-  const scrollToSection = (section: 'ingredients' | 'instructions') => {
-    const scrollView = scrollViewRef.current;
-    if (!scrollView) return;
-
-    isScrollingProgrammatically.current = true;
-    setActiveSection(section);
-    animateHighlight(section);
-
-    const OFFSET = -260;
-    let y = section === 'ingredients' ? ingredientsY : instructionsY;
-    y = y - OFFSET;
-    if (y < 0) y = 0;
-
-    scrollView.scrollTo({ y, animated: true });
-
-    setTimeout(() => {
-      isScrollingProgrammatically.current = false;
-    }, 400);
-  };
-
-  const onGestureEvent = (event: any) => {
-    const { translationX } = event.nativeEvent;
-
-    if (translationX > 50 && activeSection !== 'instructions') {
-      scrollToSection('instructions');
-    }
-    if (translationX < -50 && activeSection !== 'ingredients') {
-      scrollToSection('ingredients');
-    }
-  };
-
-  const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    if (isScrollingProgrammatically.current) return;
-
-    const yOffset = event.nativeEvent.contentOffset.y;
-    const OFFSET = -180;
-
-    if (yOffset + OFFSET >= instructionsY) {
-      if (activeSection !== 'instructions') {
-        setActiveSection('instructions');
-        animateHighlight('instructions');
-      }
-    } else {
-      if (activeSection !== 'ingredients') {
-        setActiveSection('ingredients');
-        animateHighlight('ingredients');
-      }
-    }
-  };
-
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: theme.colors.bg }}>
-        {/* Header */}
-        <HStack pl={6} pr={18} py={14} justifyContent="space-between" alignItems="center">
-          <Pressable onPress={() => router.replace('/recipes/')}>
-            <Feather name="chevron-left" size={32} color="#333" />
+    <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: theme.colors.bg }}>
+      <StatusBar backgroundColor={theme.colors.bg} barStyle="dark-content" />
+
+      {/* Header */}
+      <HStack pl={6} pr={18} py={14} justifyContent="space-between" alignItems="center">
+        <Pressable onPress={() => router.replace('/recipes/')}>
+          <Feather name="chevron-left" size={32} color="#333" />
+        </Pressable>
+        <Box flexDirection="row">
+          <Pressable pr={22} onPress={handleShare}>
+            <Feather name="share-2" size={22} color="#333" />
           </Pressable>
-          <Box flexDirection="row">
-            <Pressable pr={22} onPress={handleShare}>
-              <Feather name="share-2" size={22} color="#333" />
-            </Pressable>
-            <Pressable pr={22} onPress={() => router.push(`/recipes/EditRecipe?id=${recipe.id}`)}>
-              <Feather name="edit-2" size={22} color="#333" />
-            </Pressable>
-            <Pressable onPress={handleDelete}>
-              <Feather name="trash-2" size={22} color="#C1121F" />
-            </Pressable>
-          </Box>
-        </HStack>
+          <Pressable pr={22} onPress={() => router.push(`/recipes/EditRecipe?id=${recipe.id}`)}>
+            <Feather name="edit-2" size={22} color="#333" />
+          </Pressable>
+          <Pressable onPress={handleDelete}>
+            <Feather name="trash-2" size={22} color="#C1121F" />
+          </Pressable>
+        </Box>
+      </HStack>
 
-        <ScrollView
-          ref={scrollViewRef}
-          style={{ flex: 1 }}
-          contentContainerStyle={{ paddingBottom: 100 }}
-          keyboardShouldPersistTaps="handled"
-          onScroll={onScroll}
-          scrollEventThrottle={16}
-        >
-          {/* Recipe Image & Favorite */}
-          <Box>
-            <Image source={{ uri: imageUri }} style={styles.image} resizeMode="cover" />
-            <Pressable
-              onPress={() => toggleFavourite(recipe.id)}
-              style={{ position: 'absolute', top: 12, right: 12, zIndex: 10 }}
-            >
-              <Box bg="white" p={4} borderRadius={6} alignItems="center" justifyContent="center">
-                <FontAwesome
-                  name={recipe.favourite ? 'star' : 'star-o'}
-                  size={22}
-                  color={recipe.favourite ? '#FFC107' : '#999'}
-                />
-              </Box>
-            </Pressable>
-          </Box>
+      <ScrollView
+        ref={scrollViewRef}
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingBottom: 100 }}
+        keyboardShouldPersistTaps="handled"
+      >
+        {/* Recipe Image & Favorite */}
+        <Box>
+          <Image source={{ uri: imageUri }} style={styles.image} resizeMode="cover" />
+          <Pressable
+            onPress={() => toggleFavourite(recipe.id)}
+            style={{ position: 'absolute', top: 12, right: 12, zIndex: 10 }}
+          >
+            <Box bg="white" p={4} borderRadius={6} alignItems="center" justifyContent="center">
+              <FontAwesome
+                name={recipe.favourite ? 'star' : 'star-o'}
+                size={22}
+                color={recipe.favourite ? '#FFC107' : '#999'}
+              />
+            </Box>
+          </Pressable>
+        </Box>
 
-          <View style={styles.container}>
-            <Text style={styles.heading3xl}>{recipe.title}</Text>
-            <Text style={styles.headingMd}>By {recipe.source}</Text>
-            
-            {/* Recipe Stats */}
-            <HStack
-              pl={4}
-              pr={10}
-              pt={20}
-              pb={0}
-              justifyContent="space-between"
-              alignItems="flex-start"
-              flexWrap="wrap"
-            >
-              <Box alignItems="center" flexShrink={1}>
-                <Feather name="clock" size={20} color="#777" />
-                <Text style={styles.hstackItemText}>{+recipe.prepTime + +recipe.cookTime || '-'} mins</Text>
-              </Box>
-              <Box alignItems="center" flexShrink={1}>
-                <MaterialCommunityIcons name="bowl-mix-outline" size={20} color="#777" />
-                <Text style={styles.hstackItemText}>{recipe.category || 'Other'}</Text>
-              </Box>
-              <Box alignItems="center" flexShrink={1}>
-                <Feather name="bar-chart" size={20} color="#777" />
-                <Text style={styles.hstackItemText}>{+recipe.difficulty || 'Medium'}</Text>
-              </Box>
-              <Box alignItems="center" flexShrink={1} maxWidth="25%">
-                <Feather name="user" size={20} color="#777" />
-                <Text style={styles.hstackItemText}>Serves {+recipe.servingSize || '-'}</Text>
-              </Box>
-            </HStack>
+        <View style={styles.container}>
+          <Text style={styles.heading3xl}>{recipe.title}</Text>
+          <Text style={styles.headingMd}>By {recipe.source}</Text>
+          
+          {/* Recipe Stats */}
+          <HStack
+            pl={4}
+            pr={10}
+            pt={20}
+            pb={0}
+            justifyContent="space-between"
+            alignItems="flex-start"
+            flexWrap="wrap"
+          >
+            <Box alignItems="center" flexShrink={1}>
+              <Feather name="clock" size={20} color="#777" />
+              <Text style={styles.hstackItemText}>{+recipe.prepTime + +recipe.cookTime || '-'} mins</Text>
+            </Box>
+            <Box alignItems="center" flexShrink={1}>
+              <MaterialCommunityIcons name="bowl-mix-outline" size={20} color="#777" />
+              <Text style={styles.hstackItemText}>{recipe.category || 'Other'}</Text>
+            </Box>
+            <Box alignItems="center" flexShrink={1}>
+              <Feather name="bar-chart" size={20} color="#777" />
+              <Text style={styles.hstackItemText}>{+recipe.difficulty || 'Medium'}</Text>
+            </Box>
+            <Box alignItems="center" flexShrink={1} maxWidth="25%">
+              <Feather name="user" size={20} color="#777" />
+              <Text style={styles.hstackItemText}>Serves {+recipe.servingSize || '-'}</Text>
+            </Box>
+          </HStack>
 
-            <View style={styles.pageBreak} />
+          <View style={styles.pageBreak} />
 
-            {/* Ingredients */}
-            <Text style={styles.heading2xl} onLayout={(e) => setIngredientsY(e.nativeEvent.layout.y)}>
-              INGREDIENTS
-            </Text>
-            {ingredients.length > 0
-              ? ingredients.map((item, index) => (
-                  <Text key={`ing-${index}`} style={styles.itemText}>
-                    {item}
-                  </Text>
-                ))
-              : <Text style={styles.itemText}>No ingredients available.</Text>}
+          {/* Ingredients */}
+          <Text style={styles.heading2xl}>INGREDIENTS</Text>
+          {ingredients.length > 0
+            ? ingredients.map((item, index) => (
+                <Text key={`ing-${index}`} style={styles.itemText}>
+                  {item}
+                </Text>
+              ))
+            : <Text style={styles.itemText}>No ingredients available.</Text>}
 
-            <View style={styles.pageBreak} />
+          <View style={styles.pageBreak} />
 
-            {/* Instructions */}
-            <Text style={styles.heading2xl} onLayout={(e) => setInstructionsY(e.nativeEvent.layout.y)}>
-              INSTRUCTIONS
-            </Text>
-            <RNView>
-              {instructions.length > 0 ? (
-                instructions.map((step, index) => (
-                  <View key={`step-${index}`} style={{ marginBottom: 16 }}>
-                    <Text style={styles.stepHeading}>Step {index + 1}</Text>
-                    <Text style={styles.instructionParagraph}>{step}</Text>
-                  </View>
-                ))
-              ) : (
-                <Text style={styles.itemText}>No instructions available.</Text>
-              )}
-            </RNView>
-
-            {/* Notes */}
-            {notes.length > 0 && (
-              <>
-                
-                <View style={styles.pageBreak} />
-
-                <Text style={styles.heading2xl}>Notes:</Text>
-                {notes.map((note, idx) => (
-                  <Text key={`note-${idx}`} style={styles.itemText}>
-                    • {note}
-                  </Text>
-                ))}
-              </>
+          {/* Instructions */}
+          <Text style={styles.heading2xl}>INSTRUCTIONS</Text>
+          <RNView>
+            {instructions.length > 0 ? (
+              instructions.map((step, index) => (
+                <View key={`step-${index}`} style={{ marginBottom: 16 }}>
+                  <Text style={styles.stepHeading}>Step {index + 1}</Text>
+                  <Text style={styles.instructionParagraph}>{step}</Text>
+                </View>
+              ))
+            ) : (
+              <Text style={styles.itemText}>No instructions available.</Text>
             )}
-          </View>
-        </ScrollView>
+          </RNView>
 
-        {/* Floating toggle buttons */}
-        <View
-          style={styles.floatingButtonsWrapper}
-          onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width)}
-        >
-          <Box style={styles.outerBox}>
-            <PanGestureHandler onGestureEvent={onGestureEvent}>
-              <Animated.View style={{ flexDirection: 'row', position: 'relative' }}>
-                <Animated.View
-                  style={[
-                    {
-                      position: 'absolute',
-                      height: '100%',
-                      width: buttonWidth,
-                      backgroundColor: theme.colors.cta,
-                      borderRadius: 14,
-                    },
-                    highlightStyle,
-                  ]}
-                />
-                <Pressable
-                  style={[styles.toggleButton, { width: buttonWidth }]}
-                  onPress={() => scrollToSection('ingredients')}
-                >
-                  <Text
-                    style={[
-                      styles.toggleText,
-                      activeSection === 'ingredients' && styles.toggleTextActive,
-                    ]}
-                  >
-                    INGREDIENTS
-                  </Text>
-                </Pressable>
-                <Pressable
-                  style={[styles.toggleButton, { width: buttonWidth }]}
-                  onPress={() => scrollToSection('instructions')}
-                >
-                  <Text
-                    style={[
-                      styles.toggleText,
-                      activeSection === 'instructions' && styles.toggleTextActive,
-                    ]}
-                  >
-                    INSTRUCTIONS
-                  </Text>
-                </Pressable>
-              </Animated.View>
-            </PanGestureHandler>
-          </Box>
+          {/* Notes */}
+          {notes.length > 0 && (
+            <>
+              <View style={styles.pageBreak} />
+              <Text style={styles.heading2xl}>Notes:</Text>
+              {notes.map((note, idx) => (
+                <Text key={`note-${idx}`} style={styles.itemText}>
+                  • {note}
+                </Text>
+              ))}
+            </>
+          )}
         </View>
-      </SafeAreaView>
-    </GestureHandlerRootView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -354,31 +219,11 @@ const styles = StyleSheet.create({
   image: { width: '100%', height: 300 },
   itemText: { fontSize: 16, marginBottom: 10, lineHeight: 22, fontFamily: 'body-400', color: theme.colors.text1 },
   instructionParagraph: { fontSize: 16, marginBottom: 12, lineHeight: 28, fontFamily: 'body-400', color: theme.colors.text1 },
-  stepHeading: {
-    fontFamily: 'body-700',
-    fontSize: 16,
-    marginBottom: 4,
-    color: theme.colors.text1,
-},
+  stepHeading: { fontFamily: 'body-700', fontSize: 16, marginBottom: 4, color: theme.colors.text1 },
   heading2xl: { fontSize: 20, fontFamily: 'body-700', marginBottom: 15, marginTop: 20, color: theme.colors.text1 },
   heading3xl: { fontSize: 28, fontFamily: 'body-700', paddingTop: 14, color: theme.colors.text1 },
   headingMd: { fontSize: 16, fontFamily: 'body-500', marginTop: 10, color: theme.colors.text2 },
-  hstackItemText: { 
-    fontSize: 14, 
-    fontFamily: 'body-500', 
-    color: '#777', 
-    paddingTop: 6, 
-    textAlign: 'center' 
-  },
+  hstackItemText: { fontSize: 14, fontFamily: 'body-500', color: '#777', paddingTop: 6, textAlign: 'center' },
   body400: { fontFamily: 'body-400' },
-  toggleButton: { borderRadius: 14, paddingVertical: 10, alignItems: 'center', justifyContent: 'center' },
-  toggleText: { fontFamily: 'body-700', fontSize: 16, color: theme.colors.text1 },
-  toggleTextActive: { color: theme.colors.ctaText },
-  floatingButtonsWrapper: { position: 'absolute', bottom: 55, left: 40, right: 40, paddingHorizontal: 16, zIndex: 100, alignItems: 'center' },
-  outerBox: { backgroundColor: theme.colors.bg, borderRadius: 18, paddingVertical: 6, paddingHorizontal: 6, elevation: 4 },
-  pageBreak: {
-    height: 1, 
-    backgroundColor: '#ddd',
-    marginTop: 20,
-  },
+  pageBreak: { height: 1, backgroundColor: '#ddd', marginTop: 20 },
 });

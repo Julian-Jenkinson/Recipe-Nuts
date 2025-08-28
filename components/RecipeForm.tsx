@@ -4,7 +4,8 @@ import {
   HStack,
   Image,
   Pressable,
-  Text,
+  StatusBar,
+  Text
 } from "@gluestack-ui/themed";
 import React, { useEffect, useRef, useState } from "react";
 import { Alert, ScrollView, StyleSheet, TextInput } from "react-native";
@@ -114,7 +115,8 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
   };
 
   return (
-    <SafeAreaView edges={["top"]} style={{ flex: 1 }}>
+    <SafeAreaView edges={["top"]} style={{ flex: 1, backgroundColor: theme.colors.bg }}>
+      <StatusBar backgroundColor={theme.colors.bg} barStyle="dark-content" />
       {/* Header */}
       <HStack
         pl={6}
@@ -127,17 +129,27 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
         <Pressable onPress={onCancel}>
           <Feather name="chevron-left" size={32} color="#333" />
         </Pressable>
-        <Text style={styles.headerText}>
-          {mode === "edit" ? "Edit Recipe" : "New Recipe"}
-        </Text>
-        <Box flexDirection="row" />
+        
+        
+        <Box flexDirection="row" alignItems='center'>
+          <Pressable onPress={handleSave} style={{ marginRight: 20 }}>
+            <Feather name="save" size={24} color={theme.colors.cta}
+              style={{ marginTop: 2 }} 
+            />
+          </Pressable>
+        </Box>
       </HStack>
+
+      
 
       <ScrollView
         ref={scrollViewRef}
         contentContainerStyle={styles.container}
         keyboardShouldPersistTaps="handled"
       >
+        <Text style={styles.headerText}>
+          {mode === "edit" ? "Edit Recipe" : "New Recipe"}
+        </Text>
         {/* Title */}
         <Text style={styles.label}>Title</Text>
         <TextInput
@@ -256,7 +268,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
         />
 
         {/* Buttons */}
-        <HStack justifyContent="center" space={"md"} style={{ marginTop: 16 }}>
+        <HStack justifyContent="center" space={"md"} style={{ marginTop: 16, marginBottom:40, }}>
           <Pressable style={styles.cancelButton} onPress={onCancel}>
             <Text style={styles.cancelButtonText}>Cancel</Text>
           </Pressable>
@@ -272,57 +284,85 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
 };
 
 const styles = StyleSheet.create({
-  container: { flexGrow: 1, padding: 16, backgroundColor: theme.colors.bg },
-  headerText: { fontFamily: "Nunito-800", fontSize: 20, color: "#333" },
+  container: {
+    flexGrow: 1,
+    paddingHorizontal: 16,
+    backgroundColor: theme.colors.bg,
+  },
+  headerText: {
+    fontFamily: 'heading-800',
+    fontSize: 24,
+    color: '#333',
+  },
   label: {
-    fontFamily: "Nunito-600",
+    fontFamily: 'body-700',
     fontSize: 16,
     marginTop: 12,
     marginBottom: 4,
-    color: "#000",
+    color: '#000',
   },
   input: {
-    fontFamily: "Nunito-400",
+    fontFamily: 'body-400',
+    fontSize: 16,
     height: 40,
-    borderWidth: 0,
+    borderWidth: 1,
+    borderColor: '#ddd',
     paddingHorizontal: 8,
     borderRadius: 8,
-    backgroundColor: "#fff",
-    color: "#000",
+    backgroundColor: '#fff',
+    color: '#000',
   },
   largeInput: {
-    fontFamily: "Nunito-700",
+    fontFamily: 'body-600',
     height: 50,
+    borderWidth: 1,
+    borderColor: '#ddd',
     paddingHorizontal: 10,
     fontSize: 18,
     borderRadius: 8,
-    backgroundColor: "#fff",
-    color: "#000",
+    backgroundColor: '#fff',
+    color: '#000',
   },
   textArea: {
-    fontFamily: "Nunito-400",
+    fontFamily: 'body-400',
+    fontSize: 16,
+    borderWidth: 1,
+    borderColor: '#ddd',
     padding: 10,
     borderRadius: 8,
     minHeight: 100,
-    textAlignVertical: "top",
-    backgroundColor: "#fff",
-    color: "#000",
+    textAlignVertical: 'top',
+    backgroundColor: '#fff',
+    color: '#000',
   },
-  image: { width: "100%", height: 200, borderRadius: 8, marginTop: 16 },
+  image: {
+    width: '100%',
+    height: 200,
+    borderRadius: 8,
+    marginTop: 16,
+  },
   saveButton: {
     flex: 1,
     backgroundColor: theme.colors.cta,
     paddingVertical: 14,
     borderRadius: 12,
-    alignItems: "center",
+    alignItems: 'center',
   },
-  saveButtonText: { fontFamily: "Nunito-700", color: "#fff", fontSize: 16 },
+  saveButtonText: {
+    fontFamily: 'body-700',
+    color: '#fff',
+    fontSize: 16,
+  },
   cancelButton: {
     flex: 1,
-    backgroundColor: "#888",
+    backgroundColor: '#888',
     paddingVertical: 14,
     borderRadius: 12,
-    alignItems: "center",
+    alignItems: 'center',
   },
-  cancelButtonText: { fontFamily: "Nunito-700", color: "#fff", fontSize: 16 },
+  cancelButtonText: {
+    fontFamily: 'body-700',
+    color: '#fff',
+    fontSize: 16,
+  },
 });

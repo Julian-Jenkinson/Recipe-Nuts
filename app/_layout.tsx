@@ -37,6 +37,7 @@ export default function Layout() {
     //Heading
     //'heading-800': require('../assets/fonts/PlayfairDisplay-Bold.ttf'),
     'heading-800': require('../assets/fonts/Mulish-ExtraBold.ttf'),
+    'heading-900': require('../assets/fonts/Mulish-Black.ttf'),
     
     //Body
     //'body-400': require('../assets/fonts/Montserrat-Regular.ttf'),

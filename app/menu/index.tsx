@@ -4,8 +4,9 @@ import {
   HStack,
   Pressable,
   ScrollView,
+  StatusBar,
   Text,
-  View,
+  View
 } from "@gluestack-ui/themed";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
@@ -81,6 +82,7 @@ export default function Menu() {
 
   return (
     <SafeAreaView edges={["top", "bottom"]} style={{ flex: 1 }}>
+      <StatusBar backgroundColor={theme.colors.bg} barStyle="dark-content" />
       <View style={styles.container}>
         
         <Box ml={0} mt={8} alignSelf="flex-start">

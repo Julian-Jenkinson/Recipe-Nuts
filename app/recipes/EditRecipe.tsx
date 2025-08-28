@@ -1,5 +1,5 @@
 import { Feather } from '@expo/vector-icons';
-import { Box, HStack, Image, Pressable, Text } from '@gluestack-ui/themed';
+import { Box, HStack, Image, Pressable, StatusBar, Text } from '@gluestack-ui/themed';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useRef, useState } from 'react';
 import {
@@ -99,7 +99,8 @@ export default function EditRecipe() {
   };
 
   return (
-    <SafeAreaView edges={['top']} style={{ flex: 1 }}>
+    <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: theme.colors.bg }}>
+      <StatusBar backgroundColor={theme.colors.bg} barStyle="dark-content" />
       {/* Header */}
       <HStack 
         pl={6} pr={18} py={14} 
@@ -110,9 +111,14 @@ export default function EditRecipe() {
         <Pressable onPress={() => router.push(`/recipes/${draftRecipe.id}`)}>
           <Feather name="chevron-left" size={32} color="#333" />
         </Pressable>
-        <Box flexDirection="row">
+        <Box flexDirection="row" alignItems='center'>
+          <Pressable onPress={handleSave} style={{ marginRight: 20 }}>
+            <Feather name="save" size={24} color={theme.colors.cta}
+              style={{ marginTop: 2 }} 
+            />
+          </Pressable>
           <Pressable>
-            <Feather name="trash-2" size={22} color="#C1121F" />
+            <Feather name="trash-2" size={24} color="#C1121F" />
           </Pressable>
         </Box>
       </HStack>
@@ -210,7 +216,7 @@ export default function EditRecipe() {
         />
 
          {/* Buttons in HStack */}
-        <HStack justifyContent="center" space={"md"} style={{ marginTop: 16 }}>
+        <HStack justifyContent="center" space={"md"} style={{ marginTop: 16, marginBottom: 26 }}>
           <Pressable style={styles.cancelButton} onPress={handleCancel} >
             <Text style={styles.cancelButtonText}>Cancel</Text>
           </Pressable>
@@ -226,26 +232,27 @@ export default function EditRecipe() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    padding: 16,
+    paddingHorizontal: 16,
     backgroundColor: theme.colors.bg,
     //backgroundColor: 'white',
   },
   headerText: {
-    fontFamily: 'Nunito-800',
+    fontFamily: 'heading-800',
     fontSize: 24,
     color: '#333',
   },
   label: {
-    fontFamily: 'Nunito-600',
+    fontFamily: 'body-700',
     fontSize: 16,
     marginTop: 12,
     marginBottom: 4,
     color: '#000',
   },
   input: {
-    fontFamily: 'Nunito-400',
+    fontFamily: 'body-400',
+    fontSize: 16,
     height: 40,
-    borderWidth: 0,
+    borderWidth: 1,
     borderColor: '#ddd',
     paddingHorizontal: 8,
     borderRadius: 8,
@@ -253,9 +260,9 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   largeInput: {
-    fontFamily: 'Nunito-700',
+    fontFamily: 'body-600',
     height: 50,
-    borderWidth: 0,
+    borderWidth: 1,
     borderColor: '#ddd',
     paddingHorizontal: 10,
     fontSize: 18,
@@ -264,8 +271,9 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   textArea: {
-    fontFamily: 'Nunito-400',
-    borderWidth: 0,
+    fontFamily: 'body-400',
+    fontSize: 16,
+    borderWidth: 1,
     borderColor: '#ddd',
     padding: 10,
     borderRadius: 8,
@@ -288,7 +296,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   saveButtonText: {
-    fontFamily: 'Nunito-700',
+    fontFamily: 'body-700',
     color: '#fff',
     fontSize: 16,
   },
@@ -300,7 +308,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   cancelButtonText: {
-    fontFamily: 'Nunito-700',
+    fontFamily: 'body-700',
     color: '#fff',
     fontSize: 16,
   },
