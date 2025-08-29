@@ -10,7 +10,7 @@ import {
 } from "@gluestack-ui/themed";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { Alert, BackHandler, Platform, StyleSheet } from "react-native";
+import { Alert, BackHandler, Linking, Platform, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { PrivacyPolicyModal } from "../../components/PrivacyPolicyModal";
 import { QuickTourModal } from "../../components/QuickTourModal";
@@ -181,7 +181,27 @@ export default function Menu() {
             <View style={styles.pagebreak} />
 
             {/* CONTACT */}
-            <Pressable style={styles.menuItem}>
+            <Pressable
+              style={styles.menuItem}
+              onPress={async () => {
+                const email = 'u1133676@gmail.com';
+                const subject = 'Feedback / Support';
+                const body = '';
+                const url = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+                try {
+                  const supported = await Linking.canOpenURL(url);
+                  if (supported) {
+                    await Linking.openURL(url);
+                  } else {
+                    Alert.alert('Error', 'No email client available to send message.');
+                  }
+                } catch (err) {
+                  console.error('Error opening email:', err);
+                  Alert.alert('Error', 'Failed to open email client.');
+                }
+              }}
+            >
               <HStack style={styles.textContainer}>
                 <MaterialCommunityIcons
                   name="email-outline"

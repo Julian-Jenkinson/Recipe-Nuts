@@ -1,5 +1,5 @@
 import { Feather } from '@expo/vector-icons';
-import { HStack, Input, InputField, InputSlot, StatusBar } from '@gluestack-ui/themed';
+import { Input, InputField, InputSlot, StatusBar } from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { ActivityIndicator, Alert, Keyboard, Pressable, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
@@ -35,7 +35,12 @@ export default function AddRecipeScreen() {
       const response = await fetch(
         `https://recipe-extractor-api.fly.dev/extract?url=${encodeURIComponent(inputUrl)}`
       );
-      if (!response.ok) throw new Error('Invalid response from API');
+      if (!response.ok) {
+        console.warn('Invalid response from API');
+        Alert.alert('Error', 'Could not fetch recipe from the server.');
+        setLoading(false);
+        return;
+      }
 
       const data = await response.json();
 
@@ -106,54 +111,75 @@ export default function AddRecipeScreen() {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      
       <View style={styles.container}>
+        
         <StatusBar backgroundColor={theme.colors.bg} barStyle="dark-content" />
-        <HStack pl={6} pr={18} py={14} justifyContent="space-between" alignItems="center">
-          <Pressable onPress={() => router.replace('/recipes/')}>
+        
+        <View style={styles.header}>
+          <Pressable onPress={() => router.replace('/recipes/')} style={styles.backButton}>
             <Feather name="chevron-left" size={32} color="#333" />
           </Pressable>
-        </HStack>
-        <Text style={styles.title}>Add Recipe</Text>
+        </View>
+
+        <View style={styles.centerContainer}>
+          <Text style={styles.title}>Add Recipe</Text>
         
-        <Text style={styles.text}>
-          Copy and paste a recipe link here to extract a recipe and save it to your collection.
-        </Text>
-        <Input
-          style={styles.input}
-          variant="rounded"
-          size="md"
-          borderRadius="$3xl"
-          borderWidth={focused ? 2 : 0} // ✅ Add border when focused
-          borderColor={focused ? '#999' : 'transparent'}
-        >
-          <InputField
-            style={styles.inputField}
-            value={inputUrl}
-            onChangeText={setInputUrl}
-            placeholder="Enter recipe URL"
-            autoCapitalize="none"
-            autoCorrect={false}
-            editable={!loading}
-            onFocus={() => setFocused(true)}
-            onBlur={() => setFocused(false)}
-          />
-          {inputUrl.length > 0 && (
-            <InputSlot pr={10}>
-              <Pressable onPress={() => setInputUrl('')}>
-                <Feather name="x" size={20} color="#888" />
-              </Pressable>
-            </InputSlot>
-          )}
-        </Input>
-        {loading ? (
-          <ActivityIndicator size="small" color="#000" style={{ marginTop: 20 }} />
-        ) : (
-          <Pressable onPress={handleImportAndSave} style={styles.buttonContainer}>
-            <Feather name="download" size={20} color="#fff" style={{ marginRight: 8 }} />
-            <Text style={styles.buttonText}>Import from URL</Text>
+          <Text style={styles.text}>
+            Copy and paste a recipe link here to extract a recipe and save it to your collection.
+          </Text>
+          <Input
+            style={styles.input}
+            variant="rounded"
+            size="md"
+            borderRadius="$2xl"
+            borderWidth={focused ? 2 : 1} // ✅ Add border when focused
+            borderColor={focused ? '#888' : '#ddd'}
+          >
+            <InputField
+              style={styles.inputField}
+              value={inputUrl}
+              onChangeText={setInputUrl}
+              placeholder="Enter recipe URL"
+              autoCapitalize="none"
+              autoCorrect={false}
+              editable={!loading}
+              onFocus={() => setFocused(true)}
+              onBlur={() => setFocused(false)}
+            />
+            {inputUrl.length > 0 && (
+              <InputSlot pr={10}>
+                <Pressable onPress={() => setInputUrl('')}>
+                  <Feather name="x" size={20} color="#888" />
+                </Pressable>
+              </InputSlot>
+            )}
+          </Input>
+          <Pressable
+            onPress={handleImportAndSave}
+            disabled={loading}
+            style={({ pressed }) => [
+              styles.button,
+              { backgroundColor: pressed ? theme.colors.cta : theme.colors.cta },
+              loading && { opacity: 0.7 },
+              { justifyContent: "center", alignItems: "center" }, // keep center baseline
+            ]}
+          >
+            {loading && (
+              <ActivityIndicator
+                color="#fff"
+                style={{
+                  position: "absolute", // ignore text layout
+                  alignSelf: "center",  // force center
+                }}
+              />
+            )}
+            <Text style={[styles.buttonText, loading && { opacity: 0 }]}>
+              Import
+            </Text>
           </Pressable>
-        )}
-      </View>
+        </View>
+      </View>  
     </TouchableWithoutFeedback>
   );
 }
@@ -162,8 +188,27 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    backgroundColor: theme.colors.bg,
+  },
+  centerContainer: {
+    flex: 1,
     justifyContent: 'center',
     backgroundColor: theme.colors.bg,
+    paddingBottom:100,
+  },
+  header: {
+    paddingTop:30,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  backButton: {
+    padding: 4,
+    marginRight: 10,
+  },
+  headerTitle: {
+    fontSize: 22,
+    fontFamily: 'body-700',
   },
   title: {
     fontSize: 22,
@@ -196,12 +241,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: 'body-400',
   },
-  buttonContainer: {
+  button: {
     backgroundColor: theme.colors.cta,
     paddingVertical: 8,
     paddingHorizontal: 40,
     marginTop: 20,
-    borderRadius: 20,
+    borderRadius: 16,
     alignItems: 'center',
     alignSelf: 'center',
     flexDirection: 'row',

@@ -112,8 +112,8 @@ export default function EditRecipe() {
           <Feather name="chevron-left" size={32} color="#333" />
         </Pressable>
         <Box flexDirection="row" alignItems='center'>
-          <Pressable onPress={handleSave} style={{ marginRight: 20 }}>
-            <Feather name="save" size={24} color={theme.colors.cta}
+          <Pressable onPress={handleSave} style={{ marginRight: 28 }}>
+            <Feather name="save" size={26} color={theme.colors.cta}
               style={{ marginTop: 2 }} 
             />
           </Pressable>
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     paddingHorizontal: 8,
-    borderRadius: 8,
+    borderRadius: 16,
     backgroundColor: '#fff',
     color: '#000',
   },
@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     paddingHorizontal: 10,
     fontSize: 18,
-    borderRadius: 8,
+    borderRadius: 16,
     backgroundColor: '#fff',
     color: '#000',
   },
@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     padding: 10,
-    borderRadius: 8,
+    borderRadius: 16,
     minHeight: 100,
     textAlignVertical: 'top',
     backgroundColor: '#fff',
@@ -285,14 +285,14 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: 200,
-    borderRadius: 8,
+    borderRadius: 16,
     marginTop: 16,
   },
   saveButton: {
     flex: 1,
     backgroundColor: theme.colors.cta,
     paddingVertical: 14,
-    borderRadius: 12,
+    borderRadius: 16,
     alignItems: 'center',
   },
   saveButtonText: {
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#888', // a red tone for cancel (instead of default blue)
     paddingVertical: 14,
-    borderRadius: 12,
+    borderRadius: 16,
     alignItems: 'center',
   },
   cancelButtonText: {

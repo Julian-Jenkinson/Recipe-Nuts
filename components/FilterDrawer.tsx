@@ -3,9 +3,10 @@ import {
   Box,
   HStack,
   Pressable,
+  StatusBar,
   Text,
   VStack,
-  View
+  View,
 } from '@gluestack-ui/themed';
 import React from 'react';
 import {
@@ -14,7 +15,6 @@ import {
   Easing,
   Modal,
   PanResponder,
-  StatusBar,
   StyleSheet,
 } from 'react-native';
 import theme from '../theme';
@@ -177,7 +177,8 @@ export default function FilterDrawer({ isOpen, onClose, onFilterSelect, selected
       statusBarTranslucent={true}
       navigationBarTranslucent={true}
     >
-      <StatusBar backgroundColor="#fff" barStyle="dark-content" translucent />
+      
+      <StatusBar backgroundColor={theme.colors.cta} barStyle="light-content" />
       
       {/* Simplified Backdrop */}
       <Animated.View
@@ -262,15 +263,12 @@ export default function FilterDrawer({ isOpen, onClose, onFilterSelect, selected
                         {f.icon}
                         <Text style={styles.actionText}>{f.label}</Text>
                       </HStack>
-                      {/* Checkbox */}
-                      <Box style={[
-                        styles.checkbox,
-                        selectedFilter === f.key && styles.checkboxSelected
-                      ]}>
-                        {selectedFilter === f.key && (
-                          <Box style={styles.checkDot} />
-                        )}
-                      </Box>
+                      {/* Selected Tick */}
+                      {selectedFilter === f.key ? (
+                        <MaterialIcons name="check" size={22} color={theme.colors.cta} />
+                      ) : (
+                        <View style={{ width: 22, height: 22 }} /> // keeps spacing consistent
+                      )}
                     </HStack>
                   </Pressable>
                 ))}
@@ -341,26 +339,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     paddingLeft: 12,
     color: '#000',
-  },
-  checkbox: {
-    width: 19,
-    height: 19,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: '#E5E5E5',
-    backgroundColor: 'transparent',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  checkboxSelected: {
-    backgroundColor: '#fff',
-    borderColor: '#333',
-  },
-  checkDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 12,
-    backgroundColor: '#000',
   },
   upgradePressable: {
     alignSelf: 'center',

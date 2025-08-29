@@ -3,6 +3,7 @@ import {
   Box,
   HStack,
   Pressable,
+  StatusBar,
   Text,
   VStack,
   View,
@@ -15,7 +16,7 @@ import {
   Easing,
   Modal,
   PanResponder,
-  StatusBar,
+
   StyleSheet,
 } from 'react-native';
 import { useRecipeStore } from '../stores/useRecipeStore';
@@ -178,7 +179,8 @@ export default function AddRecipeDrawer({ isOpen, onClose }: Props) {
       statusBarTranslucent={true}
       navigationBarTranslucent={true}
     >
-      <StatusBar backgroundColor="#fff" barStyle="dark-content" translucent />
+      
+      <StatusBar backgroundColor={theme.colors.cta} barStyle="light-content" />
       
       {/* Simplified Backdrop */}
       <Animated.View

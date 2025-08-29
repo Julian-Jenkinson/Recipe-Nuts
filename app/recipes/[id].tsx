@@ -95,18 +95,18 @@ export default function RecipeDetailsScreen() {
 
       {/* Header */}
       <HStack pl={6} pr={18} py={14} justifyContent="space-between" alignItems="center">
-        <Pressable onPress={() => router.replace('/recipes/')}>
+        <Pressable hitSlop={5} onPress={() => router.replace('/recipes/')}>
           <Feather name="chevron-left" size={32} color="#333" />
         </Pressable>
         <Box flexDirection="row">
-          <Pressable pr={22} onPress={handleShare}>
-            <Feather name="share-2" size={22} color="#333" />
+          <Pressable pr={28} hitSlop={5} onPress={handleShare}>
+            <Feather name="share-2" size={23} color="#333" />
           </Pressable>
-          <Pressable pr={22} onPress={() => router.push(`/recipes/EditRecipe?id=${recipe.id}`)}>
-            <Feather name="edit-2" size={22} color="#333" />
+          <Pressable pr={28} hitSlop={5} onPress={() => router.push(`/recipes/EditRecipe?id=${recipe.id}`)}>
+            <Feather name="edit-2" size={23} color="#333" />
           </Pressable>
-          <Pressable onPress={handleDelete}>
-            <Feather name="trash-2" size={22} color="#C1121F" />
+          <Pressable onPress={handleDelete} hitSlop={5}>
+            <Feather name="trash-2" size={23} color="#C1121F" />
           </Pressable>
         </Box>
       </HStack>
@@ -122,6 +122,7 @@ export default function RecipeDetailsScreen() {
           <Image source={{ uri: imageUri }} style={styles.image} resizeMode="cover" />
           <Pressable
             onPress={() => toggleFavourite(recipe.id)}
+            hitSlop={5}
             style={{ position: 'absolute', top: 12, right: 12, zIndex: 10 }}
           >
             <Box bg="white" p={4} borderRadius={6} alignItems="center" justifyContent="center">
@@ -148,21 +149,52 @@ export default function RecipeDetailsScreen() {
             alignItems="flex-start"
             flexWrap="wrap"
           >
-            <Box alignItems="center" flexShrink={1}>
+            {/* Prep + Cook Time */}
+            <Box alignItems="center" flexShrink={1} maxWidth="25%">
               <Feather name="clock" size={20} color="#777" />
-              <Text style={styles.hstackItemText}>{+recipe.prepTime + +recipe.cookTime || '-'} mins</Text>
+              <Text
+                style={styles.hstackItemText}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {+recipe.prepTime + +recipe.cookTime || '-'} mins
+              </Text>
             </Box>
-            <Box alignItems="center" flexShrink={1}>
+
+            {/* Category */}
+            <Box alignItems="center" flexShrink={1} maxWidth="25%">
               <MaterialCommunityIcons name="bowl-mix-outline" size={20} color="#777" />
-              <Text style={styles.hstackItemText}>{recipe.category || 'Other'}</Text>
+              <Text
+                style={styles.hstackItemText}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {recipe.category || 'Other'}
+              </Text>
             </Box>
-            <Box alignItems="center" flexShrink={1}>
+
+            {/* Difficulty */}
+            <Box alignItems="center" flexShrink={1} maxWidth="25%">
               <Feather name="bar-chart" size={20} color="#777" />
-              <Text style={styles.hstackItemText}>{+recipe.difficulty || 'Medium'}</Text>
+              <Text
+                style={styles.hstackItemText}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {recipe.difficulty || 'Medium'}
+              </Text>
             </Box>
+
+            {/* Serving Size */}
             <Box alignItems="center" flexShrink={1} maxWidth="25%">
               <Feather name="user" size={20} color="#777" />
-              <Text style={styles.hstackItemText}>Serves {+recipe.servingSize || '-'}</Text>
+              <Text
+                style={styles.hstackItemText}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                Serves {+recipe.servingSize || '-'}
+              </Text>
             </Box>
           </HStack>
 
