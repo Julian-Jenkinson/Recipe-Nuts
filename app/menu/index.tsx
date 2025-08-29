@@ -79,6 +79,25 @@ export default function Menu() {
     );
   };
 
+  const handleContactPress = async () => {
+    if (Platform.OS !== 'android') return;
+
+    const email = 'u1133676@gmail.com';
+    const subject = 'Feedback / Support';
+    const body = '';
+    const url = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+    try {
+      await Linking.openURL(url);
+    } catch (err) {
+      console.error('Failed to open email client:', err);
+      Alert.alert(
+        'Error',
+        'Could not open email client. Please make sure you have an email app installed.'
+      );
+    }
+  };
+
 
   return (
     <SafeAreaView edges={["top", "bottom"]} style={{ flex: 1 }}>
@@ -181,27 +200,7 @@ export default function Menu() {
             <View style={styles.pagebreak} />
 
             {/* CONTACT */}
-            <Pressable
-              style={styles.menuItem}
-              onPress={async () => {
-                const email = 'u1133676@gmail.com';
-                const subject = 'Feedback / Support';
-                const body = '';
-                const url = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-
-                try {
-                  const supported = await Linking.canOpenURL(url);
-                  if (supported) {
-                    await Linking.openURL(url);
-                  } else {
-                    Alert.alert('Error', 'No email client available to send message.');
-                  }
-                } catch (err) {
-                  console.error('Error opening email:', err);
-                  Alert.alert('Error', 'Failed to open email client.');
-                }
-              }}
-            >
+            <Pressable style={styles.menuItem} onPress={handleContactPress}>
               <HStack style={styles.textContainer}>
                 <MaterialCommunityIcons
                   name="email-outline"
