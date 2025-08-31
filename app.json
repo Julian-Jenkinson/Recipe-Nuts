@@ -10,7 +10,7 @@
       "enabled": true,
       "autoVerify": true
     },
-    "permissions": [],
+    "permissions": ["com.android.vending.BILLING"],
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {

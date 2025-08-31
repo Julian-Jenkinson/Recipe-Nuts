@@ -1,5 +1,5 @@
 import { config } from '@gluestack-ui/config';
-import { GluestackUIProvider } from '@gluestack-ui/themed';
+import { GluestackUIProvider, StatusBar } from '@gluestack-ui/themed';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFonts } from 'expo-font';
 import * as NavigationBar from "expo-navigation-bar";
@@ -7,7 +7,7 @@ import { Stack } from "expo-router";
 import * as SplashScreen from 'expo-splash-screen';
 //import * as SystemUI from 'expo-system-ui';
 import React, { useEffect, useState } from "react";
-import { Pressable, PressableProps, StatusBar } from "react-native";
+import { Pressable, PressableProps } from "react-native";
 import { QuickTourModal } from "../components/QuickTourModal";
 import theme from '../theme';
 

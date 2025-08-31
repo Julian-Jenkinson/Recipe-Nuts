@@ -101,10 +101,10 @@ export function QuickTourModal({
 
                   {page.showUpgrade && (
                     <Button
-                      mt="$4"
+                      mt="$9"
                       style={{
                         backgroundColor: theme.colors.cta,
-                        borderRadius: 8,
+                        borderRadius: 16,
                         paddingHorizontal: 20,
                       }}
                     >
@@ -114,10 +114,10 @@ export function QuickTourModal({
 
                   {page.isLast && (
                     <Button
-                      mt="$4"
+                      mt="$9"
                       style={{
                         backgroundColor: theme.colors.cta,
-                        borderRadius: 8,
+                        borderRadius: 16,
                         paddingHorizontal: 20,
                       }}
                       onPress={onClose}
@@ -169,6 +169,7 @@ const styles = StyleSheet.create({
     borderRadius: 0,
   },
   headerTitle: {
+    paddingTop:40,
     fontFamily: "body-400",
     fontSize: 20,
   },
@@ -188,6 +189,7 @@ const styles = StyleSheet.create({
   pageText: {
     fontFamily: "body-400",
     fontSize: 20,
+    lineHeight:30,
     textAlign: "center",
     color: theme.colors.text2,
     paddingHorizontal: 10,
