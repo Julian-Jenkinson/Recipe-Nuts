@@ -44,6 +44,8 @@ Utilising Expo managed workflow. The following commands will be useful:
    npx react-native log-android                     # view logs on connected device
    adb logcat | grep recipenuts                     # detailed logs
    npx expo prebuild                                  # rebuilds andoid folder to update stale native code
+   eas build --platform android --profile production  # prod build
+
 
 
    ```

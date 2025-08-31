@@ -4,13 +4,12 @@ import {
   HStack,
   Pressable,
   ScrollView,
-  StatusBar,
   Text,
   View
 } from "@gluestack-ui/themed";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { Alert, BackHandler, Linking, Platform, StyleSheet } from "react-native";
+import { Alert, BackHandler, Linking, Platform, StatusBar, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { PrivacyPolicyModal } from "../../components/PrivacyPolicyModal";
 import { QuickTourModal } from "../../components/QuickTourModal";

@@ -1,15 +1,16 @@
 import { Feather, Ionicons } from '@expo/vector-icons';
-import { Box, HStack, Input, InputField, InputSlot, Pressable, StatusBar, Text, View } from '@gluestack-ui/themed';
+import { Box, HStack, Input, InputField, InputSlot, Pressable, Text, View } from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { FlatList, Keyboard, KeyboardAvoidingView, Platform, TouchableWithoutFeedback } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { FlatList, Keyboard, KeyboardAvoidingView, Platform, StatusBar, TouchableWithoutFeedback } from 'react-native';
 import AddRecipeButton from '../../components/AddRecipeButton';
 import AddRecipeDrawer from '../../components/AddRecipeDrawer';
 import FilterDrawer from '../../components/FilterDrawer';
 import RecipeCard from '../../components/RecipeCard';
 import { useRecipeStore } from '../../stores/useRecipeStore';
 import theme from '../../theme';
+
+import Constants from "expo-constants";
 
 export default function RecipeListScreen() {
   const router = useRouter();
@@ -76,7 +77,17 @@ export default function RecipeListScreen() {
 
   return (
     <>
-      <SafeAreaView edges={['top','bottom']} style={{ flex: 1 }}>
+      {/* Fake "status bar background" */}
+      {Platform.OS === "android" && (
+        <View
+          style={{
+            height: Constants.statusBarHeight,
+            backgroundColor: theme.colors.cta,
+          }}
+        /> 
+      )}
+      
+        
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
           style={{ flex: 1 }}
@@ -154,48 +165,73 @@ export default function RecipeListScreen() {
                 </HStack>
               </View>
 
-              <HStack pl={16} pb={12} pt={4}>
-                <Text 
-                    fontSize={24} 
-                    color={theme.colors.text1} 
-                    style={{ flex:1, fontFamily: 'heading-900'}}
-                    numberOfLines={1}
-                    ellipsizeMode="tail" //stops cutoff text sometimes
-                  >
-                    Recipes
-                  </Text>
-              </HStack>
+              {filteredRecipes.length > 0 && (
+                <HStack pl={16} pb={12} pt={4}>
+                  <Text 
+                      fontSize={24} 
+                      color={theme.colors.text1} 
+                      style={{ flex:1, fontFamily: 'heading-900'}}
+                      numberOfLines={1}
+                      ellipsizeMode="tail" //stops cutoff text sometimes
+                    >
+                      Recipes
+                    </Text>
+                </HStack>
+              )}
               
 
               {/* Recipes List */}
-              <FlatList
-                data={filteredRecipes}
-                numColumns={1}
-                keyExtractor={(item) => item.id}
-                contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 20, paddingTop:10 }}
-                ItemSeparatorComponent={() => (
-                  <View style={{ height: 1, backgroundColor: '#ddd', marginVertical: 25 }} />
-                )}
-                keyboardShouldPersistTaps="handled"
-                renderItem={({ item }) => (
-                  <RecipeCard
-                    {...item}
-                    onPress={() => handlePress(item.id)}
-                    onToggleFavourite={() => {
-                      useRecipeStore.getState().toggleFavourite(item.id);
-                    }}
-                  />
-                )}
-              />
+              {filteredRecipes.length === 0 ? (
+                <View flex={1} alignItems="center" justifyContent="center" px={30} pb={90}>
+                  <Ionicons name="restaurant-outline" size={72} color={theme.colors.cta} />
+                  <Text
+                    lineHeight={30}
+                    fontSize={20}
+                    color={theme.colors.text2}
+                    textAlign="center"
+                    mt={16}
+                    style={{ fontFamily: 'body-600' }}
+                  >
+                    To get started, tap the {"\n"} 
+                    <Text style={{ fontFamily: 'heading-900', color: theme.colors.cta, fontSize:22 }}>+ </Text> 
+                    icon to add your first recipe.
+                  </Text>
+                </View>
+              ) : (
+                <FlatList
+                  data={filteredRecipes}
+                  numColumns={1}
+                  keyExtractor={(item) => item.id}
+                  contentContainerStyle={{
+                    paddingHorizontal: 16,
+                    paddingBottom: 20,
+                    paddingTop: 10
+                  }}
+                  ItemSeparatorComponent={() => (
+                    <View style={{ height: 1, backgroundColor: '#ddd', marginVertical: 25 }} />
+                  )}
+                  keyboardShouldPersistTaps="handled"
+                  renderItem={({ item }) => (
+                    <RecipeCard
+                      {...item}
+                      onPress={() => handlePress(item.id)}
+                      onToggleFavourite={() => {
+                        useRecipeStore.getState().toggleFavourite(item.id);
+                      }}
+                    />
+                  )}
+                />
+              )}
+
 
               {/* Add Button */}
-              <Box position='absolute' bottom={25} right={30}>
+              <Box position='absolute' bottom={65} right={30}>
                 <AddRecipeButton onPress={() => setIsAddOpen(true)} />
               </Box>
             </View>
           </TouchableWithoutFeedback>
         </KeyboardAvoidingView>
-      </SafeAreaView>
+      
 
       {/* Drawers */}
       <AddRecipeDrawer isOpen={isAddOpen} onClose={() => setIsAddOpen(false)} />

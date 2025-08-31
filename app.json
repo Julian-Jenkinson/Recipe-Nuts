@@ -10,6 +10,7 @@
       "enabled": true,
       "autoVerify": true
     },
+    "permissions": [],
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -70,6 +71,5 @@
     "assetBundlePatterns": [
       "**/*"
     ]
-    
   }
 }
