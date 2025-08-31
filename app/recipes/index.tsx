@@ -111,7 +111,7 @@ export default function RecipeListScreen() {
                 borderBottomRightRadius={20}
                 mb={15}
               >
-                <HStack px={22} pt={5} pb={0} justifyContent="space-between" alignItems="center">
+                <HStack px={22} pt={10} pb={0} justifyContent="space-between" alignItems="center">
                   <Box p={0}>
                     <Pressable onPress={() => router.push('/menu')} hitSlop={10}>
                       <Ionicons name="menu" size={38} color={theme.colors.bgFocus} />

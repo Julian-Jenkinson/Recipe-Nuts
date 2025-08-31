@@ -10,7 +10,6 @@ import {
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { Alert, BackHandler, Linking, Platform, StatusBar, StyleSheet } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { PrivacyPolicyModal } from "../../components/PrivacyPolicyModal";
 import { QuickTourModal } from "../../components/QuickTourModal";
 import { RecipeBar } from "../../components/RecipeBar";
@@ -99,11 +98,11 @@ export default function Menu() {
 
 
   return (
-    <SafeAreaView edges={["top", "bottom"]} style={{ flex: 1 }}>
+    <View style={{ flex: 1 }}>
       <StatusBar backgroundColor={theme.colors.bg} barStyle="dark-content" />
       <View style={styles.container}>
         
-        <Box ml={0} mt={8} alignSelf="flex-start">
+        <Box ml={0} mt={48} alignSelf="flex-start">
           <Pressable onPress={() => router.replace('/recipes/')}>
             <Feather name="chevron-left" size={32} color="#333" />
           </Pressable>
@@ -253,7 +252,7 @@ export default function Menu() {
         isOpen={showPrivacyModal}
         onClose={() => setShowPrivacyModal(false)}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 
