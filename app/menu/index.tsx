@@ -7,7 +7,6 @@ import {
   Text,
   View,
 } from "@gluestack-ui/themed";
-import * as InAppPurchases from "expo-in-app-purchases";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -19,12 +18,15 @@ import {
   StatusBar,
   StyleSheet,
 } from "react-native";
+import * as RNIap from "react-native-iap";
 import { PrivacyPolicyModal } from "../../components/PrivacyPolicyModal";
 import { QuickTourModal } from "../../components/QuickTourModal";
 import { RecipeBar } from "../../components/RecipeBar";
 import { TAndCModal } from "../../components/TAndCModal";
 import { useRecipeStore } from "../../stores/useRecipeStore";
 import theme from "../../theme";
+
+const itemSkus = ["pro_upgrade"];
 
 export default function Menu() {
   const recipes = useRecipeStore((state) => state.recipes);
@@ -38,66 +40,72 @@ export default function Menu() {
   const [showQuickTourModal, setShowQuickTourModal] = useState(false);
   const [loadingPurchase, setLoadingPurchase] = useState(false);
 
-  // --- In-App Purchase Setup ---
   useEffect(() => {
-    let isMounted = true;
+    let purchaseUpdateSubscription: any;
+    let purchaseErrorSubscription: any;
 
-    const connectPurchases = async () => {
-      await InAppPurchases.connectAsync();
-
-      InAppPurchases.setPurchaseListener(async ({ responseCode, results, errorCode }) => {
-        if (!isMounted) return;
-
-        if (responseCode === InAppPurchases.IAPResponseCode.OK && results?.length) {
-          for (const purchase of results) {
-            if (!purchase.acknowledged && purchase.productId === "pro_upgrade") {
-              upgradeToPro();
-              Alert.alert("Success!", "You are now Pro! 🚀");
-              await InAppPurchases.finishTransactionAsync(purchase, false);
+    const initIAP = async () => {
+      try {
+        await RNIap.initConnection();
+        purchaseUpdateSubscription = RNIap.purchaseUpdatedListener(
+          async (purchase: RNIap.Purchase) => {
+            const receipt = purchase.transactionReceipt;
+            if (receipt && purchase.productId === "pro_upgrade") {
+              try {
+                upgradeToPro();
+                Alert.alert("Success!", "You are now Pro! 🚀");
+                await RNIap.finishTransaction({ purchase });
+              } catch (err) {
+                console.warn("Error finishing transaction:", err);
+              }
             }
+            setLoadingPurchase(false);
           }
-        } else if (responseCode === InAppPurchases.IAPResponseCode.USER_CANCELED) {
-          console.log("Purchase canceled");
-        } else {
-          console.warn("Purchase error:", errorCode);
-          Alert.alert("Purchase Error", "Something went wrong during the purchase.");
-        }
+        );
 
-        setLoadingPurchase(false);
-      });
+        purchaseErrorSubscription = RNIap.purchaseErrorListener((error) => {
+          console.warn("Purchase error:", error);
+          Alert.alert("Purchase Error", error.message);
+          setLoadingPurchase(false);
+        });
+      } catch (err) {
+        console.warn("IAP init error:", err);
+      }
     };
 
-    connectPurchases();
+    initIAP();
 
     return () => {
-      isMounted = false;
-      InAppPurchases.disconnectAsync();
+      if (purchaseUpdateSubscription) purchaseUpdateSubscription.remove();
+      if (purchaseErrorSubscription) purchaseErrorSubscription.remove();
+      RNIap.endConnection();
     };
   }, []);
 
   const handleUpgrade = async () => {
-    if (isPro) {
-      return Alert.alert("Already Pro!", "You already have unlimited recipes 🚀");
-    }
+  if (isPro) {
+    return Alert.alert("Already Pro!", "You already have unlimited recipes 🚀");
+  }
 
-    try {
-      setLoadingPurchase(true);
+  try {
+    setLoadingPurchase(true);
 
-      const { responseCode, results } = await InAppPurchases.getProductsAsync(["pro_upgrade"]);
-
-      if (responseCode !== InAppPurchases.IAPResponseCode.OK || !results?.length) {
-        Alert.alert("Error", "Product not available. Please try again later.");
-        setLoadingPurchase(false);
-        return;
-      }
-
-      await InAppPurchases.purchaseItemAsync("pro_upgrade");
-    } catch (err) {
-      console.error("Purchase error:", err);
-      Alert.alert("Error", "Could not complete purchase. Please try again later.");
+    const products = await RNIap.fetchProducts({ skus: itemSkus, type: "inapp" });
+    if (!products?.length) {
+      Alert.alert("Error", "Product not available. Please try again later.");
       setLoadingPurchase(false);
+      return;
     }
-  };
+
+    await RNIap.requestPurchase({ request: { sku: "pro_upgrade" } as RNIap.RequestPurchasePropsByPlatforms });
+
+  } catch (err) {
+    console.error("Purchase error:", err);
+    Alert.alert("Error", "Could not complete purchase. Please try again later.");
+    setLoadingPurchase(false);
+  }
+};
+
 
   const togglePro = () => setPro(!isPro);
 
@@ -140,7 +148,6 @@ export default function Menu() {
 
         <ScrollView>
           <Box>
-            {/* UPGRADE TO PRO */}
             <Pressable
               style={styles.menuItem}
               onPress={handleUpgrade}
@@ -182,7 +189,6 @@ export default function Menu() {
                 </Box>
               )}
 
-              {/* Dev-only simulate button */}
               {__DEV__ && !isPro && (
                 <Pressable
                   onPress={() => {
@@ -198,7 +204,6 @@ export default function Menu() {
 
             <View style={styles.pagebreak} />
 
-            {/* Other menu items */}
             <Pressable style={styles.menuItem} onPress={() => setShowQuickTourModal(true)}>
               <HStack style={styles.textContainer}>
                 <MaterialCommunityIcons name="map-marker-path" style={styles.icon} />
@@ -211,7 +216,6 @@ export default function Menu() {
 
           <View style={styles.pagebreak} />
 
-          {/* Sub Menu */}
           <Box flex={1} style={styles.submenu}>
             <Pressable onPress={() => setShowTAndCModal(true)}>
               <Text style={styles.subtext}>Terms and Conditions</Text>
@@ -230,7 +234,6 @@ export default function Menu() {
         </ScrollView>
       </View>
 
-      {/* Modals */}
       <QuickTourModal isOpen={showQuickTourModal} onClose={() => setShowQuickTourModal(false)} />
       <TAndCModal isOpen={showTAndCModal} onClose={() => setShowTAndCModal(false)} />
       <PrivacyPolicyModal
@@ -241,17 +244,6 @@ export default function Menu() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { backgroundColor: theme.colors.bg, flex: 1, paddingHorizontal: 16 },
-  heading: { fontSize: 26, fontFamily: "body-800", marginTop: 30, marginBottom: 15, marginLeft: 40 },
-  text: { fontSize: 18, fontFamily: "body-800", marginLeft: 18 },
-  menuItem: { paddingBottom: 10 },
-  undertext: { fontSize: 17, fontFamily: "body-400", color: theme.colors.text2, marginLeft: 42, marginTop: 4 },
-  recipebar: { marginLeft: 42, marginRight: 42, marginTop: 10, marginBottom: 5 },
-  textContainer: { marginTop: 12, marginBottom: 2, alignItems: "center", flexDirection: "row" },
-  icon: { color: theme.colors.cta, fontSize: 22 },
-  submenu: {},
-  subtext: { fontSize: 19, fontFamily: "body-700", marginVertical: 8, marginLeft: 42 },
-  exittext: { fontSize: 19, fontFamily: "body-800", marginTop: 10, marginBottom: 40, marginLeft: 42 },
-  pagebreak: { height: 1, backgroundColor: "#ddd", marginVertical: 15, marginLeft: 42, marginRight: 42 },
-});
+// styles unchanged
+
+const styles = StyleSheet.create({ container: { backgroundColor: theme.colors.bg, flex: 1, paddingHorizontal: 16 }, heading: { fontSize: 26, fontFamily: "body-800", marginTop: 30, marginBottom: 15, marginLeft: 40 }, text: { fontSize: 18, fontFamily: "body-800", marginLeft: 18 }, menuItem: { paddingBottom: 10 }, undertext: { fontSize: 17, fontFamily: "body-400", color: theme.colors.text2, marginLeft: 42, marginTop: 4 }, recipebar: { marginLeft: 42, marginRight: 42, marginTop: 10, marginBottom: 5 }, textContainer: { marginTop: 12, marginBottom: 2, alignItems: "center", flexDirection: "row" }, icon: { color: theme.colors.cta, fontSize: 22 }, submenu: {}, subtext: { fontSize: 19, fontFamily: "body-700", marginVertical: 8, marginLeft: 42 }, exittext: { fontSize: 19, fontFamily: "body-800", marginTop: 10, marginBottom: 40, marginLeft: 42 }, pagebreak: { height: 1, backgroundColor: "#ddd", marginVertical: 15, marginLeft: 42, marginRight: 42 }, });
