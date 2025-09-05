@@ -11,6 +11,14 @@ def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
 react {
     entryFile = file(["node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android", "absolute"].execute(null, rootDir).text.trim())
     reactNativeDir = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsoluteFile()
+
+    
+    // <<< Add this line to force Gradle to use the right Node
+    def nodeBin = System.getenv("NVM_BIN") ?: "/Users/jules/.nvm/versions/node/v20.19.5/bin"
+nodeExecutableAndArgs = ["${nodeBin}/node"]
+
+
+
     hermesCommand = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/sdks/hermesc/%OS-BIN%/hermesc"
     codegenDir = new File(["node", "--print", "require.resolve('@react-native/codegen/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile().getAbsoluteFile()
 
@@ -89,11 +97,12 @@ android {
 
     namespace 'com.hulio.recipenuts'
     defaultConfig {
+        missingDimensionStrategy "store", "play"
         applicationId 'com.hulio.recipenuts'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.0.1-internal"
+        versionName "1.0.1-closed"
     }
     signingConfigs {
         debug {

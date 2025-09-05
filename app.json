@@ -10,7 +10,6 @@
       "enabled": true,
       "autoVerify": true
     },
-    "permissions": ["com.android.vending.BILLING"],
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -18,6 +17,7 @@
       "bundleIdentifier": "com.hulio.recipenuts"
     },
     "android": {
+      "permissions": ["com.android.vending.BILLING"],
       "intentFilters": [
         {
           "action": "VIEW",
@@ -50,12 +50,15 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      ["react-native-edge-to-edge", {
-        "android": {
-          "parentTheme": "Default",
-          "enforceNavigationBarContrast": false
+      [
+        "react-native-edge-to-edge", 
+        {
+          "android": {
+            "parentTheme": "Default",
+            "enforceNavigationBarContrast": false
+          }
         }
-      }],
+      ],
       "expo-font",
       "expo-web-browser"
     ],

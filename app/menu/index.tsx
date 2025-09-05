@@ -1,3 +1,4 @@
+import { REVENUECAT_API_KEY } from "@env";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import {
   Box,
@@ -9,16 +10,8 @@ import {
 } from "@gluestack-ui/themed";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  Alert,
-  BackHandler,
-  Linking,
-  Platform,
-  StatusBar,
-  StyleSheet,
-} from "react-native";
-import * as RNIap from "react-native-iap";
+import { ActivityIndicator, Alert, BackHandler, Linking, Platform, StatusBar, StyleSheet } from "react-native";
+import Purchases from "react-native-purchases";
 import { PrivacyPolicyModal } from "../../components/PrivacyPolicyModal";
 import { QuickTourModal } from "../../components/QuickTourModal";
 import { RecipeBar } from "../../components/RecipeBar";
@@ -26,7 +19,8 @@ import { TAndCModal } from "../../components/TAndCModal";
 import { useRecipeStore } from "../../stores/useRecipeStore";
 import theme from "../../theme";
 
-const itemSkus = ["pro_upgrade"];
+//const REVENUECAT_API_KEY = "YOUR_REVENUECAT_PUBLIC_API_KEY"; // replace with your key
+const PRODUCT_ID = "pro_upgrade"; // must match RevenueCat product ID
 
 export default function Menu() {
   const recipes = useRecipeStore((state) => state.recipes);
@@ -41,71 +35,53 @@ export default function Menu() {
   const [loadingPurchase, setLoadingPurchase] = useState(false);
 
   useEffect(() => {
-    let purchaseUpdateSubscription: any;
-    let purchaseErrorSubscription: any;
+    // Initialize RevenueCat
+    Purchases.configure({ apiKey: REVENUECAT_API_KEY });
 
-    const initIAP = async () => {
+    const checkProStatus = async () => {
       try {
-        await RNIap.initConnection();
-        purchaseUpdateSubscription = RNIap.purchaseUpdatedListener(
-          async (purchase: RNIap.Purchase) => {
-            const receipt = purchase.transactionReceipt;
-            if (receipt && purchase.productId === "pro_upgrade") {
-              try {
-                upgradeToPro();
-                Alert.alert("Success!", "You are now Pro! 🚀");
-                await RNIap.finishTransaction({ purchase });
-              } catch (err) {
-                console.warn("Error finishing transaction:", err);
-              }
-            }
-            setLoadingPurchase(false);
-          }
-        );
-
-        purchaseErrorSubscription = RNIap.purchaseErrorListener((error) => {
-          console.warn("Purchase error:", error);
-          Alert.alert("Purchase Error", error.message);
-          setLoadingPurchase(false);
-        });
+        const purchaserInfo = await Purchases.getCustomerInfo();
+        if (purchaserInfo.entitlements.active["pro"]) {
+          setPro(true);
+        }
       } catch (err) {
-        console.warn("IAP init error:", err);
+        console.warn("RevenueCat error:", err);
       }
     };
 
-    initIAP();
-
-    return () => {
-      if (purchaseUpdateSubscription) purchaseUpdateSubscription.remove();
-      if (purchaseErrorSubscription) purchaseErrorSubscription.remove();
-      RNIap.endConnection();
-    };
+    checkProStatus();
   }, []);
 
   const handleUpgrade = async () => {
-  if (isPro) {
-    return Alert.alert("Already Pro!", "You already have unlimited recipes 🚀");
-  }
-
-  try {
-    setLoadingPurchase(true);
-
-    const products = await RNIap.fetchProducts({ skus: itemSkus, type: "inapp" });
-    if (!products?.length) {
-      Alert.alert("Error", "Product not available. Please try again later.");
-      setLoadingPurchase(false);
-      return;
+    if (isPro) {
+      return Alert.alert("Already Pro!", "You already have unlimited recipes 🚀");
     }
 
-    await RNIap.requestPurchase({ request: { sku: "pro_upgrade" } as RNIap.RequestPurchasePropsByPlatforms });
+    try {
+      setLoadingPurchase(true);
+      const offerings = await Purchases.getOfferings();
+      const proOffer = offerings.current?.availablePackages.find(pkg => pkg.product.identifier === PRODUCT_ID);
 
-  } catch (err) {
-    console.error("Purchase error:", err);
-    Alert.alert("Error", "Could not complete purchase. Please try again later.");
-    setLoadingPurchase(false);
-  }
-};
+      if (!proOffer) {
+        Alert.alert("Error", "Product not available. Please try again later.");
+        setLoadingPurchase(false);
+        return;
+      }
 
+      const purchase = await Purchases.purchasePackage(proOffer);
+
+      if (purchase.customerInfo.entitlements.active["pro"]) {
+        upgradeToPro();
+        Alert.alert("Success!", "You are now Pro! 🚀");
+      }
+
+      setLoadingPurchase(false);
+    } catch (err: any) {
+      console.warn("Purchase error:", err);
+      Alert.alert("Purchase Error", err.message ?? "Could not complete purchase.");
+      setLoadingPurchase(false);
+    }
+  };
 
   const togglePro = () => setPro(!isPro);
 
@@ -243,6 +219,9 @@ export default function Menu() {
     </View>
   );
 }
+
+// styles remain unchanged
+
 
 // styles unchanged
 
