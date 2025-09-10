@@ -11,6 +11,10 @@ import { Pressable, PressableProps, StatusBar } from "react-native";
 import { QuickTourModal } from "../components/QuickTourModal";
 import theme from '../theme';
 
+import { Platform } from 'react-native';
+
+import Purchases, { LOG_LEVEL } from 'react-native-purchases';
+
 function NoRippleButton(props: PressableProps) {
   console.log("🟡 no ripple about to be called");
   return <Pressable {...props} android_ripple={null} />;
@@ -55,6 +59,19 @@ export default function Layout() {
 
   });
 
+  // Revenue Cat Initilization
+  useEffect(() => {
+    Purchases.setLogLevel(LOG_LEVEL.VERBOSE);
+
+    if (Platform.OS === 'ios') {
+      //Purchases.configure({apiKey: <revenuecat_project_apple_api_key>});
+      //keep this for later integration
+    } else if (Platform.OS === 'android') {
+      Purchases.configure({apiKey: process.env.EXPO_PUBLIC_REVENUECAT_GOOGLE_API_KEY! });
+    }
+
+  }, []);
+
   useEffect(() => {
     // Prevent splash screen from auto-hiding
     SplashScreen.preventAutoHideAsync()
@@ -63,12 +80,10 @@ export default function Layout() {
 
     const setNavBar = async () => {
       try {
-
         // Adjust button (icon) style for contrast
         await NavigationBar.setButtonStyleAsync("dark"); // "light" or "dark"
         // Show or hide nav bar
         await NavigationBar.setVisibilityAsync("visible"); // or "hidden"
-        
         //SystemUI.setBackgroundColorAsync(theme.colors.bg)
         console.log("✅ NavigationBar customized");
       } catch (e) {
