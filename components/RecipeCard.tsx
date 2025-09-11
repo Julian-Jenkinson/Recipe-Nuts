@@ -69,7 +69,7 @@ export default function RecipeCard({
         </Box>
 
         {/* Text Container */}
-        <Box flex={1} px={10} py={0} justifyContent='center'>
+        <Box flex={1} px={16} py={0} justifyContent='center'>
           <HStack justifyContent="space-between" alignItems="flex-start" mb={4}>
             <Text
               fontSize={17}

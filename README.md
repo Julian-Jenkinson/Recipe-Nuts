@@ -35,16 +35,17 @@ Currently in the testing phase. I am aiming towards a public release in August 2
 Utilising Expo managed workflow. The following commands will be useful:
 
    ```bash
-   npm install                                      # Install dependencies
-   npx expo start                                   # Start the app
-   emulator -avd Medium_Phone_API_36.0 -wipe-data   # Wipe android emulator data
+   npm install                                                    # Install dependencies
+   npx expo start -                                               # Start the app with clear cache
+   emulator -avd Medium_Phone_API_36.0 -wipe-data                 # Wipe android emulator data
    npx expo-doctor
-   eas build --profile preview --platform android   # Test build preview
+   npx react-native log-android                                   # view logs on connected device
+   adb logcat | grep recipenuts                                   # detailed logs
+   npx expo prebuild                                              # (re)builds andoid/ios folders
+   eas build --profile preview --platform android                 # Test build preview
    eas build --profile preview --platform android --clear-cache   # Test Preview build with a clean cache
-   npx react-native log-android                     # view logs on connected device
-   adb logcat | grep recipenuts                     # detailed logs
-   npx expo prebuild                                  # rebuilds andoid folder to update stale native code
-   eas build --platform android --profile production  # prod build
+   eas build --platform android --profile production              # prod build
+   eas build --platfrom android --profile development             # dev build
 
 
 

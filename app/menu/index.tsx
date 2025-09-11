@@ -16,6 +16,7 @@ import { RecipeBar } from "../../components/RecipeBar";
 import { TAndCModal } from "../../components/TAndCModal";
 import { useRecipeStore } from "../../stores/useRecipeStore";
 import theme from "../../theme";
+import { fetchPaywallPackage, purchasePackage } from '../../utils/revenueCat';
 
 
 export default function Menu() {
@@ -32,26 +33,25 @@ export default function Menu() {
 
   const togglePro = () => setPro(!isPro);
 
-  const handleUpgrade = () => {
-    if (isPro) {
-      //Alert.alert("Already Pro!", "You already have unlimited recipes 🚀");
-      return;
+  const handleUpgrade = async () => {
+    const pkg = await fetchPaywallPackage("default");
+    if (!pkg) return Alert.alert("Purchase not available");
+
+    try {
+      const purchase = await purchasePackage(pkg);
+
+      if (purchase.customerInfo.entitlements.active["pro"]) {
+        setPro(true);
+        Alert.alert(
+          "Success",
+          "You have upgraded to Pro! Unlimited recipes unlocked."
+        );
+      }
+    } catch (e: any) {
+      if (!e.userCancelled) {
+        Alert.alert("Purchase failed", e.message);
+      }
     }
-    // For now just simulate upgrade
-    Alert.alert(
-      "Upgrade to Pro",
-      "This will unlock unlimited recipe storage.",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Upgrade",
-          onPress: () => {
-            upgradeToPro(); // ✅ mark user as Pro
-            Alert.alert("Success", "You have upgraded to Pro! Unlimited recipes unlocked.");
-          },
-        },
-      ]
-    );
   };
 
   // Exit button logic (android only)
@@ -110,8 +110,6 @@ export default function Menu() {
         
         {/* Headings */}
         <Text style={styles.heading}>Menu</Text>
-
-
 
         <ScrollView>
 
