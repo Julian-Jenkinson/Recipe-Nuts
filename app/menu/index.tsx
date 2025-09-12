@@ -202,7 +202,7 @@ export default function Menu() {
 
 const styles = StyleSheet.create({
   container: { backgroundColor: theme.colors.bg, flex: 1, paddingHorizontal: 16 },
-  heading: { fontSize: 26, fontFamily: "body-800", marginTop: 30, marginBottom: 15, marginLeft: 40 },
+  heading: { fontSize: 26, fontFamily: "body-800", marginTop: 20, marginBottom: 20, marginLeft: 40 },
   text: { fontSize: 18, fontFamily: "body-800", marginLeft: 18 },
   menuItem: { paddingBottom: 10 },
   undertext: { fontSize: 17, fontFamily: "body-400", color: theme.colors.text2, marginLeft: 42, marginTop: 4 },

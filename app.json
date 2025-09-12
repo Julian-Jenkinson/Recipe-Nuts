@@ -33,7 +33,9 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.hulio.recipenuts",
-      "permissions": ["BILLING"]
+      "permissions": ["BILLING"],
+       "enableProguardInReleaseBuilds": true,
+      "proguardRules": "./proguard-rules.pro"
     },
     "web": {
       "bundler": "metro",

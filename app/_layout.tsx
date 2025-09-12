@@ -65,6 +65,7 @@ export default function Layout() {
   useEffect(() => {
     const initRevenueCat = async () => {
       try {
+        // Configure RevenueCat
         if (Platform.OS === "ios") {
           // Purchases.configure({ apiKey: IOS_KEY });
         } else {
@@ -73,15 +74,25 @@ export default function Layout() {
           });
         }
 
-        // Automatic restore on app start
-        await useRecipeStore.getState().restorePurchases();
+        // Fetch the latest customer info from RC
+        const info = await Purchases.getCustomerInfo();
+
+        // Sync store state: isPro = true only if entitlement active
+        useRecipeStore.setState({
+          customerInfo: info,
+          isPro: !!info.entitlements.active["pro"],
+        });
+
       } catch (err) {
         console.warn("⚠️ RevenueCat init failed:", err);
+        // fallback: reset local Pro state
+        useRecipeStore.setState({ isPro: false, customerInfo: null });
       }
     };
 
     initRevenueCat();
   }, []);
+
 
   
   useEffect(() => {
@@ -152,6 +163,7 @@ export default function Layout() {
       <StatusBar
         backgroundColor={theme.colors.bg}
         barStyle="dark-content"
+        translucent={true} // added this to try and resolve extra padding bug... not sure if i need it
       />
       <Stack
         screenOptions={{
