@@ -24,10 +24,3 @@ export const purchasePackage = async (pkg: any) => {
   }
 };
 
-export const restorePurchases = async () => {
-  try {
-    return await Purchases.restorePurchases();
-  } catch (e) {
-    throw e;
-  }
-};

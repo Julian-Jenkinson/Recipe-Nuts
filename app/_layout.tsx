@@ -9,11 +9,12 @@ import * as SplashScreen from 'expo-splash-screen';
 import React, { useEffect, useState } from "react";
 import { Pressable, PressableProps, StatusBar } from "react-native";
 import { QuickTourModal } from "../components/QuickTourModal";
+import { useRecipeStore } from '../stores/useRecipeStore';
 import theme from '../theme';
 
 import { Platform } from 'react-native';
 
-import Purchases, { LOG_LEVEL } from 'react-native-purchases';
+import Purchases from 'react-native-purchases';
 
 function NoRippleButton(props: PressableProps) {
   console.log("🟡 no ripple about to be called");
@@ -23,6 +24,7 @@ function NoRippleButton(props: PressableProps) {
 export default function Layout() {
   console.log("🟡 Layout started");
 
+  const setPro = useRecipeStore((state) => state.setPro);
   const [showQuickTour, setShowQuickTour] = useState(false);
 
   const [loaded, error] = useFonts({
@@ -61,17 +63,27 @@ export default function Layout() {
 
   // Revenue Cat Initilization
   useEffect(() => {
-    Purchases.setLogLevel(LOG_LEVEL.VERBOSE);
+    const initRevenueCat = async () => {
+      try {
+        if (Platform.OS === "ios") {
+          // Purchases.configure({ apiKey: IOS_KEY });
+        } else {
+          Purchases.configure({
+            apiKey: process.env.EXPO_PUBLIC_REVENUECAT_GOOGLE_API_KEY!,
+          });
+        }
 
-    if (Platform.OS === 'ios') {
-      //Purchases.configure({apiKey: <revenuecat_project_apple_api_key>});
-      //keep this for later integration
-    } else if (Platform.OS === 'android') {
-      Purchases.configure({apiKey: process.env.EXPO_PUBLIC_REVENUECAT_GOOGLE_API_KEY! });
-    }
+        // Automatic restore on app start
+        await useRecipeStore.getState().restorePurchases();
+      } catch (err) {
+        console.warn("⚠️ RevenueCat init failed:", err);
+      }
+    };
 
+    initRevenueCat();
   }, []);
 
+  
   useEffect(() => {
     // Prevent splash screen from auto-hiding
     SplashScreen.preventAutoHideAsync()
