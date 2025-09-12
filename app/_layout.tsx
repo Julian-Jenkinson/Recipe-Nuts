@@ -65,7 +65,7 @@ export default function Layout() {
   useEffect(() => {
     const initRevenueCat = async () => {
       try {
-        // Configure RevenueCat
+        // 1️⃣ Configure RevenueCat
         if (Platform.OS === "ios") {
           // Purchases.configure({ apiKey: IOS_KEY });
         } else {
@@ -74,19 +74,27 @@ export default function Layout() {
           });
         }
 
-        // Fetch the latest customer info from RC
-        const info = await Purchases.getCustomerInfo();
+        const store = useRecipeStore.getState();
 
-        // Sync store state: isPro = true only if entitlement active
-        useRecipeStore.setState({
-          customerInfo: info,
-          isPro: !!info.entitlements.active["pro"],
-        });
+        // 2️⃣ Use persisted Pro state first (offline-friendly)
+        let isPro = store.isPro;
+        let customerInfo = store.customerInfo;
+
+        // 3️⃣ Try fetching latest info from RevenueCat
+        try {
+          const info = await Purchases.getCustomerInfo();
+          customerInfo = info;
+          isPro = !!info.entitlements.active["pro"];
+
+          // 4️⃣ Only update store if info is available
+          useRecipeStore.setState({ customerInfo, isPro });
+        } catch (err) {
+          console.warn("⚠️ RevenueCat fetch failed, using persisted state", err);
+          // Keep offline state intact; do not overwrite isPro
+        }
 
       } catch (err) {
         console.warn("⚠️ RevenueCat init failed:", err);
-        // fallback: reset local Pro state
-        useRecipeStore.setState({ isPro: false, customerInfo: null });
       }
     };
 
