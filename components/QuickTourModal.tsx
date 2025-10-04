@@ -1,30 +1,17 @@
 import {
-  Button,
-  ButtonText,
-  CloseIcon,
-  Heading,
-  HStack,
-  Icon,
-  Modal,
-  ModalBackdrop,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  Pressable,
-  Text,
-  VStack,
+  Button, ButtonText, CloseIcon, Heading, HStack, Icon, Modal,
+  ModalBackdrop, ModalCloseButton, ModalContent, ModalHeader, Pressable,
+  Text, VStack
 } from "@gluestack-ui/themed";
 import React, { useEffect, useRef, useState } from "react";
 import {
-  Dimensions,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-  ScrollView,
-  StyleSheet,
-  View,
+  Alert, Dimensions, NativeScrollEvent, NativeSyntheticEvent, ScrollView,
+  StyleSheet, View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useRecipeStore } from "../stores/useRecipeStore";
 import theme from "../theme";
+import { fetchPaywallPackage, purchasePackage } from '../utils/revenueCat';
 
 const { width, height } = Dimensions.get("window");
 
@@ -37,12 +24,34 @@ export function QuickTourModal({
 }) {
   const [currentPage, setCurrentPage] = useState(0);
   const scrollRef = useRef<ScrollView>(null);
+  const syncCustomerInfo = useRecipeStore((state) => state.syncCustomerInfo);
+  const [upgradePrice, setUpgradePrice] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadPackage = async () => {
+      const pkg = await fetchPaywallPackage("default");
+      if (pkg) {
+        setUpgradePrice(pkg.product.priceString); // e.g. "$3.99" with correct locale
+      }
+    };
+
+    if (isOpen) {
+      loadPackage();
+    }
+  }, [isOpen]);
+
 
   const pages = [
-    { title: "Welcome to Recipe Nuts", text: "Save and organize your favorite recipes with ease." },
-    { title: "Import From Your Favourite Sites", text: "Paste the recipe URL into the add recipe tab to extract just the important bits. No blogs! No backstories!" },
-    { title: "Get Started for Free", text: "Start your collection with storage for up to 10 recipes. Upgrade for a one time fee of $3.99 to get unlimited.", showUpgrade: true },
-    { title: "Share & Explore", text: "Share recipes with friends or browse your collection for your next meal!", isLast: true },
+    { title: "Welcome to Recipe Nuts", 
+      text: "Save and organize your favorite recipes with ease." },
+    { title: "Import From Your Favourite Sites", 
+      text: "Paste the recipe URL into the add recipe tab to extract just the important bits. No blogs! No backstories!" },
+    { title: "Get Started for Free", 
+      text: `Start your collection with storage for up to 10 recipes. Upgrade for a one time fee of ${upgradePrice ?? "…" } to get unlimited.`, 
+      showUpgrade: true },
+    { title: "Share & Explore", 
+      text: "Share recipes with friends or browse your collection for your next meal!", 
+      isLast: true },
   ];
 
   const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -50,6 +59,8 @@ export function QuickTourModal({
     const pageIndex = Math.round(offsetX / width);
     setCurrentPage(pageIndex);
   };
+
+
 
   // Reset to first page whenever modal opens
   useEffect(() => {
@@ -69,6 +80,26 @@ export function QuickTourModal({
       onClose();
     }
   };
+
+  const handleUpgrade = async () => {
+      const pkg = await fetchPaywallPackage("default");
+      if (!pkg) return Alert.alert("Purchase not available");
+  
+      try {
+        await purchasePackage(pkg);
+        // Sync store state with RevenueCat
+        await syncCustomerInfo();
+  
+        Alert.alert(
+          "Success",
+          "You have upgraded to Pro! Unlimited recipes unlocked."
+        );
+      } catch (e: any) {
+        if (!e.userCancelled) {
+          Alert.alert("Purchase failed", e.message);
+        }
+      }
+    };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="full" animationDuration="0" >
@@ -101,6 +132,7 @@ export function QuickTourModal({
 
                   {page.showUpgrade && (
                     <Button
+                      onPress={handleUpgrade}
                       mt="$4"
                       style={{
                         backgroundColor: theme.colors.cta,

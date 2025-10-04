@@ -68,7 +68,8 @@ export default function Layout() {
         // 1️⃣ Configure RevenueCat
         if (Platform.OS === "ios") {
           // Purchases.configure({ apiKey: IOS_KEY });
-        } else {
+        } 
+        else {
           Purchases.configure({
             apiKey: process.env.EXPO_PUBLIC_REVENUECAT_GOOGLE_API_KEY!,
           });
