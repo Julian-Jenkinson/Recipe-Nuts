@@ -69,7 +69,7 @@ export default function Menu() {
   const handleContactPress = async () => {
     if (Platform.OS !== 'android') return;
 
-    const email = 'u1133676@gmail.com';
+    const email = 'hello.recipenuts@gmail.com';
     const subject = 'Feedback / Support';
     const url = `mailto:${email}?subject=${encodeURIComponent(subject)}`;
 
