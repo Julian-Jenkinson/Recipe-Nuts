@@ -265,7 +265,7 @@ export default function FilterDrawer({ isOpen, onClose, onFilterSelect, selected
                       </HStack>
                       {/* Selected Tick */}
                       {selectedFilter === f.key ? (
-                        <MaterialIcons name="check" size={22} color={theme.colors.cta} />
+                        <MaterialIcons name="check" size={22} color={theme.colors.cta}/>
                       ) : (
                         <View style={{ width: 22, height: 22 }} /> // keeps spacing consistent
                       )}

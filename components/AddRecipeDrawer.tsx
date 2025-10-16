@@ -1,26 +1,11 @@
 import { Feather } from '@expo/vector-icons';
-import {
-  Box,
-  HStack,
-  Pressable,
-  StatusBar,
-  Text,
-  VStack,
-  View,
-} from '@gluestack-ui/themed';
+import { Box, HStack, Pressable, StatusBar, Text, VStack, View } from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import {
-  Animated,
-  Dimensions,
-  Easing,
-  Modal,
-  PanResponder,
-
-  StyleSheet,
-} from 'react-native';
+import { Alert, Animated, Dimensions, Easing, Modal, PanResponder, StyleSheet } from 'react-native';
 import { useRecipeStore } from '../stores/useRecipeStore';
 import theme from '../theme';
+import { fetchPaywallPackage, purchasePackage } from '../utils/revenueCat';
 
 type Props = {
   isOpen: boolean;
@@ -33,6 +18,7 @@ export default function AddRecipeDrawer({ isOpen, onClose }: Props) {
   // Access recipe data and pro status
   const recipes = useRecipeStore((state) => state.recipes);
   const isPro = useRecipeStore((state) => state.isPro);
+  const syncCustomerInfo = useRecipeStore((state) => state.syncCustomerInfo);
   
   // Check if free tier limit is reached
   const hasReachedLimit = !isPro && recipes.length >= 10;
@@ -170,6 +156,26 @@ export default function AddRecipeDrawer({ isOpen, onClose }: Props) {
 
   const combinedTranslateY = Animated.add(drawerTranslateY, translateY);
 
+  const handleUpgrade = async () => {
+      const pkg = await fetchPaywallPackage("default");
+      if (!pkg) return Alert.alert("Purchase not available");
+  
+      try {
+        await purchasePackage(pkg);
+        // Sync store state with RevenueCat
+        await syncCustomerInfo();
+  
+        Alert.alert(
+          "Success",
+          "You have upgraded to Pro! Unlimited recipes unlocked."
+        );
+      } catch (e: any) {
+        if (!e.userCancelled) {
+          Alert.alert("Purchase failed", e.message);
+        }
+      }
+    };
+
   return (
     <Modal
       visible={isOpen}
@@ -278,7 +284,9 @@ export default function AddRecipeDrawer({ isOpen, onClose }: Props) {
                   <Pressable
                     onPress={() => {
                       onClose();
-                      router.push('/menu');
+                      setTimeout(() => {
+                        handleUpgrade();
+                      }, 250);
                     }}
                     style={styles.upgradePressable}
                   >

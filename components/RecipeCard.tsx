@@ -107,6 +107,7 @@ export default function RecipeCard({
                   color={theme.colors.text2}
                   style={styles.metaText}
                   numberOfLines={1}
+                  flex={1}
                 >
                   {source.replace(/^https?:\/\/(www\.)?/, "").split("/")[0]}
                 </Text>
@@ -141,6 +142,7 @@ export default function RecipeCard({
                   color={theme.colors.text2}
                   style={styles.metaText}
                   numberOfLines={1}
+                  flex={1}
                 >
                   {servingSizeText}
                 </Text>
