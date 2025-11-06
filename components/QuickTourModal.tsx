@@ -6,7 +6,7 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 import {
   Alert, Dimensions, NativeScrollEvent, NativeSyntheticEvent, ScrollView,
-  StyleSheet, View
+  StatusBar, StyleSheet, View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRecipeStore } from "../stores/useRecipeStore";
@@ -101,8 +101,12 @@ export function QuickTourModal({
       }
     };
 
+//check status bar colour is working properly - this will be in effect in NEXT build
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="full" animationDuration="0" >
+      <StatusBar backgroundColor={theme.colors.bg} barStyle="dark-content" />
+    
       <ModalBackdrop />
       <ModalContent style={styles.modal}>
         <SafeAreaView edges={["top", "bottom"]} style={{ flex: 1 }}>
