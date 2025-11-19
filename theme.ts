@@ -5,7 +5,7 @@ const theme = {
     //cta: '#f2973c',
     cta: '#FFBE3C',
     ctaText: '#ffffff',
-    text1: '#444',
+    text1: '#111',
     text2: '#777',
   },
 };

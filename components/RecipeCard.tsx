@@ -42,7 +42,7 @@ export default function RecipeCard({
     // Remove "serving" or "servings" (case-insensitive)
     let displayValue = val.replace(/servings?/i, '').trim();
     // Optionally, remove other words like "approx", "about" if you want to clean further
-    displayValue = displayValue.replace(/^(approx|about)\s*/i, '').trim();
+    displayValue = displayValue.replace(/^(approx|about|makes)\s*/i, '').trim();
     // Return the final string
     return `Serves ${displayValue}`;
   }
@@ -96,12 +96,14 @@ export default function RecipeCard({
               />
             </Pressable>
           </HStack>
+          
 
+          
           <Box gap={1}>
             {source && (
               <HStack alignItems="center" gap={8}>
                 <Box alignItems="center" justifyContent="center" style={styles.iconContainer}>
-                  <Feather name="external-link" size={14} color="#111" strokeWidth={2.5} />
+                  <Feather name="external-link" size={14} color={theme.colors.text2} strokeWidth={2.5} />
                 </Box>
                 <Text
                   color={theme.colors.text2}
@@ -117,7 +119,7 @@ export default function RecipeCard({
             {(prepTime || cookTime) && (
               <HStack alignItems="center" gap={8}>
                 <Box alignItems="center" justifyContent="center" style={styles.iconContainer}>
-                  <Feather name="clock" size={14} color="#111" strokeWidth={2.5} />
+                  <Feather name="clock" size={14} color={theme.colors.text2} strokeWidth={2.5} />
                 </Box>
                 <Text
                   color={theme.colors.text2}
@@ -136,7 +138,7 @@ export default function RecipeCard({
             {servingSizeText && (
               <HStack alignItems="center" gap={8}>
                 <Box alignItems="center" justifyContent="center" style={styles.iconContainer}>
-                  <Feather name="users" size={14} color="#111" strokeWidth={2.5} />
+                  <Feather name="users" size={14} color={theme.colors.text2} strokeWidth={2.5} />
                 </Box>
                 <Text
                   color={theme.colors.text2}
@@ -149,6 +151,25 @@ export default function RecipeCard({
               </HStack>
             )}
           </Box>
+          
+
+          {/* testing out a new format
+          <Text>
+           {source.replace(/^https?:\/\/(www\.)?/, "").split("/")[0]}
+            |
+           {(() => {
+                    const prep = parseInt(prepTime ?? '') || 0;
+                    const cook = parseInt(cookTime ?? '') || 0;
+                    const total = prep + cook;
+                    return total > 0 ? `${total} mins` : (prepTime || cookTime);
+                  })()} 
+           | 
+           {servingSizeText}
+          </Text>
+          */}
+
+
+
         </Box>
       </HStack>
     </Pressable>
@@ -157,10 +178,10 @@ export default function RecipeCard({
 
 const styles = StyleSheet.create({
   titleText: {
-    fontFamily: 'body-800',
+    fontFamily: 'heading-800',
   },
   metaText: {
-    fontFamily: 'body-400',
+    fontFamily: 'body-600',
     lineHeight: 20,
     fontSize: 15,
   },
@@ -168,6 +189,6 @@ const styles = StyleSheet.create({
     height: 20,
   },
   iconStyle: {
-    color: '#111',
+    //color: '#111',
   },
 });

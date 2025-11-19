@@ -1,4 +1,4 @@
-import { Feather, FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather, FontAwesome } from '@expo/vector-icons';
 import { Box, HStack, Image, Pressable, StatusBar, Text, View } from '@gluestack-ui/themed';
 import * as FileSystem from 'expo-file-system';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -117,9 +117,13 @@ export default function RecipeDetailsScreen() {
         contentContainerStyle={{ paddingBottom: 100 }}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Recipe Image & Favorite */}
+        <View style={styles.container}>
+          <Text style={styles.heading3xl}>{recipe.title}</Text>
+          <Text style={styles.headingMd}>By {recipe.source}</Text>
+
+          {/* Recipe Image & Favorite */}
         <Box>
-          <Image source={{ uri: imageUri }} style={styles.image} resizeMode="cover" />
+          <Image source={{ uri: imageUri }} style={styles.image} resizeMode="cover" borderRadius={4}/>
           <Pressable
             onPress={() => toggleFavourite(recipe.id)}
             hitSlop={5}
@@ -134,74 +138,29 @@ export default function RecipeDetailsScreen() {
             </Box>
           </Pressable>
         </Box>
-
-        <View style={styles.container}>
-          <Text style={styles.heading3xl}>{recipe.title}</Text>
-          <Text style={styles.headingMd}>By {recipe.source}</Text>
           
-          {/* Recipe Stats */}
-          <HStack
-            pl={4}
-            pr={10}
-            pt={20}
-            pb={0}
-            justifyContent="space-between"
-            alignItems="flex-start"
-            flexWrap="wrap"
-          >
-            {/* Prep + Cook Time */}
-            <Box alignItems="center" flexShrink={1} maxWidth="25%">
-              <Feather name="clock" size={20} color="#777" />
-              <Text
-                style={styles.hstackItemText}
-                numberOfLines={1}
-                ellipsizeMode="tail"
-              >
+          {/* Recipe Stats 2 */}
+          <HStack paddingTop={20}>
+              <Feather name="clock" size={18} color="#111" />
+              <Text style={styles.metaText}>
                 {+recipe.prepTime + +recipe.cookTime || '-'} mins
               </Text>
-            </Box>
 
-            {/* Category */}
-            <Box alignItems="center" flexShrink={1} maxWidth="25%">
-              <MaterialCommunityIcons name="bowl-mix-outline" size={20} color="#777" />
-              <Text
-                style={styles.hstackItemText}
-                numberOfLines={1}
-                ellipsizeMode="tail"
-              >
-                {recipe.category || 'Other'}
-              </Text>
-            </Box>
-
-            {/* Difficulty */}
-            <Box alignItems="center" flexShrink={1} maxWidth="25%">
-              <Feather name="bar-chart" size={20} color="#777" />
-              <Text
-                style={styles.hstackItemText}
-                numberOfLines={1}
-                ellipsizeMode="tail"
-              >
-                {recipe.difficulty || 'Medium'}
-              </Text>
-            </Box>
-
-            {/* Serving Size */}
-            <Box alignItems="center" flexShrink={1} maxWidth="25%">
-              <Feather name="user" size={20} color="#777" />
-              <Text
-                style={styles.hstackItemText}
-                numberOfLines={1}
-                ellipsizeMode="tail"
-              >
+              <Feather name="user" size={18} color="#111" />
+              <Text style={styles.metaText}>
                 Serves {+recipe.servingSize || '-'}
               </Text>
-            </Box>
+
+              <Feather name="bar-chart" size={18} color="#111" />
+              <Text style={styles.metaText}>
+                {recipe.difficulty || 'Medium'}
+              </Text>
           </HStack>
 
           <View style={styles.pageBreak} />
 
           {/* Ingredients */}
-          <Text style={styles.heading2xl}>INGREDIENTS</Text>
+          <Text style={styles.heading2xl}>Ingredients</Text>
           {ingredients.length > 0
             ? ingredients.map((item, index) => (
                 <Text key={`ing-${index}`} style={styles.itemText}>
@@ -213,7 +172,7 @@ export default function RecipeDetailsScreen() {
           <View style={styles.pageBreak} />
 
           {/* Instructions */}
-          <Text style={styles.heading2xl}>INSTRUCTIONS</Text>
+          <Text style={styles.heading2xl}>Instructions</Text>
           <RNView>
             {instructions.length > 0 ? (
               instructions.map((step, index) => (
@@ -249,13 +208,13 @@ const styles = StyleSheet.create({
   container: { paddingHorizontal: 16 },
   centered: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 16 },
   image: { width: '100%', height: 300 },
-  itemText: { fontSize: 16, marginBottom: 10, lineHeight: 22, fontFamily: 'body-400', color: theme.colors.text1 },
-  instructionParagraph: { fontSize: 16, marginBottom: 12, lineHeight: 28, fontFamily: 'body-400', color: theme.colors.text1 },
+  itemText: { fontSize: 16, marginBottom: 20, lineHeight: 28, fontFamily: 'body-500', color: theme.colors.text1 },
+  instructionParagraph: { fontSize: 16, marginBottom: 20, lineHeight: 28, fontFamily: 'body-500', color: theme.colors.text1 },
   stepHeading: { fontFamily: 'body-700', fontSize: 16, marginBottom: 4, color: theme.colors.text1 },
   heading2xl: { fontSize: 20, fontFamily: 'body-700', marginBottom: 15, marginTop: 20, color: theme.colors.text1 },
   heading3xl: { fontSize: 28, fontFamily: 'body-700', paddingTop: 14, color: theme.colors.text1 },
-  headingMd: { fontSize: 16, fontFamily: 'body-500', marginTop: 10, color: theme.colors.text2 },
-  hstackItemText: { fontSize: 14, fontFamily: 'body-500', color: '#777', paddingTop: 6, textAlign: 'center' },
+  headingMd: { fontSize: 16, fontFamily: 'body-600', marginTop: 10, marginBottom: 15, color: theme.colors.text1 },
+  metaText: { fontSize: 16, fontFamily: 'body-600', color: theme.colors.text1, textAlign: 'center', paddingLeft:6,paddingRight:22 },
   body400: { fontFamily: 'body-400' },
   pageBreak: { height: 1, backgroundColor: '#ddd', marginTop: 20 },
 });

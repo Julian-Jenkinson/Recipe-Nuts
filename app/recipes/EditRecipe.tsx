@@ -156,12 +156,14 @@ export default function EditRecipe() {
           style={styles.input}
         />
 
+        {/*
         <Text style={styles.label}>Category</Text>
         <TextInput
           value={draftRecipe.category}
           onChangeText={(text) => setDraftRecipe({ ...draftRecipe, category: text })}
           style={styles.input}
         />
+        */}
 
         <Text style={styles.label}>Difficulty</Text>
         <TextInput
