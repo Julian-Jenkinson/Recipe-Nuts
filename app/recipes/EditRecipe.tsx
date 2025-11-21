@@ -1,5 +1,6 @@
 import { Feather } from '@expo/vector-icons';
 import { Box, HStack, Image, Pressable, StatusBar, Text } from '@gluestack-ui/themed';
+import * as ImagePicker from 'expo-image-picker';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useRef, useState } from 'react';
 import {
@@ -98,6 +99,47 @@ export default function EditRecipe() {
     router.back();
   };
 
+  const pickImage = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permissionResult.granted) {
+      Alert.alert('Permission required', 'Permission to access the media library is required.');
+      return;
+    }
+  
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 4],
+      quality: 1,
+    });
+  
+    if (!result.canceled) {
+      setDraftRecipe({
+        ...draftRecipe,
+        imageUrl: result.assets[0].uri,
+      });
+    }
+  };
+  
+  const takePhoto = async () => {
+    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+  
+    if (!permissionResult.granted) {
+      Alert.alert('Permission required', 'Permission to access the camera is required.');
+      return;
+    }
+  
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+  
+    if (!result.canceled) {
+      setDraftRecipe({ ...draftRecipe, imageUrl: result.assets[0].uri });
+    }
+  };
+
   return (
     <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: theme.colors.bg }}>
       <StatusBar backgroundColor={theme.colors.bg} barStyle="dark-content" />
@@ -149,7 +191,26 @@ export default function EditRecipe() {
           />
         ) : null}
 
-        <Text style={styles.label}>Source</Text>
+        {/* Buttons under image */}
+        <HStack justifyContent="center" mt={12} gap={12}>
+          <Pressable style={styles.cameraButton} onPress={pickImage}>
+            <HStack alignItems="center" gap={8}>
+              <Text style={styles.cameraButtonText}>Choose Image</Text>
+              <Feather name="upload" size={22} color='theme.colors.text1' />
+            </HStack>
+          </Pressable>
+        
+          <Pressable style={styles.cameraButton} onPress={takePhoto}>
+            <HStack alignItems="center" gap={8}>
+              <Text style={styles.cameraButtonText}>Take Photo</Text>
+              <Feather name="camera" size={22} color='theme.colors.text1' />
+            </HStack>
+          </Pressable>
+        </HStack>
+
+
+
+        <Text style={styles.label}>Author</Text>
         <TextInput
           value={draftRecipe.source}
           onChangeText={(text) => setDraftRecipe({ ...draftRecipe, source: text })}
@@ -283,10 +344,11 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
     backgroundColor: '#fff',
     color: '#000',
+    lineHeight:28,
   },
   image: {
     width: '100%',
-    height: 200,
+    height: 220,
     borderRadius: 16,
     marginTop: 16,
   },
@@ -313,5 +375,18 @@ const styles = StyleSheet.create({
     fontFamily: 'body-700',
     color: '#fff',
     fontSize: 16,
+  },
+
+  cameraButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+    borderRadius: 16,
+  },
+  cameraButtonText: {
+    color: theme.colors.text1,
+    fontSize: 16,
+    fontFamily: 'body-700',
   },
 });

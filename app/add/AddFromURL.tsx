@@ -1,13 +1,13 @@
 import { Feather } from '@expo/vector-icons';
 import { Input, InputField, InputSlot, StatusBar } from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
+import * as StoreReview from 'expo-store-review';
 import React, { useState } from 'react';
 import { ActivityIndicator, Alert, Keyboard, Pressable, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 import { FreeTierLimitReached } from '../../components/FreeTierLimitReached';
 import { useRecipeStore } from '../../stores/useRecipeStore';
 import theme from '../../theme';
 import { downloadAndStoreImage } from '../../utils/downloadAndStoreImage';
-
 
 export default function AddRecipeScreen() {
   const recipes = useRecipeStore((state) => state.recipes);
@@ -82,8 +82,20 @@ export default function AddRecipeScreen() {
       
       // ✅ 7. Show quick success toast/alert AFTER navigation
       setTimeout(() => {
-        Alert.alert('Success', 'Recipe imported and saved!');
-      }, 300); // tiny delay to avoid blocking transition
+        Alert.alert(
+          'Success',
+          'Recipe imported and saved!',
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                // NOW the alert is gone → trigger review
+                triggerReviewIfNeeded();
+              }
+            }
+          ]
+        );
+      }, 2000);// tiny delay to avoid blocking transition
 
     } catch (err: any) {
       console.error('Import error:', err);
@@ -98,7 +110,6 @@ export default function AddRecipeScreen() {
   };
 
   const hasReachedLimit = !isPro && recipes.length >= 10;
-
   if (hasReachedLimit) {
     return (
       <FreeTierLimitReached 
@@ -108,6 +119,20 @@ export default function AddRecipeScreen() {
       />
     );
   }
+
+  const triggerReviewIfNeeded = async () => {
+    try {
+      // Optional: add your own logic, e.g. only every 5 imports
+      // if (!shouldAskForReview()) return;
+
+      const available = await StoreReview.isAvailableAsync();
+      if (available) {
+        await StoreReview.requestReview();
+      }
+    } catch (err) {
+      console.log("Review prompt error:", err);
+    }
+  };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>

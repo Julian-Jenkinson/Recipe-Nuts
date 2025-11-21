@@ -82,7 +82,7 @@ export default function RecipeDetailsScreen() {
       await Share.share({
         message: `Check out this recipe: \n\n${recipe.title}\nBy ${recipe.source}\n\nIngredients:\n${ingredients.join(
           '\n'
-        )}\n\nInstructions:\n${instructions.join('\n\n')}`,
+        )}\n\nInstructions:\n${instructions.join('\n\n')}\n\nRecipe shared by RecipeNuts\nAvailable on the Play Store`,
       });
     } catch (error) {
       console.error('Error sharing:', error instanceof Error ? error.message : error);
@@ -119,11 +119,11 @@ export default function RecipeDetailsScreen() {
       >
         <View style={styles.container}>
           <Text style={styles.heading3xl}>{recipe.title}</Text>
-          <Text style={styles.headingMd}>By {recipe.source}</Text>
+          <Text style={styles.headingMd}>{recipe.source}</Text>
 
           {/* Recipe Image & Favorite */}
         <Box>
-          <Image source={{ uri: imageUri }} style={styles.image} resizeMode="cover" borderRadius={4}/>
+          <Image source={{ uri: imageUri }} style={styles.image} resizeMode="cover" borderRadius={12}/>
           <Pressable
             onPress={() => toggleFavourite(recipe.id)}
             hitSlop={5}
@@ -157,19 +157,23 @@ export default function RecipeDetailsScreen() {
               </Text>
           </HStack>
 
-          <View style={styles.pageBreak} />
+          
 
           {/* Ingredients */}
-          <Text style={styles.heading2xl}>Ingredients</Text>
-          {ingredients.length > 0
-            ? ingredients.map((item, index) => (
-                <Text key={`ing-${index}`} style={styles.itemText}>
-                  {item}
-                </Text>
-              ))
-            : <Text style={styles.itemText}>No ingredients available.</Text>}
-
+          <Box style={styles.ingredientBox}>
+            <Text style={styles.heading2xl}>Ingredients</Text>
+            {ingredients.length > 0
+              ? ingredients.map((item, index) => (
+                  <Text key={`ing-${index}`} style={styles.itemText}>
+                    {item}
+                  </Text>
+                ))
+              : <Text style={styles.itemText}>No ingredients available.</Text>}
+          </Box>
+          
+          {/*
           <View style={styles.pageBreak} />
+          */}
 
           {/* Instructions */}
           <Text style={styles.heading2xl}>Instructions</Text>
@@ -211,10 +215,11 @@ const styles = StyleSheet.create({
   itemText: { fontSize: 16, marginBottom: 20, lineHeight: 28, fontFamily: 'body-500', color: theme.colors.text1 },
   instructionParagraph: { fontSize: 16, marginBottom: 20, lineHeight: 28, fontFamily: 'body-500', color: theme.colors.text1 },
   stepHeading: { fontFamily: 'body-700', fontSize: 16, marginBottom: 4, color: theme.colors.text1 },
-  heading2xl: { fontSize: 20, fontFamily: 'body-700', marginBottom: 15, marginTop: 20, color: theme.colors.text1 },
+  heading2xl: { fontSize: 20, fontFamily: 'body-700', marginBottom: 15, marginTop: 10, color: theme.colors.text1 },
   heading3xl: { fontSize: 28, fontFamily: 'body-700', paddingTop: 14, color: theme.colors.text1 },
-  headingMd: { fontSize: 16, fontFamily: 'body-600', marginTop: 10, marginBottom: 15, color: theme.colors.text1 },
+  headingMd: { fontSize: 16, fontFamily: 'body-600', marginTop: 5, marginBottom: 15, color: theme.colors.text2 },
   metaText: { fontSize: 16, fontFamily: 'body-600', color: theme.colors.text1, textAlign: 'center', paddingLeft:6,paddingRight:22 },
   body400: { fontFamily: 'body-400' },
   pageBreak: { height: 1, backgroundColor: '#ddd', marginTop: 20 },
+  ingredientBox:{backgroundColor:"#f6f6f6", padding:16, borderRadius:12, marginTop:20, marginBottom:20,}
 });

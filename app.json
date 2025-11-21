@@ -59,6 +59,7 @@
           "enforceNavigationBarContrast": false
         }
       }],
+      
       "expo-font",
       "expo-web-browser"
     ],

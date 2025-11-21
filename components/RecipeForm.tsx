@@ -7,6 +7,7 @@ import {
   StatusBar,
   Text
 } from "@gluestack-ui/themed";
+import * as ImagePicker from 'expo-image-picker';
 import React, { useEffect, useRef, useState } from "react";
 import { Alert, ScrollView, StyleSheet, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -114,6 +115,50 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
     onSubmit(finalRecipe);
   };
 
+  const pickImage = async () => {
+  const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  if (!permissionResult.granted) {
+    Alert.alert('Permission required', 'Permission to access the media library is required.');
+    return;
+  }
+
+  const result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    allowsEditing: true,
+    aspect: [4, 4],
+    quality: 1,
+  });
+
+  if (!result.canceled) {
+    setDraftRecipe({
+      ...draftRecipe,
+      imageUrl: result.assets[0].uri,
+    });
+  }
+};
+
+const takePhoto = async () => {
+  const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+
+  if (!permissionResult.granted) {
+    Alert.alert('Permission required', 'Permission to access the camera is required.');
+    return;
+  }
+
+  const result = await ImagePicker.launchCameraAsync({
+    allowsEditing: true,
+    aspect: [4, 3],
+    quality: 1,
+  });
+
+  if (!result.canceled) {
+    setDraftRecipe({ ...draftRecipe, imageUrl: result.assets[0].uri });
+  }
+};
+
+
+
+
   return (
     <SafeAreaView edges={["top"]} style={{ flex: 1, backgroundColor: theme.colors.bg }}>
       <StatusBar backgroundColor={theme.colors.bg} barStyle="dark-content" />
@@ -161,20 +206,47 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
         />
 
         {/* ✅ Only imageUrl goes to <Image /> */}
-        <Image
-          source={
-            isValidImageUrl(draftRecipe.imageUrl)
-              ? { uri: draftRecipe.imageUrl }
-              : fallbackImage
-          }
-          style={styles.image}
-          resizeMode="cover"
-          accessibilityLabel={`Image of ${draftRecipe.title || "placeholder"}`}
-          alt={`Image of ${draftRecipe.title || "placeholder"}`}
-        />
+       {/* Image or Placeholder */}
+{isValidImageUrl(draftRecipe.imageUrl) ? (
+  <Image
+    source={{ uri: draftRecipe.imageUrl }}
+    style={styles.image}
+    resizeMode="cover"
+    accessibilityLabel={`Image of ${draftRecipe.title || "placeholder"}`}
+    alt={`Image of ${draftRecipe.title || "placeholder"}`}
+  />
+) : (
+  <Box
+    style={styles.imagePlaceholder}
+    alignItems="center"
+    justifyContent="center"
+  >
+    <Feather name="image" size={48} color="#ccc" />
+  </Box>
+)}
+
+{/* Buttons under image */}
+<HStack justifyContent="center" mt={12} gap={12}>
+  <Pressable style={styles.cameraButton} onPress={pickImage}>
+    <HStack alignItems="center" gap={8}>
+      <Text style={styles.cameraButtonText}>Choose Image</Text>
+      <Feather name="upload" size={24} color='theme.colors.text1' />
+    </HStack>
+  </Pressable>
+
+  <Pressable style={styles.cameraButton} onPress={takePhoto}>
+    <HStack alignItems="center" gap={8}>
+      <Text style={styles.cameraButtonText}>Take Photo</Text>
+      <Feather name="camera" size={24} color='theme.colors.text1' />
+    </HStack>
+  </Pressable>
+</HStack>
+
+
+
 
         {/* Source (just text info, never used as image) */}
-        <Text style={styles.label}>Source</Text>
+        <Text style={styles.label}>Author</Text>
         <TextInput
           value={draftRecipe.source}
           onChangeText={(text) =>
@@ -184,7 +256,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
           placeholder="e.g. https://www.tasty.com/pasta"
         />
 
-        {/* Category */}
+        {/* Category 
         <Text style={styles.label}>Category</Text>
         <TextInput
           value={draftRecipe.category}
@@ -193,6 +265,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
           }
           style={styles.input}
         />
+        */}
 
         {/* Difficulty */}
         <Text style={styles.label}>Difficulty</Text>
@@ -334,6 +407,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
     backgroundColor: '#fff',
     color: '#000',
+    lineHeight:28,
   },
   image: {
     width: '100%',
@@ -364,5 +438,30 @@ const styles = StyleSheet.create({
     fontFamily: 'body-700',
     color: '#fff',
     fontSize: 16,
+  },
+  imagePlaceholder: {
+  width: '100%',
+  height: 220,
+  marginTop:16,
+  borderRadius: 16,
+  backgroundColor: '#f0f0f0',
+  borderWidth: 1,
+  borderColor: '#ddd',
+  alignItems: 'center',
+  justifyContent: 'center',
+},
+  cameraButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    //backgroundColor: theme.colors.cta,
+    //paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 16,
+  },
+  cameraButtonText: {
+    color: theme.colors.text1,
+    fontSize: 16,
+    fontFamily: 'body-700',
   },
 });
