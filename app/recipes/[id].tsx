@@ -160,15 +160,20 @@ export default function RecipeDetailsScreen() {
           
 
           {/* Ingredients */}
+          <Text style={styles.heading2xl}>Ingredients</Text>
           <Box style={styles.ingredientBox}>
-            <Text style={styles.heading2xl}>Ingredients</Text>
             {ingredients.length > 0
               ? ingredients.map((item, index) => (
-                  <Text key={`ing-${index}`} style={styles.itemText}>
-                    {item}
-                  </Text>
+                  <View key={`ing-${index}`}>
+                    <HStack style={styles.ingredientHStack}>
+                      <Box style={styles.ingredientTick}>
+                      </Box>
+                      <Text style={styles.ingredientText}>{item}</Text>
+                    </HStack>
+                  </View>
+                  
                 ))
-              : <Text style={styles.itemText}>No ingredients available.</Text>}
+              : <Text style={styles.itemText}>No ingredients available</Text>}
           </Box>
           
           {/*
@@ -180,26 +185,31 @@ export default function RecipeDetailsScreen() {
           <RNView>
             {instructions.length > 0 ? (
               instructions.map((step, index) => (
-                <View key={`step-${index}`} style={{ marginBottom: 16 }}>
-                  <Text style={styles.stepHeading}>Step {index + 1}</Text>
-                  <Text style={styles.instructionParagraph}>{step}</Text>
+                <View key={`step-${index}`} style={{ marginBottom: index === step.length -1 ? 0 : 25,  }}>
+                  <HStack style={styles.instructionHStack} >
+                    <Text style={styles.stepHeading}>{index + 1}</Text>
+                    <Text style={styles.instructionParagraph}>{step}</Text>
+                  </HStack>
                 </View>
               ))
             ) : (
-              <Text style={styles.itemText}>No instructions available.</Text>
+              <Box style={styles.ingredientBox}>
+                <Text style={styles.itemText}>No instructions available</Text>
+              </Box>
             )}
           </RNView>
 
           {/* Notes */}
           {notes.length > 0 && (
             <>
-              <View style={styles.pageBreak} />
-              <Text style={styles.heading2xl}>Notes:</Text>
-              {notes.map((note, idx) => (
-                <Text key={`note-${idx}`} style={styles.itemText}>
-                  • {note}
-                </Text>
-              ))}
+              <Text style={styles.heading2xl}>Notes</Text>
+              <Box style={styles.note}>
+                {notes.map((note, index) => (
+                  <Text key={`note-${index}`} style={styles.noteText}>
+                  {note}
+                  </Text>
+                ))}
+              </Box>
             </>
           )}
         </View>
@@ -209,17 +219,133 @@ export default function RecipeDetailsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { paddingHorizontal: 16 },
-  centered: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 16 },
-  image: { width: '100%', height: 300 },
-  itemText: { fontSize: 16, marginBottom: 20, lineHeight: 28, fontFamily: 'body-500', color: theme.colors.text1 },
-  instructionParagraph: { fontSize: 16, marginBottom: 20, lineHeight: 28, fontFamily: 'body-500', color: theme.colors.text1 },
-  stepHeading: { fontFamily: 'body-700', fontSize: 16, marginBottom: 4, color: theme.colors.text1 },
-  heading2xl: { fontSize: 20, fontFamily: 'body-700', marginBottom: 15, marginTop: 10, color: theme.colors.text1 },
-  heading3xl: { fontSize: 28, fontFamily: 'body-700', paddingTop: 14, color: theme.colors.text1 },
-  headingMd: { fontSize: 16, fontFamily: 'body-600', marginTop: 5, marginBottom: 15, color: theme.colors.text2 },
-  metaText: { fontSize: 16, fontFamily: 'body-600', color: theme.colors.text1, textAlign: 'center', paddingLeft:6,paddingRight:22 },
-  body400: { fontFamily: 'body-400' },
-  pageBreak: { height: 1, backgroundColor: '#ddd', marginTop: 20 },
-  ingredientBox:{backgroundColor:"#f6f6f6", padding:16, borderRadius:12, marginTop:20, marginBottom:20,}
+  container: { 
+    paddingHorizontal: 16 }
+    ,
+  centered: { 
+    flex: 1, 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    padding: 16 
+  },
+  image: { 
+    width: '100%', 
+    height: 300 
+  },
+  ingredientBox: {
+    backgroundColor: theme.colors.paper, 
+    paddingHorizontal:16, 
+    paddingVertical:24, 
+    borderRadius:12, 
+    gap: 20
+  },
+  ingredientHStack: {
+    //alignItems:'flex-start',
+    alignItems:'center',
+    borderRadius: 12,
+    gap: 10,
+  },
+  ingredientTick: {
+    lineHeight:28,
+    width:30,
+    height:30,
+    borderRadius:15,
+    //textAlign: 'center',
+    borderColor: '#888',
+    borderWidth:1,
+    borderStyle:'dashed'
+    //color: 'white', 
+    //backgroundColor: theme.colors.cta,
+  },
+  ingredientText: { 
+    paddingLeft: 16,
+    paddingRight: 42,
+    fontSize: 16, 
+    lineHeight: 28, 
+    fontFamily: 'body-500', 
+    color: theme.colors.text1 
+  },
+  instructionHStack: {
+    //alignItems:'flex-start',
+    alignItems:'center',
+    paddingHorizontal:16, 
+    paddingVertical:24, 
+    borderRadius: 12,
+    gap: 10,
+    backgroundColor: theme.colors.paper, 
+  },
+  stepHeading: { 
+    //marginTop:7,
+    fontFamily: 'body-700', 
+    fontSize: 16, 
+    lineHeight:28,
+    width:30,
+    height:30,
+    borderRadius:15,
+    textAlign: 'center',
+    color: 'white', 
+    backgroundColor: theme.colors.cta,
+  },
+  instructionParagraph: {
+    paddingLeft:16,
+    paddingRight: 42,
+    fontSize: 16,
+    lineHeight: 28, 
+    fontFamily: 'body-500', 
+    color: theme.colors.text1 
+  },
+  note: {
+    alignItems:'flex-start',
+    paddingHorizontal:16, 
+    paddingVertical:16, 
+    borderRadius: 12,
+    backgroundColor: theme.colors.paper, 
+  },
+  noteText: {
+    paddingVertical:6,
+    fontSize: 16,
+    lineHeight: 28, 
+    fontFamily: 'body-500', 
+    color: theme.colors.text1 
+  },
+  itemText: {
+    paddingHorizontal:16,
+    paddingVertical:16,
+    textAlign: 'center',
+    fontSize: 16,
+    lineHeight: 28, 
+    fontFamily: 'body-600', 
+    color: theme.colors.text1 
+  },
+  heading2xl: { 
+    fontSize: 20, 
+    fontFamily: 'body-700', 
+    marginBottom: 20, 
+    marginTop: 30, 
+    color: theme.colors.text1 
+  },
+  heading3xl: { 
+    fontSize: 28, 
+    fontFamily: 'body-700', 
+    paddingTop: 14, 
+    color: theme.colors.text1 
+  },
+  headingMd: { 
+    fontSize: 16, 
+    fontFamily: 'body-600', 
+    marginTop: 5, 
+    marginBottom: 15, 
+    color: theme.colors.text2 
+  },
+  metaText: { 
+    fontSize: 16, 
+    fontFamily: 'body-600', 
+    color: theme.colors.text1, 
+    textAlign: 'center', 
+    paddingLeft: 6,
+    paddingRight: 22 
+  },
+  body400: { 
+    fontFamily: 'body-400' 
+  },
 });

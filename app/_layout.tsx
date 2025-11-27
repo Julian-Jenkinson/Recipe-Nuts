@@ -28,6 +28,9 @@ export default function Layout() {
   const [showQuickTour, setShowQuickTour] = useState(false);
 
   const [loaded, error] = useFonts({
+
+    'Nunito-Sans': require('../assets/fonts/NunitoSans-VariableFont_YTLC,opsz,wdth,wght.ttf'),
+
     'Nunito-200': require('../assets/fonts/Nunito-ExtraLight.ttf'),
     'Nunito-300': require('../assets/fonts/Nunito-Light.ttf'),
     'Nunito-400': require('../assets/fonts/Nunito-Regular.ttf'),
