@@ -107,7 +107,7 @@ export default function RecipeDetailsScreen() {
       await Share.share({
         message: `Check out this recipe: \n\n${recipe.title}\nBy ${recipe.source}\n\nIngredients:\n${ingredients.join(
           '\n'
-        )}\n\nInstructions:\n${instructions.join('\n\n')}\n\nRecipe shared by RecipeNuts\nAvailable on the Play Store`,
+        )}\n\nInstructions:\n${instructions.join('\n\n')}\n\nRecipe shared by Recipe Nuts\n\nAvailable on the Play Store`,
       });
     } catch (error) {
       console.error('Error sharing:', error instanceof Error ? error.message : error);
