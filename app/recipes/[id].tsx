@@ -1,8 +1,8 @@
-import { Feather, FontAwesome } from '@expo/vector-icons';
+import { Feather, FontAwesome, Octicons } from '@expo/vector-icons';
 import { Box, HStack, Image, Pressable, StatusBar, Text, View } from '@gluestack-ui/themed';
 import * as FileSystem from 'expo-file-system';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Alert,
   View as RNView,
@@ -21,6 +21,7 @@ export default function RecipeDetailsScreen() {
   const deleteRecipe = useRecipeStore((state) => state.deleteRecipe);
   const toggleFavourite = useRecipeStore((state) => state.toggleFavourite);
   const recipe = useRecipeStore((state) => (id ? state.getRecipeById(id) : undefined));
+
 
   const scrollViewRef = useRef<ScrollView>(null);
 
@@ -50,6 +51,30 @@ export default function RecipeDetailsScreen() {
   const ingredients = Array.isArray(recipe.ingredients) ? recipe.ingredients.map(String) : [];
   const notes = Array.isArray(recipe.notes) ? recipe.notes.map(String) : [];
   const imageUri = recipe.imageUrl?.length ? recipe.imageUrl : 'https://via.placeholder.com/400';
+
+  const [tickedIngredients, setTickedIngredients] = useState<boolean[]>(
+    ingredients.map(() => false)
+  );
+
+  const [tickedInstructions, setTickedInstructions] = useState<boolean[]>(
+    instructions.map(() => false)
+  );
+
+  const toggleIngredient = (index: number) => {
+    setTickedIngredients(prev => {
+      const copy = [...prev];
+      copy[index] = !copy[index];
+      return copy;
+    });
+  };
+
+  const toggleInstruction = (index: number) => {
+    setTickedInstructions(prev => {
+      const copy = [...prev];
+      copy[index] = !copy[index];
+      return copy;
+    });
+  };
 
   const handleDelete = () => {
     Alert.alert(
@@ -157,46 +182,78 @@ export default function RecipeDetailsScreen() {
               </Text>
           </HStack>
 
-          
-
           {/* Ingredients */}
           <Text style={styles.heading2xl}>Ingredients</Text>
+
           <Box style={styles.ingredientBox}>
-            {ingredients.length > 0
-              ? ingredients.map((item, index) => (
-                  <View key={`ing-${index}`}>
-                    <HStack style={styles.ingredientHStack}>
-                      <Box style={styles.ingredientTick}>
+            {ingredients.length > 0 ? (
+              ingredients.map((item, index) => (
+                <View key={`ing-${index}`}>
+                  <HStack style={styles.ingredientHStack}>
+                    
+                    <Pressable onPress={() => toggleIngredient(index)}>
+                      <Box style={tickedIngredients[index]
+                        ? styles.ingredientTicked
+                        : styles.ingredientNotTicked
+                      }>
+                        {tickedIngredients[index] && (
+                          <Octicons name="check" size={20} color={theme.colors.ctaText} />
+                        )}
                       </Box>
-                      <Text style={styles.ingredientText}>{item}</Text>
-                    </HStack>
-                  </View>
-                  
-                ))
-              : <Text style={styles.itemText}>No ingredients available</Text>}
+                    </Pressable>
+
+                    <Text style={[
+                      styles.ingredientText, 
+                      tickedIngredients[index] && { opacity: 0.3 }]}
+                    >
+                      {item}
+                    </Text>
+                  </HStack>
+                </View>
+              ))
+            ) : (
+              <Text style={styles.itemText}>No ingredients available</Text>
+            )}
           </Box>
-          
-          {/*
-          <View style={styles.pageBreak} />
-          */}
 
           {/* Instructions */}
           <Text style={styles.heading2xl}>Instructions</Text>
           <RNView>
             {instructions.length > 0 ? (
               instructions.map((step, index) => (
-                <View key={`step-${index}`} style={{ marginBottom: index === step.length -1 ? 0 : 25,  }}>
-                  <HStack style={styles.instructionHStack} >
-                    <Text style={styles.stepHeading}>{index + 1}</Text>
-                    <Text style={styles.instructionParagraph}>{step}</Text>
-                  </HStack>
-                </View>
+                <Pressable key={`step-${index}`} onPress={() => toggleInstruction(index)}>
+                  <View style={{ marginBottom: index === instructions.length - 1 ? 0 : 25 }}>
+                    <HStack style={styles.instructionHStack}>
+                      
+                      <View
+  style={[
+    styles.stepHeading,
+    tickedInstructions[index] && { backgroundColor: theme.colors.cta }, // optional
+  ]}
+>
+  {tickedInstructions[index] ? (
+    <Octicons name="check" size={20} color={theme.colors.ctaText} />
+  ) : (
+    <Text style={{ color: 'white', fontFamily: 'body-700' }}>{index + 1}</Text>
+  )}
+</View>
+                      <Text 
+                        style={[
+                          styles.instructionParagraph,
+                          {opacity: tickedInstructions[index] ? 0.3 : 1}]}
+                      >
+                        {step}
+                      </Text>
+                    </HStack>
+                  </View>
+                </Pressable>
               ))
             ) : (
               <Box style={styles.ingredientBox}>
                 <Text style={styles.itemText}>No instructions available</Text>
               </Box>
             )}
+
           </RNView>
 
           {/* Notes */}
@@ -245,17 +302,31 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     gap: 10,
   },
-  ingredientTick: {
+  ingredientNotTicked: {
     lineHeight:28,
     width:30,
     height:30,
     borderRadius:15,
-    //textAlign: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
     borderColor: '#888',
+    borderStyle:'dashed',
     borderWidth:1,
-    borderStyle:'dashed'
-    //color: 'white', 
     //backgroundColor: theme.colors.cta,
+    //borderWidth:0,
+  },
+  ingredientTicked: {
+    lineHeight:28,
+    width:30,
+    height:30,
+    borderRadius:15,
+    justifyContent: 'center',
+    alignItems: 'center',
+    //borderColor: '#888',
+    //borderStyle:'dashed',
+    //borderWidth:1,
+    backgroundColor: theme.colors.cta,
+    borderWidth:0,
   },
   ingredientText: { 
     paddingLeft: 16,
@@ -266,7 +337,6 @@ const styles = StyleSheet.create({
     color: theme.colors.text1 
   },
   instructionHStack: {
-    //alignItems:'flex-start',
     alignItems:'center',
     paddingHorizontal:16, 
     paddingVertical:24, 
@@ -275,16 +345,16 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.paper, 
   },
   stepHeading: { 
-    //marginTop:7,
     fontFamily: 'body-700', 
     fontSize: 16, 
     lineHeight:28,
     width:30,
     height:30,
     borderRadius:15,
-    textAlign: 'center',
     color: 'white', 
     backgroundColor: theme.colors.cta,
+    justifyContent:'center',
+    alignItems: 'center'
   },
   instructionParagraph: {
     paddingLeft:16,
@@ -318,20 +388,20 @@ const styles = StyleSheet.create({
     color: theme.colors.text1 
   },
   heading2xl: { 
-    fontSize: 20, 
-    fontFamily: 'body-700', 
+    fontSize: 24, 
+    fontFamily: 'heading-900', 
     marginBottom: 20, 
     marginTop: 30, 
     color: theme.colors.text1 
   },
   heading3xl: { 
-    fontSize: 28, 
-    fontFamily: 'body-700', 
+    fontSize: 30, 
+    fontFamily: 'heading-900', 
     paddingTop: 14, 
     color: theme.colors.text1 
   },
   headingMd: { 
-    fontSize: 16, 
+    fontSize: 18, 
     fontFamily: 'body-600', 
     marginTop: 5, 
     marginBottom: 15, 
