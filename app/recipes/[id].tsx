@@ -194,6 +194,7 @@ export default function RecipeDetailsScreen() {
                       <Box style={tickedIngredients[index]
                         ? styles.ingredientTicked
                         : styles.ingredientNotTicked
+                        
                       }>
                         {tickedIngredients[index] && (
                           <Octicons name="check" size={20} color={theme.colors.ctaText} />
@@ -225,7 +226,7 @@ export default function RecipeDetailsScreen() {
                       <View
                         style={[
                           styles.stepHeading,
-                          tickedInstructions[index] && { backgroundColor: theme.colors.cta, borderWidth:0 }, // optional
+                          tickedInstructions[index] && { backgroundColor: theme.colors.cta, borderWidth:0, opacity: tickedInstructions[index] ? 0.75 : 1 }, // optional
                         ]}
                       >
                         {tickedInstructions[index] ? (
@@ -323,6 +324,7 @@ const styles = StyleSheet.create({
     //borderWidth:1,
     backgroundColor: theme.colors.cta,
     borderWidth:0,
+    opacity:0.75,
   },
   ingredientText: { 
     paddingLeft: 16,
