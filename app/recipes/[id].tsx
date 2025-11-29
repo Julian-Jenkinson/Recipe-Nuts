@@ -184,14 +184,13 @@ export default function RecipeDetailsScreen() {
 
           {/* Ingredients */}
           <Text style={styles.heading2xl}>Ingredients</Text>
-
           <Box style={styles.ingredientBox}>
             {ingredients.length > 0 ? (
               ingredients.map((item, index) => (
+                
                 <View key={`ing-${index}`}>
-                  <HStack style={styles.ingredientHStack}>
-                    
-                    <Pressable onPress={() => toggleIngredient(index)}>
+                  <Pressable onPress={() => toggleIngredient(index)}>                  
+                    <HStack style={styles.ingredientHStack}>
                       <Box style={tickedIngredients[index]
                         ? styles.ingredientTicked
                         : styles.ingredientNotTicked
@@ -200,15 +199,14 @@ export default function RecipeDetailsScreen() {
                           <Octicons name="check" size={20} color={theme.colors.ctaText} />
                         )}
                       </Box>
-                    </Pressable>
-
-                    <Text style={[
-                      styles.ingredientText, 
-                      tickedIngredients[index] && { opacity: 0.3 }]}
-                    >
-                      {item}
-                    </Text>
-                  </HStack>
+                      <Text style={[
+                        styles.ingredientText, 
+                        tickedIngredients[index] && { opacity: 0.3 }]}
+                      >
+                        {item}
+                      </Text>
+                    </HStack>
+                  </Pressable> 
                 </View>
               ))
             ) : (
@@ -224,19 +222,18 @@ export default function RecipeDetailsScreen() {
                 <Pressable key={`step-${index}`} onPress={() => toggleInstruction(index)}>
                   <View style={{ marginBottom: index === instructions.length - 1 ? 0 : 25 }}>
                     <HStack style={styles.instructionHStack}>
-                      
                       <View
-  style={[
-    styles.stepHeading,
-    tickedInstructions[index] && { backgroundColor: theme.colors.cta }, // optional
-  ]}
->
-  {tickedInstructions[index] ? (
-    <Octicons name="check" size={20} color={theme.colors.ctaText} />
-  ) : (
-    <Text style={{ color: 'white', fontFamily: 'body-700' }}>{index + 1}</Text>
-  )}
-</View>
+                        style={[
+                          styles.stepHeading,
+                          tickedInstructions[index] && { backgroundColor: theme.colors.cta, borderWidth:0 }, // optional
+                        ]}
+                      >
+                        {tickedInstructions[index] ? (
+                          <Octicons name="check" size={20} color={theme.colors.ctaText} />
+                        ) : (
+                          <Text style={{ color: 'white', fontFamily: 'body-700' }}>{index + 1}</Text>
+                        )}
+                      </View>
                       <Text 
                         style={[
                           styles.instructionParagraph,
@@ -253,7 +250,6 @@ export default function RecipeDetailsScreen() {
                 <Text style={styles.itemText}>No instructions available</Text>
               </Box>
             )}
-
           </RNView>
 
           {/* Notes */}
@@ -351,10 +347,12 @@ const styles = StyleSheet.create({
     width:30,
     height:30,
     borderRadius:15,
-    color: 'white', 
     backgroundColor: theme.colors.cta,
     justifyContent:'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    //borderColor: '#888',
+    //borderStyle:'dashed',
+    //borderWidth:1,
   },
   instructionParagraph: {
     paddingLeft:16,
