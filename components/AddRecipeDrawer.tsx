@@ -240,62 +240,53 @@ export default function AddRecipeDrawer({ isOpen, onClose }: Props) {
 
               {/* Body */}
               <VStack gap={20}>
-                {hasReachedLimit && (
-                  <Text style={styles.limitText}>
-                    Free tier limit reached. Upgrade to add more recipes.
-                  </Text>
-                )}
-                
-                {!hasReachedLimit && (
-                  <>
-                    <Pressable
-                      onPress={() => {
-                        onClose();
-                        router.push('/add/AddFromURL');
-                      }}
-                      style={styles.actionPressable}
-                    >
-                      <HStack alignItems="center">
-                        <Feather name="link" size={20} color="#000" />
-                        <Text style={styles.actionText}>
-                          Add recipe from link
-                        </Text>
-                      </HStack>
-                    </Pressable>
-                    
-                    <Pressable
-                      onPress={() => {
-                        onClose();
-                        router.push('/add/AddBlankRecipe');
-                      }}
-                      style={[styles.actionPressable, { paddingTop: 0 }]}
-                    >
-                      <HStack alignItems="center">
-                        <Feather name="plus" size={20} color="#000" />
-                        <Text style={styles.actionText}>
-                          Create new recipe
-                        </Text>
-                      </HStack>
-                    </Pressable>
-                  </>
-                )}
-                
-                {hasReachedLimit && (
-                  <Pressable
-                    onPress={() => {
-                      onClose();
-                      setTimeout(() => {
-                        handleUpgrade();
-                      }, 250);
-                    }}
-                    style={styles.upgradePressable}
-                  >
-                    <Text style={styles.upgradeText}>
-                      Upgrade Now
-                    </Text>
-                  </Pressable>
-                )}
-              </VStack>
+  {hasReachedLimit ? (
+    <>
+      <Text style={styles.limitText}>
+        Free tier limit reached. Upgrade to add more recipes.
+      </Text>
+
+      <Pressable
+        onPress={() => {
+          onClose();
+          setTimeout(() => handleUpgrade(), 250);
+        }}
+        style={styles.upgradePressable}
+      >
+        <Text style={styles.upgradeText}>Upgrade Now</Text>
+      </Pressable>
+    </>
+  ) : (
+    <>
+      <Pressable
+        onPress={() => {
+          onClose();
+          router.push('/add/AddFromURL');
+        }}
+        style={styles.actionPressable}
+      >
+        <HStack alignItems="center">
+          <Feather name="link" size={20} color="#000" />
+          <Text style={styles.actionText}>Add recipe from link</Text>
+        </HStack>
+      </Pressable>
+
+      <Pressable
+        onPress={() => {
+          onClose();
+          router.push('/add/AddBlankRecipe');
+        }}
+        style={[styles.actionPressable, { paddingTop: 0 }]}
+      >
+        <HStack alignItems="center">
+          <Feather name="plus" size={20} color="#000" />
+          <Text style={styles.actionText}>Create new recipe</Text>
+        </HStack>
+      </Pressable>
+    </>
+  )}
+</VStack>
+
             </Box>
           </Pressable>
         </Animated.View>
@@ -350,9 +341,9 @@ const styles = StyleSheet.create({
   },
   limitText: {
     fontFamily: 'body-600',
-    fontSize: 16,
+    fontSize: 18,
     color: '#333',
-    paddingBottom: 10,
+    paddingTop: 10,
     textAlign: 'center',
   },
   actionPressable: {
@@ -366,11 +357,12 @@ const styles = StyleSheet.create({
   },
   upgradePressable: {
     alignSelf: 'center',
-    marginTop: 10,
+    //marginTop: 5,
   },
   upgradeText: {
-    fontFamily: 'body-600',
+    fontFamily: 'body-700',
     fontSize: 18,
     color: theme.colors.cta,
+    paddingBottom:15,
   },
 });

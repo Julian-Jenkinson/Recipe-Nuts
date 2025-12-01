@@ -178,7 +178,7 @@ const takePhoto = async () => {
         
         <Box flexDirection="row" alignItems='center'>
           <Pressable onPress={handleSave} style={{ marginRight: 10 }}>
-            <Feather name="save" size={24} color={theme.colors.cta}
+            <Feather name="save" size={28} color={theme.colors.cta}
               style={{ marginTop: 2 }} 
             />
           </Pressable>
@@ -279,35 +279,49 @@ const takePhoto = async () => {
           style={styles.input}
         />
 
-        {/* Serving Size */}
-        <Text style={styles.label}>Serving Size</Text>
-        <TextInput
-          value={draftRecipe.servingSize}
-          onChangeText={(text) =>
-            setDraftRecipe({ ...draftRecipe, servingSize: text })
-          }
-          style={styles.input}
-        />
+        <HStack gap={24} flexWrap="wrap">
+          {/* Serving Size */}
+          <Box flex={1}>
+            <Text style={styles.label}>Serving Size</Text>
+            <TextInput
+              value={draftRecipe.servingSize}
+              onChangeText={(text) =>
+                setDraftRecipe({ ...draftRecipe, servingSize: text })
+              }
+              style={styles.input}
+              //placeholder="e.g. 4"
+              keyboardType="numeric"
+            />
+          </Box>
 
-        {/* Prep Time */}
-        <Text style={styles.label}>Prep Time</Text>
-        <TextInput
-          value={draftRecipe.prepTime}
-          onChangeText={(text) =>
-            setDraftRecipe({ ...draftRecipe, prepTime: text })
-          }
-          style={styles.input}
-        />
+          {/* Prep Time */}
+          <Box flex={1}>
+            <Text style={styles.label}>Prep Time</Text>
+            <TextInput
+              value={draftRecipe.prepTime}
+              onChangeText={(text) =>
+                setDraftRecipe({ ...draftRecipe, prepTime: text })
+              }
+              style={styles.input}
+              //placeholder="e.g. 30"
+              keyboardType="numeric"
+            />
+          </Box>
 
-        {/* Cook Time */}
-        <Text style={styles.label}>Cook Time</Text>
-        <TextInput
-          value={draftRecipe.cookTime}
-          onChangeText={(text) =>
-            setDraftRecipe({ ...draftRecipe, cookTime: text })
-          }
-          style={styles.input}
-        />
+          {/* Cook Time */}
+          <Box flex={1}>
+            <Text style={styles.label}>Cook Time</Text>
+            <TextInput
+              value={draftRecipe.cookTime}
+              onChangeText={(text) =>
+                setDraftRecipe({ ...draftRecipe, cookTime: text })
+              }
+              style={styles.input}
+              //placeholder="e.g. 45"
+              keyboardType="numeric"
+            />
+          </Box>
+        </HStack>
 
         {/* Ingredients */}
         <Text style={styles.label}>Ingredients</Text>
@@ -344,9 +358,7 @@ const takePhoto = async () => {
 
         {/* Buttons */}
         <HStack justifyContent="center" space={"md"} style={{ marginTop: 16, marginBottom:40, }}>
-          <Pressable style={styles.cancelButton} onPress={onCancel}>
-            <Text style={styles.cancelButtonText}>Cancel</Text>
-          </Pressable>
+          
           <Pressable style={styles.saveButton} onPress={handleSave}>
             <Text style={styles.saveButtonText}>
               {mode === "edit" ? "Save Changes" : "Create Recipe"}
@@ -373,8 +385,8 @@ const styles = StyleSheet.create({
   label: {
     fontFamily: 'body-700',
     fontSize: 16,
-    marginTop: 12,
-    marginBottom: 4,
+    marginTop: 24,
+    marginBottom: 8,
     color: '#000',
   },
   input: {
@@ -417,6 +429,7 @@ const styles = StyleSheet.create({
     height: 200,
     borderRadius: 16,
     marginTop: 16,
+    borderStyle: 'dashed',
   },
   saveButton: {
     flex: 1,
@@ -430,18 +443,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
   },
-  cancelButton: {
-    flex: 1,
-    backgroundColor: '#888',
-    paddingVertical: 14,
-    borderRadius: 16,
-    alignItems: 'center',
-  },
-  cancelButtonText: {
-    fontFamily: 'body-700',
-    color: '#fff',
-    fontSize: 16,
-  },
+
   imagePlaceholder: {
   width: '100%',
   height: 220,

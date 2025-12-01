@@ -81,6 +81,21 @@ export default function Menu() {
     }
   };
 
+  const handleRestore = async () => {
+    try {
+      await syncCustomerInfo(); // RevenueCat syncs purchases
+      if (isPro) {
+        Alert.alert("Restored!", "Your Pro subscription has been restored.");
+      } else {
+        Alert.alert("Nothing to restore", "No previous purchases found.");
+      }
+    } catch (err) {
+      console.warn("Restore failed:", err);
+      Alert.alert("Error", "Failed to restore purchases. Try again later.");
+    }
+  };
+
+
   return (
     <View style={{ flex: 1 }}>
       <StatusBar backgroundColor={theme.colors.bg} barStyle="dark-content" />
@@ -124,6 +139,25 @@ export default function Menu() {
                 <Box>
                   <Text style={styles.undertext}>Unlimited recipes unlocked</Text>
                 </Box>
+              )}
+            </Pressable>
+
+            <View style={styles.pagebreak} />
+
+            {/* RESTORE PURCHASE */}
+            <Pressable 
+              style={styles.menuItem} 
+              onPress={handleRestore} 
+              disabled={isPro}
+            >
+              <HStack style={styles.textContainer}>
+                <MaterialCommunityIcons name="restore" style={styles.icon} />
+                <Text style={styles.text}>Restore Purchase</Text>
+              </HStack>
+              {!isPro ? (
+                <Text style={styles.undertext}>Restore your previous Pro purchase</Text>
+              ) : (
+                <Text style={styles.undertext}>Already Pro</Text>
               )}
             </Pressable>
 

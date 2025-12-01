@@ -47,7 +47,7 @@ export function QuickTourModal({
     { title: "Import From Your Favourite Sites", 
       text: "Paste the recipe URL into the add recipe tab to extract just the important bits. No blogs! No backstories!" },
     { title: "Get Started for Free", 
-      text: `Start your collection with storage for up to 10 recipes. Upgrade for a one time fee of ${upgradePrice ?? "…" } to get unlimited.`, 
+      text: `Start your collection with storage for up to 10 recipes. Upgrade for a one time fee of ${upgradePrice ?? "…" } to get unlimited access.`, 
       showUpgrade: true },
     { title: "Share & Explore", 
       text: "Share recipes with friends or browse your collection for your next meal!", 
