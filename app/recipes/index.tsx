@@ -180,48 +180,71 @@ export default function RecipeListScreen() {
               )}
               
 
-              {/* Recipes List */}
-              {filteredRecipes.length === 0 ? (
-                <View flex={1} alignItems="center" justifyContent="center" px={30} pb={90}>
-                  <Ionicons name="restaurant-outline" size={72} color={theme.colors.cta} />
-                  <Text
-                    lineHeight={30}
-                    fontSize={20}
-                    color={theme.colors.text2}
-                    textAlign="center"
-                    mt={16}
-                    style={{ fontFamily: 'body-600' }}
-                  >
-                    To get started, tap the {"\n"} 
-                    <Text style={{ fontFamily: 'heading-900', color: theme.colors.cta, fontSize:22 }}>+ </Text> 
-                    icon to add your first recipe.
-                  </Text>
-                </View>
-              ) : (
-                <FlatList
-                  data={filteredRecipes}
-                  numColumns={1}
-                  keyExtractor={(item) => item.id}
-                  contentContainerStyle={{
-                    paddingHorizontal: 16,
-                    paddingBottom: 20,
-                    paddingTop: 10
-                  }}
-                  ItemSeparatorComponent={() => (
-                    <View style={{ height: 1, backgroundColor: '#ddd', marginVertical: 25 }} />
-                  )}
-                  keyboardShouldPersistTaps="handled"
-                  renderItem={({ item }) => (
-                    <RecipeCard
-                      {...item}
-                      onPress={() => handlePress(item.id)}
-                      onToggleFavourite={() => {
-                        useRecipeStore.getState().toggleFavourite(item.id);
-                      }}
-                    />
-                  )}
-                />
-              )}
+              {/* Empty States & List */}
+{recipes.length === 0 ? (
+  // 🍽️ Empty state: NO RECIPES AT ALL
+  <View flex={1} alignItems="center" justifyContent="center" px={30} pb={90}>
+    <Ionicons name="restaurant-outline" size={72} color={theme.colors.cta} />
+    <Text
+      lineHeight={30}
+      fontSize={20}
+      color={theme.colors.text2}
+      textAlign="center"
+      mt={16}
+      style={{ fontFamily: 'body-600' }}
+    >
+      To get started, tap the plus{"\n"}
+      icon to add your first recipe.
+    </Text>
+  </View>
+) : filteredRecipes.length === 0 ? (
+  // 🔍 Empty state: SEARCH RETURNED NOTHING
+  <View flex={1} alignItems="center" justifyContent="center" px={30} pb={90}>
+    <Ionicons name="search-outline" size={72} color={theme.colors.text2} />
+    <Text
+      lineHeight={30}
+      fontSize={20}
+      color={theme.colors.text2}
+      textAlign="center"
+      mt={16}
+      style={{ fontFamily: 'body-600' }}
+    >
+      No recipes match your search.
+    </Text>
+  </View>
+) : (
+  // 📄 Show Recipe List
+  <FlatList
+    data={filteredRecipes}
+    numColumns={1}
+    keyExtractor={(item) => item.id}
+    contentContainerStyle={{
+      paddingHorizontal: 16,
+      paddingBottom: 20,
+      paddingTop: 10
+    }}
+    ItemSeparatorComponent={() => (
+      <View
+        style={{
+          height: 1,
+          backgroundColor: '#ddd',
+          marginVertical: 25
+        }}
+      />
+    )}
+    keyboardShouldPersistTaps="handled"
+    renderItem={({ item }) => (
+      <RecipeCard
+        {...item}
+        onPress={() => handlePress(item.id)}
+        onToggleFavourite={() =>
+          useRecipeStore.getState().toggleFavourite(item.id)
+        }
+      />
+    )}
+  />
+)}
+
 
 
               {/* Add Button */}

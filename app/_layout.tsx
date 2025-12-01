@@ -5,7 +5,6 @@ import { useFonts } from 'expo-font';
 import * as NavigationBar from "expo-navigation-bar";
 import { Stack } from "expo-router";
 import * as SplashScreen from 'expo-splash-screen';
-//import * as SystemUI from 'expo-system-ui';
 import React, { useEffect, useState } from "react";
 import { Pressable, PressableProps, StatusBar } from "react-native";
 import { QuickTourModal } from "../components/QuickTourModal";
@@ -28,40 +27,15 @@ export default function Layout() {
   const [showQuickTour, setShowQuickTour] = useState(false);
 
   const [loaded, error] = useFonts({
-
-    'Nunito-Sans': require('../assets/fonts/NunitoSans-VariableFont_YTLC,opsz,wdth,wght.ttf'),
-
-    'Nunito-200': require('../assets/fonts/Nunito-ExtraLight.ttf'),
-    'Nunito-300': require('../assets/fonts/Nunito-Light.ttf'),
-    'Nunito-400': require('../assets/fonts/Nunito-Regular.ttf'),
-    'Nunito-500': require('../assets/fonts/Nunito-Medium.ttf'),
-    'Nunito-600': require('../assets/fonts/Nunito-SemiBold.ttf'),
-    'Nunito-700': require('../assets/fonts/Nunito-Bold.ttf'),
-    'Nunito-800': require('../assets/fonts/Nunito-ExtraBold.ttf'),
-    'Nunito-900': require('../assets/fonts/Nunito-Black.ttf'),
-    
-    //'OpenSans-400': require('../assets/fonts/OpenSans-Regular.ttf'),
-    //'OpenSans-800': require('../assets/fonts/OpenSans-Bold.ttf'),
-
-    //Heading
-    //'heading-800': require('../assets/fonts/PlayfairDisplay-Bold.ttf'),
     'heading-800': require('../assets/fonts/Mulish-ExtraBold.ttf'),
     'heading-900': require('../assets/fonts/Mulish-Black.ttf'),
     
-    //Body
-    //'body-400': require('../assets/fonts/Montserrat-Regular.ttf'),
-    //'body-800': require('../assets/fonts/Montserrat-Bold.ttf'),
-
-    //'body-400': require('../assets/fonts/OpenSans-Regular.ttf'),
-    //'body-800': require('../assets/fonts/OpenSans-Bold.ttf'),
-
     'body-400': require('../assets/fonts/Mulish-Light.ttf'),
-    //'body-400': require('../assets/fonts/Mulish-Light.ttf'),
     'body-500': require('../assets/fonts/Mulish-Regular.ttf'),
     'body-600': require('../assets/fonts/Mulish-Medium.ttf'),
     'body-700': require('../assets/fonts/Mulish-Bold.ttf'),
     'body-800': require('../assets/fonts/Mulish-ExtraBold.ttf'),
-
+    'body-900': require('../assets/fonts/Mulish-Black.ttf'),
   });
 
   // Revenue Cat Initilization
@@ -104,8 +78,6 @@ export default function Layout() {
 
     initRevenueCat();
   }, []);
-
-
   
   useEffect(() => {
     // Prevent splash screen from auto-hiding

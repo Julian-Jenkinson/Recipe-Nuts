@@ -9,7 +9,7 @@ import {
 } from "@gluestack-ui/themed";
 import * as ImagePicker from 'expo-image-picker';
 import React, { useEffect, useRef, useState } from "react";
-import { Alert, ScrollView, StyleSheet, TextInput } from "react-native";
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Recipe } from "../stores/useRecipeStore";
 import theme from "../theme";
@@ -186,7 +186,11 @@ const takePhoto = async () => {
       </HStack>
 
       
-
+      <KeyboardAvoidingView
+        behavior={Platform.OS==='ios' ? 'padding' : undefined} 
+        style={{flex:1}}
+        keyboardVerticalOffset={Platform.OS==='ios' ? 0 : 30}  
+      >
       <ScrollView
         ref={scrollViewRef}
         contentContainerStyle={styles.container}
@@ -206,43 +210,41 @@ const takePhoto = async () => {
         />
 
         {/* ✅ Only imageUrl goes to <Image /> */}
-       {/* Image or Placeholder */}
-{isValidImageUrl(draftRecipe.imageUrl) ? (
-  <Image
-    source={{ uri: draftRecipe.imageUrl }}
-    style={styles.image}
-    resizeMode="cover"
-    accessibilityLabel={`Image of ${draftRecipe.title || "placeholder"}`}
-    alt={`Image of ${draftRecipe.title || "placeholder"}`}
-  />
-) : (
-  <Box
-    style={styles.imagePlaceholder}
-    alignItems="center"
-    justifyContent="center"
-  >
-    <Feather name="image" size={48} color="#ccc" />
-  </Box>
-)}
+        {/* Image or Placeholder */}
+        {isValidImageUrl(draftRecipe.imageUrl) ? (
+          <Image
+            source={{ uri: draftRecipe.imageUrl }}
+            style={styles.image}
+            resizeMode="cover"
+            accessibilityLabel={`Image of ${draftRecipe.title || "placeholder"}`}
+            alt={`Image of ${draftRecipe.title || "placeholder"}`}
+          />
+        ) : (
+          <Box
+            style={styles.imagePlaceholder}
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Feather name="image" size={48} color="#ccc" />
+          </Box>
+        )}
 
-{/* Buttons under image */}
-<HStack justifyContent="center" mt={12} gap={12}>
-  <Pressable style={styles.cameraButton} onPress={pickImage}>
-    <HStack alignItems="center" gap={8}>
-      <Text style={styles.cameraButtonText}>Choose Image</Text>
-      <Feather name="upload" size={24} color='theme.colors.text1' />
-    </HStack>
-  </Pressable>
+        {/* Buttons under image */}
+        <HStack justifyContent="center" mt={12} gap={12}>
+          <Pressable style={styles.cameraButton} onPress={pickImage}>
+            <HStack alignItems="center" gap={8}>
+              <Text style={styles.cameraButtonText}>Choose Image</Text>
+              <Feather name="upload" size={24} color='theme.colors.text1' />
+            </HStack>
+          </Pressable>
 
-  <Pressable style={styles.cameraButton} onPress={takePhoto}>
-    <HStack alignItems="center" gap={8}>
-      <Text style={styles.cameraButtonText}>Take Photo</Text>
-      <Feather name="camera" size={24} color='theme.colors.text1' />
-    </HStack>
-  </Pressable>
-</HStack>
-
-
+          <Pressable style={styles.cameraButton} onPress={takePhoto}>
+            <HStack alignItems="center" gap={8}>
+              <Text style={styles.cameraButtonText}>Take Photo</Text>
+              <Feather name="camera" size={24} color='theme.colors.text1' />
+            </HStack>
+          </Pressable>
+        </HStack>
 
 
         {/* Source (just text info, never used as image) */}
@@ -352,6 +354,7 @@ const takePhoto = async () => {
           </Pressable>
         </HStack>
       </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };

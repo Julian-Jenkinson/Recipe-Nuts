@@ -20,10 +20,27 @@ export default function RecipeDetailsScreen() {
 
   const deleteRecipe = useRecipeStore((state) => state.deleteRecipe);
   const toggleFavourite = useRecipeStore((state) => state.toggleFavourite);
-  const recipe = useRecipeStore((state) => (id ? state.getRecipeById(id) : undefined));
-
+  const recipe = useRecipeStore((state) => state.getRecipeById(id || ''));
 
   const scrollViewRef = useRef<ScrollView>(null);
+
+  const [tickedIngredients, setTickedIngredients] = useState<boolean[]>([]);
+  const [tickedInstructions, setTickedInstructions] = useState<boolean[]>([]);
+
+  const ingredients = recipe ? (Array.isArray(recipe.ingredients) ? recipe.ingredients.map(String) : []) : [];
+  const instructions = recipe ? (Array.isArray(recipe.instructions) ? recipe.instructions : []) : [];
+  
+  const notes = recipe && Array.isArray(recipe.notes) ? recipe.notes.map(String) : [];
+  const imageUri = recipe?.imageUrl?.length ? recipe.imageUrl : 'https://via.placeholder.com/400';
+
+
+  React.useEffect(() => {
+    if (!recipe) return;
+    setTickedIngredients(ingredients.map(() => false));
+    setTickedInstructions(instructions.map(() => false));
+  }, [recipe?.id]);
+
+
 
   if (!id) {
     return (
@@ -47,19 +64,6 @@ export default function RecipeDetailsScreen() {
     );
   }
 
-  const instructions = Array.isArray(recipe.instructions) ? recipe.instructions : [];
-  const ingredients = Array.isArray(recipe.ingredients) ? recipe.ingredients.map(String) : [];
-  const notes = Array.isArray(recipe.notes) ? recipe.notes.map(String) : [];
-  const imageUri = recipe.imageUrl?.length ? recipe.imageUrl : 'https://via.placeholder.com/400';
-
-  const [tickedIngredients, setTickedIngredients] = useState<boolean[]>(
-    ingredients.map(() => false)
-  );
-
-  const [tickedInstructions, setTickedInstructions] = useState<boolean[]>(
-    instructions.map(() => false)
-  );
-
   const toggleIngredient = (index: number) => {
     setTickedIngredients(prev => {
       const copy = [...prev];
@@ -75,6 +79,7 @@ export default function RecipeDetailsScreen() {
       return copy;
     });
   };
+
 
   const handleDelete = () => {
     Alert.alert(
