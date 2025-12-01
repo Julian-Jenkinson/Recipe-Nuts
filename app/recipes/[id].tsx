@@ -129,14 +129,14 @@ export default function RecipeDetailsScreen() {
           <Feather name="chevron-left" size={32} color="#333" />
         </Pressable>
         <Box flexDirection="row">
-          <Pressable pr={28} hitSlop={5} onPress={handleShare}>
+          <Pressable pr={35} hitSlop={5} onPress={handleShare}>
             <Feather name="share-2" size={23} color="#333" />
           </Pressable>
-          <Pressable pr={28} hitSlop={5} onPress={() => router.push(`/recipes/EditRecipe?id=${recipe.id}`)}>
+          <Pressable pr={35} hitSlop={5} onPress={() => router.push(`/recipes/EditRecipe?id=${recipe.id}`)}>
             <Feather name="edit-2" size={23} color="#333" />
           </Pressable>
           <Pressable onPress={handleDelete} hitSlop={5}>
-            <Feather name="trash-2" size={23} color="#C1121F" />
+            <Feather name="trash-2" size={24} color="#C1121F" />
           </Pressable>
         </Box>
       </HStack>

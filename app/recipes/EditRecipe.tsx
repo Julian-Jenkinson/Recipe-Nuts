@@ -154,13 +154,10 @@ export default function EditRecipe() {
           <Feather name="chevron-left" size={32} color="#333" />
         </Pressable>
         <Box flexDirection="row" alignItems='center'>
-          <Pressable onPress={handleSave} style={{ marginRight: 28 }}>
-            <Feather name="save" size={26} color={theme.colors.cta}
+          <Pressable onPress={handleSave}>
+            <Feather name="save" size={28} color={theme.colors.cta}
               style={{ marginTop: 2 }} 
             />
-          </Pressable>
-          <Pressable>
-            <Feather name="trash-2" size={24} color="#C1121F" />
           </Pressable>
         </Box>
       </HStack>
@@ -233,27 +230,49 @@ export default function EditRecipe() {
           style={styles.input}
         />
 
-        <Text style={styles.label}>Serving Size</Text>
-        <TextInput
-          value={draftRecipe.servingSize}
-          onChangeText={(text) => setDraftRecipe({ ...draftRecipe, servingSize: text })}
-          style={styles.input}
-        />
+        <HStack gap={24} flexWrap="wrap">
+          {/* Serving Size */}
+          <Box flex={1}>
+            <Text style={styles.label}>Serving Size</Text>
+            <TextInput
+              value={draftRecipe.servingSize}
+              onChangeText={(text) =>
+                setDraftRecipe({ ...draftRecipe, servingSize: text })
+              }
+              style={styles.input}
+              //placeholder="e.g. 4"
+              keyboardType="numeric"
+            />
+          </Box>
 
-        <Text style={styles.label}>Prep Time</Text>
-        <TextInput
-          value={draftRecipe.prepTime}
-          onChangeText={(text) => setDraftRecipe({ ...draftRecipe, prepTime: text })}
-          style={styles.input}
-        />
+          {/* Prep Time */}
+          <Box flex={1}>
+            <Text style={styles.label}>Prep Time</Text>
+            <TextInput
+              value={draftRecipe.prepTime}
+              onChangeText={(text) =>
+                setDraftRecipe({ ...draftRecipe, prepTime: text })
+              }
+              style={styles.input}
+              //placeholder="e.g. 30"
+              keyboardType="numeric"
+            />
+          </Box>
 
-        <Text style={styles.label}>Cook Time</Text>
-        <TextInput
-          value={draftRecipe.cookTime}
-          onChangeText={(text) => setDraftRecipe({ ...draftRecipe, cookTime: text })}
-          style={styles.input}
-        />
-
+          {/* Cook Time */}
+          <Box flex={1}>
+            <Text style={styles.label}>Cook Time</Text>
+            <TextInput
+              value={draftRecipe.cookTime}
+              onChangeText={(text) =>
+                setDraftRecipe({ ...draftRecipe, cookTime: text })
+              }
+              style={styles.input}
+              //placeholder="e.g. 45"
+              keyboardType="numeric"
+            />
+          </Box>
+        </HStack>
         <Text style={styles.label}>Ingredients</Text>
         <TextInput
           value={draftRecipe.ingredients}
@@ -280,9 +299,6 @@ export default function EditRecipe() {
 
          {/* Buttons in HStack */}
         <HStack justifyContent="center" space={"md"} style={{ marginTop: 16, marginBottom: 26 }}>
-          <Pressable style={styles.cancelButton} onPress={handleCancel} >
-            <Text style={styles.cancelButtonText}>Cancel</Text>
-          </Pressable>
           <Pressable style={styles.saveButton} onPress={handleSave} >
             <Text style={styles.saveButtonText}>Save Changes</Text>
           </Pressable>
@@ -307,8 +323,8 @@ const styles = StyleSheet.create({
   label: {
     fontFamily: 'body-700',
     fontSize: 16,
-    marginTop: 12,
-    marginBottom: 4,
+    marginTop: 24,
+    marginBottom: 8,
     color: '#000',
   },
   input: {
@@ -364,19 +380,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
   },
-  cancelButton: {
-    flex: 1,
-    backgroundColor: '#888', // a red tone for cancel (instead of default blue)
-    paddingVertical: 14,
-    borderRadius: 16,
-    alignItems: 'center',
-  },
-  cancelButtonText: {
-    fontFamily: 'body-700',
-    color: '#fff',
-    fontSize: 16,
-  },
-
   cameraButton: {
     flexDirection: 'row',
     alignItems: 'center',
