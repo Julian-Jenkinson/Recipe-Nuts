@@ -10,6 +10,7 @@ const theme = {
     //paper: '#f6f5ef'
     paper: '#f4f1e7',
     //paper: '#f8f8f4',
+    paper2:'#ddd'
   },
 };
 

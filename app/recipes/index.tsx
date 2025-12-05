@@ -189,7 +189,7 @@ export default function RecipeListScreen() {
                     color={theme.colors.text2}
                     textAlign="center"
                     mt={16}
-                    style={{ fontFamily: 'body-600' }}
+                    style={{ fontFamily: 'body-500' }}
                   >
                     To get started, tap the plus{"\n"}
                     icon to add your first recipe.
