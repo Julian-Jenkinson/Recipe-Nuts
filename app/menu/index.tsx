@@ -101,7 +101,7 @@ export default function Menu() {
       <StatusBar backgroundColor={theme.colors.bg} barStyle="dark-content" />
       <View style={styles.container}>
 
-        <Box ml={0} mt={48} alignSelf="flex-start">
+        <Box ml={0} mt={58} alignSelf="flex-start">
           <Pressable onPress={() => router.replace('/recipes/')}>
             <Feather name="chevron-left" size={32} color="#333" />
           </Pressable>
@@ -145,6 +145,8 @@ export default function Menu() {
             <View style={styles.pagebreak} />
 
             {/* RESTORE PURCHASE */}
+            {!isPro && (
+              <>
             <Pressable 
               style={styles.menuItem} 
               onPress={handleRestore} 
@@ -154,14 +156,12 @@ export default function Menu() {
                 <MaterialCommunityIcons name="restore" style={styles.icon} />
                 <Text style={styles.text}>Restore Purchase</Text>
               </HStack>
-              {!isPro ? (
                 <Text style={styles.undertext}>Restore your previous Pro purchase</Text>
-              ) : (
-                <Text style={styles.undertext}>Already Pro</Text>
-              )}
             </Pressable>
 
             <View style={styles.pagebreak} />
+            </>
+            )}
 
             {/* QUICK TOUR */}
             <Pressable style={styles.menuItem} onPress={() => setShowQuickTourModal(true)}>

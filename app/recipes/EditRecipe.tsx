@@ -9,9 +9,11 @@ import {
   StyleSheet,
   TextInput
 } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRecipeStore } from '../../stores/useRecipeStore';
 import theme from '../../theme';
+
 
 export default function EditRecipe() {
   const router = useRouter();
@@ -162,10 +164,18 @@ export default function EditRecipe() {
         </Box>
       </HStack>
 
-      <ScrollView
-        ref={scrollViewRef}
+      
+      
+      <KeyboardAwareScrollView
+        //ref={scrollViewRef}
         contentContainerStyle={styles.container}
         keyboardShouldPersistTaps="handled"
+        enableOnAndroid={true}
+        extraScrollHeight={0}
+        keyboardOpeningTime={200}
+        extraHeight={0}
+        enableAutomaticScroll
+        
       >
         <Text style={[styles.headerText]}>
           Edit Recipe
@@ -303,14 +313,14 @@ export default function EditRecipe() {
             <Text style={styles.saveButtonText}>Save Changes</Text>
           </Pressable>
         </HStack>
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
+    //flexGrow: 1,
     paddingHorizontal: 16,
     backgroundColor: theme.colors.bg,
   },

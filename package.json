@@ -50,6 +50,7 @@
     "react-dom": "19.0.0",
     "react-native": "0.79.5",
     "react-native-gesture-handler": "~2.24.0",
+    "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-purchases": "^9.3.0",
     "react-native-purchases-ui": "^9.3.0",
     "react-native-reanimated": "~3.17.4",

@@ -187,7 +187,7 @@ const takePhoto = async () => {
 
       
       <KeyboardAvoidingView
-        behavior={Platform.OS==='ios' ? 'padding' : undefined} 
+        behavior={Platform.OS==='ios' ? 'padding' : 'padding'} 
         style={{flex:1}}
         keyboardVerticalOffset={Platform.OS==='ios' ? 0 : 30}  
       >
@@ -376,6 +376,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingHorizontal: 16,
     backgroundColor: theme.colors.bg,
+    
   },
   headerText: {
     fontFamily: 'heading-800',

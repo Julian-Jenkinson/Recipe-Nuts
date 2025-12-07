@@ -107,7 +107,7 @@ export function QuickTourModal({
     <Modal isOpen={isOpen} onClose={onClose} size="full" animationDuration="0" >
       <StatusBar backgroundColor={theme.colors.bg} barStyle="dark-content" />
     
-      <ModalBackdrop />
+      <ModalBackdrop animationDuration={0} bg="rgba(0,0,0,0)" sx={{ _backdropAnimation: { enter: { duration: 0 }, exit: { duration: 0 } } }} />
       <ModalContent style={styles.modal}>
         <SafeAreaView edges={["top", "bottom"]} style={{ flex: 1 }}>
           {/* Header */}
@@ -249,5 +249,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#777",
     paddingVertical: 3,
+    paddingHorizontal: 4,
   },
 });

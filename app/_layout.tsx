@@ -1,6 +1,5 @@
 import { config } from '@gluestack-ui/config';
 import { GluestackUIProvider } from '@gluestack-ui/themed';
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFonts } from 'expo-font';
 import * as NavigationBar from "expo-navigation-bar";
 import { Stack } from "expo-router";
@@ -9,7 +8,6 @@ import React, { useEffect, useState } from "react";
 import { Pressable, PressableProps, StatusBar } from "react-native";
 import { QuickTourModal } from "../components/QuickTourModal";
 import { useRecipeStore } from '../stores/useRecipeStore';
-import theme from '../theme';
 
 import { Platform } from 'react-native';
 
@@ -98,6 +96,7 @@ export default function Layout() {
       }
     };
 
+    {/*
     const checkFirstOpen = async () => {
       try {
         const hasSeenTour = await AsyncStorage.getItem("hasSeenQuickTour");
@@ -113,6 +112,14 @@ export default function Layout() {
     setNavBar();
     checkFirstOpen();
   }, []);
+
+  */}
+    })
+
+  useEffect(() => {
+  setShowQuickTour(true);
+}, []);
+
 
   useEffect(() => {
     console.log("🔄 useEffect: Font load state -> loaded:", loaded, "| error:", error);
@@ -145,8 +152,8 @@ export default function Layout() {
   return (
     <GluestackUIProvider config={config}>
       <StatusBar
-        backgroundColor={theme.colors.bg}
-        barStyle="dark-content"
+        //backgroundColor={theme.colors.cta}
+        //barStyle="light-content"
         translucent={true} // added this to try and resolve extra padding bug... not sure if i need it
       />
       <Stack

@@ -95,7 +95,7 @@ export default function AddRecipeScreen() {
             }
           ]
         );
-      }, 2000);// tiny delay to avoid blocking transition
+      }, 1000);// tiny delay to avoid blocking transition
 
     } catch (err: any) {
       console.error('Import error:', err);

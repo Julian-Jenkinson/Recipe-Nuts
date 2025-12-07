@@ -45,6 +45,9 @@ export default function RecipeListScreen() {
     return sorted;
   };
 
+  
+
+
   // Sync localRecipes if store updates and apply current filter
   useEffect(() => {
     const sortedRecipes = applySorting(recipes, selectedFilter);
@@ -84,8 +87,14 @@ export default function RecipeListScreen() {
             height: Constants.statusBarHeight,
             backgroundColor: theme.colors.cta,
           }}
-        /> 
+        />
       )}
+      <StatusBar
+        translucent
+        backgroundColor="transparent"
+        barStyle="light-content"
+      />
+
 
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -100,10 +109,6 @@ export default function RecipeListScreen() {
           >
             <View style={{ flex: 1 }} bg={theme.colors.bg}>
               {/* Header */}
-              <StatusBar
-                backgroundColor={theme.colors.cta}
-                barStyle="light-content"
-              />
               <View 
                 bg={theme.colors.cta}
                 borderBottomLeftRadius={20}
