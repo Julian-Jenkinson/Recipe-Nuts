@@ -9,7 +9,8 @@ import {
 } from "@gluestack-ui/themed";
 import * as ImagePicker from 'expo-image-picker';
 import React, { useEffect, useRef, useState } from "react";
-import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput } from "react-native";
+import { Alert, StyleSheet, TextInput } from "react-native";
+import { KeyboardAwareScrollView, KeyboardAwareScrollViewRef } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Recipe } from "../stores/useRecipeStore";
 import theme from "../theme";
@@ -45,7 +46,8 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
   onCancel,
   mode = "create",
 }) => {
-  const scrollViewRef = useRef<ScrollView>(null);
+  
+  const scrollViewRef = useRef<KeyboardAwareScrollViewRef>(null);
 
   // ✅ Form-friendly draft state
   const [draftRecipe, setDraftRecipe] = useState<RecipeFormDraft>(() => ({
@@ -159,6 +161,7 @@ const takePhoto = async () => {
 
 
 
+
   return (
     <SafeAreaView edges={["top"]} style={{ flex: 1, backgroundColor: theme.colors.bg }}>
       <StatusBar backgroundColor={theme.colors.bg} barStyle="dark-content" />
@@ -185,16 +188,14 @@ const takePhoto = async () => {
         </Box>
       </HStack>
 
-      
-      <KeyboardAvoidingView
-        behavior={Platform.OS==='ios' ? 'padding' : 'padding'} 
-        style={{flex:1}}
-        keyboardVerticalOffset={Platform.OS==='ios' ? 0 : 30}  
-      >
-      <ScrollView
-        ref={scrollViewRef}
+      <KeyboardAwareScrollView
+      ref={scrollViewRef}
         contentContainerStyle={styles.container}
+        //bottomOffset={0}
         keyboardShouldPersistTaps="handled"
+        //enabled
+        //extraKeyboardSpace={0}
+        scrollEventThrottle={16}
       >
         <Text style={styles.headerText}>
           {mode === "edit" ? "Edit Recipe" : "New Recipe"}
@@ -365,8 +366,7 @@ const takePhoto = async () => {
             </Text>
           </Pressable>
         </HStack>
-      </ScrollView>
-      </KeyboardAvoidingView>
+      </KeyboardAwareScrollView>  
     </SafeAreaView>
   );
 };
@@ -376,6 +376,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingHorizontal: 16,
     backgroundColor: theme.colors.bg,
+    
     
   },
   headerText: {
@@ -419,7 +420,8 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     padding: 10,
     borderRadius: 12,
-    minHeight: 100,
+    //minHeight: 100,
+    height: 160,
     textAlignVertical: 'top',
     backgroundColor: '#f7f7f7',
     color: '#000',

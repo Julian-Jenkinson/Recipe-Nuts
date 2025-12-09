@@ -6,6 +6,7 @@ import { Stack } from "expo-router";
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useEffect, useState } from "react";
 import { Pressable, PressableProps, StatusBar } from "react-native";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 import { QuickTourModal } from "../components/QuickTourModal";
 import { useRecipeStore } from '../stores/useRecipeStore';
 
@@ -151,17 +152,19 @@ export default function Layout() {
 
   return (
     <GluestackUIProvider config={config}>
-      <StatusBar
-        //backgroundColor={theme.colors.cta}
-        //barStyle="light-content"
-        translucent={true} // added this to try and resolve extra padding bug... not sure if i need it
-      />
-      <Stack
-        screenOptions={{
-          headerShown: false,
-        }} 
-      />     
-      <QuickTourModal isOpen={showQuickTour} onClose={() => setShowQuickTour(false)} />
+      <KeyboardProvider>
+        <StatusBar
+          //backgroundColor={theme.colors.cta}
+          //barStyle="light-content"
+          translucent={true} // added this to try and resolve extra padding bug... not sure if i need it
+        />
+        <Stack
+          screenOptions={{
+            headerShown: false,
+          }} 
+        />     
+        <QuickTourModal isOpen={showQuickTour} onClose={() => setShowQuickTour(false)} />
+      </KeyboardProvider>
     </GluestackUIProvider>
   );
 }

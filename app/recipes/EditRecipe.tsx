@@ -9,10 +9,11 @@ import {
   StyleSheet,
   TextInput
 } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRecipeStore } from '../../stores/useRecipeStore';
 import theme from '../../theme';
+
 
 
 export default function EditRecipe() {
@@ -169,13 +170,9 @@ export default function EditRecipe() {
       <KeyboardAwareScrollView
         //ref={scrollViewRef}
         contentContainerStyle={styles.container}
-        keyboardShouldPersistTaps="handled"
-        enableOnAndroid={true}
-        extraScrollHeight={0}
-        keyboardOpeningTime={200}
-        extraHeight={0}
-        enableAutomaticScroll
-        
+        //bottomInset={24}  // adjust for bottom buttons if needed
+        //extraOffset={50}
+        //animated
       >
         <Text style={[styles.headerText]}>
           Edit Recipe
@@ -320,7 +317,7 @@ export default function EditRecipe() {
 
 const styles = StyleSheet.create({
   container: {
-    //flexGrow: 1,
+    flexGrow: 1, //play with this flexgrow etc
     paddingHorizontal: 16,
     backgroundColor: theme.colors.bg,
   },
@@ -365,7 +362,8 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     padding: 10,
     borderRadius: 12,
-    minHeight: 100,
+    //minHeight: 100,
+    height: 160,
     textAlignVertical: 'top',
     backgroundColor: '#f7f7f7',
     color: '#000',
