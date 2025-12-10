@@ -2,7 +2,7 @@ import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Box, HStack, Pressable, ScrollView, Text, View } from "@gluestack-ui/themed";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Alert, BackHandler, Linking, Platform, StatusBar, StyleSheet } from "react-native";
+import { Alert, BackHandler, Linking, Platform, Share, StatusBar, StyleSheet } from "react-native";
 import { PrivacyPolicyModal } from "../../components/PrivacyPolicyModal";
 import { QuickTourModal } from "../../components/QuickTourModal";
 import { RecipeBar } from "../../components/RecipeBar";
@@ -122,6 +122,27 @@ export default function Menu() {
     }
   };
 
+  const handleShare = async () => {
+    try {
+      const androidUrl =
+        "https://play.google.com/store/apps/details?id=com.hulio.recipenuts";
+
+      const iosUrl =
+        "https://apps.apple.com/app/idYOUR_APP_ID"; // replace when live
+
+      const storeUrl = Platform.OS === "android" ? androidUrl : iosUrl;
+
+      await Share.share({
+        message: `Check out RecipeNuts — an easy way to save, organise, and cook your favourite recipes!\n\n${storeUrl}`,
+        title: "RecipeNuts App"
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+
+
 
   return (
     <View style={{ flex: 1 }}>
@@ -213,7 +234,7 @@ export default function Menu() {
             <View style={styles.pagebreak} />
 
             {/* SHARE */}
-            <Pressable style={styles.menuItem}>
+            <Pressable style={styles.menuItem} onPress={handleShare}>
               <HStack style={styles.textContainer}>
                 <Feather name="share-2" style={styles.icon} />
                 <Text style={styles.text}>Share</Text>
