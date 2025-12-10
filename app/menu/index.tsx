@@ -3,7 +3,6 @@ import { Box, HStack, Pressable, ScrollView, Text, View } from "@gluestack-ui/th
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Alert, BackHandler, Linking, Platform, StatusBar, StyleSheet } from "react-native";
-
 import { PrivacyPolicyModal } from "../../components/PrivacyPolicyModal";
 import { QuickTourModal } from "../../components/QuickTourModal";
 import { RecipeBar } from "../../components/RecipeBar";
@@ -78,6 +77,34 @@ export default function Menu() {
     } catch (err) {
       console.error('Failed to open email client:', err);
       Alert.alert('Error', 'Could not open email client. Make sure you have an email app installed.');
+    }
+  };
+
+  
+
+  const openStoreReview = async () => {
+    const androidPackage = "com.hulio.recipenuts"; 
+    const iosAppId = "<PLACEHOLDER>";            // placeholder
+
+    try {
+      if (Platform.OS === "android") {
+        await Linking.openURL(`market://details?id=${androidPackage}`);
+      } else {
+        await Linking.openURL(
+          `itms-apps://itunes.apple.com/app/id${iosAppId}?action=write-review`
+        );
+      }
+    } catch (error) {
+      // Fallback to web
+      if (Platform.OS === "android") {
+        Linking.openURL(
+          `https://play.google.com/store/apps/details?id=${androidPackage}`
+        );
+      } else {
+        Linking.openURL(
+          `https://apps.apple.com/app/id${iosAppId}?action=write-review`
+        );
+      }
     }
   };
 
@@ -175,7 +202,7 @@ export default function Menu() {
             <View style={styles.pagebreak} />
 
             {/* RATE */}
-            <Pressable style={styles.menuItem}>
+            <Pressable style={styles.menuItem} onPress={openStoreReview}>
               <HStack style={styles.textContainer}>
                 <MaterialCommunityIcons name="star-outline" style={styles.icon} />
                 <Text style={styles.text}>Rate</Text>
