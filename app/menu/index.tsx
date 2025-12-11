@@ -137,6 +137,7 @@ export default function Menu() {
         title: "RecipeNuts App"
       });
     } catch (error) {
+
       console.error(error);
     }
   };

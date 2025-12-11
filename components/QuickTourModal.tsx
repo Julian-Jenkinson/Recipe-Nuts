@@ -153,8 +153,8 @@ export function QuickTourModal({
                       mt="$4"
                       style={{
                         backgroundColor: theme.colors.cta,
-                        borderRadius: 8,
-                        paddingHorizontal: 20,
+                        borderRadius: 12,
+                        paddingHorizontal: 16,
                       }}
                       onPress={onClose}
                     >
@@ -167,7 +167,12 @@ export function QuickTourModal({
           </ScrollView>
 
           {/* Footer */}
-          <HStack justifyContent="space-between" alignItems="center" px="$6" mb="$4">
+          <HStack 
+            justifyContent="space-between" 
+            alignItems="center" 
+            mb="$4"
+            style={{ paddingHorizontal: 24 }}
+          >
             <Pressable onPress={onClose}>
               <Text style={styles.skipText}>SKIP</Text>
             </Pressable>
@@ -209,7 +214,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   page: {
-    width: width,
+    width: width -1,
     height: height * 0.75,
     justifyContent: "center",
     alignItems: "center",
@@ -243,12 +248,16 @@ const styles = StyleSheet.create({
     fontFamily: "body-800",
     fontSize: 18,
     color: "white",
+    paddingHorizontal: 16,
+    overflow: "visible",         // fix text clipping
+    includeFontPadding: false,   // fix text clipping
   },
   skipText: {
     fontFamily: "body-700",
     fontSize: 16,
     color: "#777",
     paddingVertical: 3,
-    paddingHorizontal: 4,
+    overflow: "visible",         // fix text clipping
+    includeFontPadding: false,   // fix text clipping
   },
 });
