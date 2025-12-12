@@ -255,10 +255,6 @@ export default function Menu() {
             <Pressable onPress={() => setShowPrivacyModal(true)}>
               <Text style={styles.subtext}>Privacy Policy</Text>
             </Pressable>
-
-
-            
-
           </Box>
         </ScrollView>
         <VersionNumber/>

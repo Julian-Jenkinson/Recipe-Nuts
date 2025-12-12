@@ -1,5 +1,6 @@
 import {
-  Button, ButtonText, CloseIcon, Heading, HStack, Icon, Modal,
+  Button, ButtonText,
+  CloseIcon, Heading, HStack, Icon, Modal,
   ModalBackdrop, ModalCloseButton, ModalContent, ModalHeader, Pressable,
   Text, VStack
 } from "@gluestack-ui/themed";
@@ -172,8 +173,9 @@ export function QuickTourModal({
             alignItems="center" 
             mb="$4"
             style={{ paddingHorizontal: 24 }}
+            
           >
-            <Pressable onPress={onClose}>
+            <Pressable onPress={onClose} style={{ minWidth: 50 }}>
               <Text style={styles.skipText}>SKIP</Text>
             </Pressable>
 
@@ -190,7 +192,7 @@ export function QuickTourModal({
             ))}
           </HStack>
 
-            <Pressable onPress={handleNext}>
+            <Pressable onPress={handleNext} style={{ minWidth: 50 }}>
               <Text style={styles.skipText}>
                 {currentPage === pages.length - 1 ? "DONE" : "NEXT"}
               </Text>
@@ -249,8 +251,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "white",
     paddingHorizontal: 16,
-    overflow: "visible",         // fix text clipping
-    includeFontPadding: false,   // fix text clipping
+    minWidth: 110,
+    textAlign: 'center',
+
   },
   skipText: {
     fontFamily: "body-700",
@@ -259,5 +262,6 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
     overflow: "visible",         // fix text clipping
     includeFontPadding: false,   // fix text clipping
+    paddingHorizontal:3,
   },
 });
