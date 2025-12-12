@@ -94,8 +94,14 @@ export default function EditRecipe() {
     };
 
     updateRecipe(updatedRecipe);
-    Alert.alert('Success', 'Recipe updated!');
-    router.back();
+    //Alert.alert('Success', 'Recipe updated!');
+    //router.back();
+    Alert.alert('Success', 'Recipe updated!', [
+            {
+              text: 'OK',
+              onPress: () => router.replace('/recipes'),
+            },
+          ]);
   };
 
   const handleCancel = () => {
@@ -300,7 +306,7 @@ export default function EditRecipe() {
         <TextInput
           value={draftRecipe.notes}
           onChangeText={(text) => setDraftRecipe({ ...draftRecipe, notes: text })}
-          style={styles.textArea}
+          style={styles.textAreaNotes}
           multiline
         />
 
@@ -356,6 +362,20 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   textArea: {
+    fontFamily: 'body-400',
+    fontSize: 16,
+    borderWidth: .7,
+    borderColor: '#ddd',
+    padding: 10,
+    borderRadius: 12,
+    //minHeight: 100,
+    height: 250,
+    textAlignVertical: 'top',
+    backgroundColor: '#f7f7f7',
+    color: '#000',
+    lineHeight:28,
+  },
+  textAreaNotes: {
     fontFamily: 'body-400',
     fontSize: 16,
     borderWidth: .7,

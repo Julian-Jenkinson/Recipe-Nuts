@@ -353,7 +353,7 @@ const takePhoto = async () => {
           onChangeText={(text) =>
             setDraftRecipe({ ...draftRecipe, notes: text })
           }
-          style={styles.textArea}
+          style={styles.textAreaNotes}
           multiline
         />
 
@@ -414,6 +414,20 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   textArea: {
+    fontFamily: 'body-400',
+    fontSize: 16,
+    borderWidth: .7,
+    borderColor: '#ddd',
+    padding: 10,
+    borderRadius: 12,
+    //minHeight: 100,
+    height: 250,
+    textAlignVertical: 'top',
+    backgroundColor: '#f7f7f7',
+    color: '#000',
+    lineHeight:28,
+  },
+  textAreaNotes: {
     fontFamily: 'body-400',
     fontSize: 16,
     borderWidth: .7,

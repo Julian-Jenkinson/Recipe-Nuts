@@ -31,7 +31,7 @@ export default function AddRecipeScreen() {
     setLoading(true);
 
     try {
-      // ✅ 1. Fetch recipe data
+      // Fetch recipe data
       const response = await fetch(
         `https://recipe-extractor-api.fly.dev/extract?url=${encodeURIComponent(inputUrl)}`
       );
@@ -48,13 +48,13 @@ export default function AddRecipeScreen() {
         throw new Error('Incomplete recipe data');
       }
 
-      // ✅ 2. Download image (still part of ONE loading phase)
+      // Download image (still part of ONE loading phase)
       let localImageUri = '';
       if (data.image) {
         localImageUri = (await downloadAndStoreImage(data.image)) || '';
       }
 
-      // ✅ 3. Build recipe
+      // Build recipe
       const newRecipe = {
         id: `recipe-${Date.now()}`,
         title: data.title,
@@ -71,31 +71,49 @@ export default function AddRecipeScreen() {
         favourite: false,
       };
 
-      // ✅ 4. Save recipe
+      // Save recipe
       addRecipe(newRecipe);
 
-      // ✅ 5. Reset input
+      // Reset input
       setInputUrl('');
+      // Show toast, navigate back to recipes and prompt for review
+      Alert.alert(
+        'Success', 
+        'Recipe imported and saved!', 
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              router.replace('/recipes');
+              setTimeout(() => {
+                triggerReviewIfNeeded();
+              }, 1500); // 1.2s delay gives user time to see the imported recipe
+            }
+          },
+        ]
+      );
 
+      
+      
       // ✅ 6. Navigate back *after everything is done*
-      router.replace('/recipes');
+      //router.replace('/recipes');
       
       // ✅ 7. Show quick success toast/alert AFTER navigation
-      setTimeout(() => {
-        Alert.alert(
-          'Success',
-          'Recipe imported and saved!',
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                // NOW the alert is gone → trigger review
-                triggerReviewIfNeeded();
-              }
-            }
-          ]
-        );
-      }, 1000);// tiny delay to avoid blocking transition
+      //setTimeout(() => {
+       // Alert.alert(
+        //  'Success',
+        //  'Recipe imported and saved!',
+        //  [
+        //    {
+        //      text: 'OK',
+        //      onPress: () => {
+        //        // NOW the alert is gone → trigger review
+        //        triggerReviewIfNeeded();
+        //      }
+        //    }
+        //  ]
+        //);
+      //}, 1000);// tiny delay to avoid blocking transition
 
     } catch (err: any) {
       console.error('Import error:', err);
