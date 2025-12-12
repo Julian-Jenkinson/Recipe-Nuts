@@ -1,8 +1,9 @@
+import { VersionNumber } from "@/components/VersionNumber";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Box, HStack, Pressable, ScrollView, Text, View } from "@gluestack-ui/themed";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Alert, BackHandler, Linking, Platform, Share, StatusBar, StyleSheet } from "react-native";
+import { Alert, Linking, Platform, Share, StatusBar, StyleSheet } from "react-native";
 import { PrivacyPolicyModal } from "../../components/PrivacyPolicyModal";
 import { QuickTourModal } from "../../components/QuickTourModal";
 import { RecipeBar } from "../../components/RecipeBar";
@@ -51,18 +52,6 @@ export default function Menu() {
         Alert.alert("Purchase failed", e.message);
       }
     }
-  };
-
-  const handleExit = () => {
-    if (Platform.OS !== "android") return;
-    Alert.alert(
-      "Exit App",
-      "Are you sure you want to exit?",
-      [
-        { text: "Cancel", style: "cancel" },
-        { text: "Exit", style: "destructive", onPress: () => BackHandler.exitApp() },
-      ]
-    );
   };
 
   const handleContactPress = async () => {
@@ -267,11 +256,8 @@ export default function Menu() {
               <Text style={styles.subtext}>Privacy Policy</Text>
             </Pressable>
 
-            <View style={styles.pagebreak} />
-
-            <Pressable onPress={handleExit}>
-              <Text style={styles.exittext}>Exit</Text>
-            </Pressable>
+            <VersionNumber/>
+            
           </Box>
         </ScrollView>
       </View>
@@ -294,6 +280,6 @@ const styles = StyleSheet.create({
   icon: { color: theme.colors.cta, fontSize: 22 },
   submenu: {},
   subtext: { fontSize: 19, fontFamily: "body-700", marginVertical: 8, marginLeft: 42 },
-  exittext: { fontSize: 19, fontFamily: "body-800", marginTop: 10, marginBottom: 40, marginLeft: 42 },
+  exittext: { fontSize: 19, fontFamily: "body-800", marginTop: 10, marginBottom: 20, marginLeft: 42 },
   pagebreak: { height: 1, backgroundColor: '#ddd', marginVertical: 15, marginLeft: 42, marginRight: 42 },
 });
