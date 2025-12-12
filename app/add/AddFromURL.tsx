@@ -31,7 +31,7 @@ export default function AddRecipeScreen() {
     setLoading(true);
 
     try {
-      // Fetch recipe data
+      // ✅ 1. Fetch recipe data
       const response = await fetch(
         `https://recipe-extractor-api.fly.dev/extract?url=${encodeURIComponent(inputUrl)}`
       );
@@ -48,13 +48,13 @@ export default function AddRecipeScreen() {
         throw new Error('Incomplete recipe data');
       }
 
-      // Download image (still part of ONE loading phase)
+      // ✅ 2. Download image (still part of ONE loading phase)
       let localImageUri = '';
       if (data.image) {
         localImageUri = (await downloadAndStoreImage(data.image)) || '';
       }
 
-      // Build recipe
+      // ✅ 3. Build recipe
       const newRecipe = {
         id: `recipe-${Date.now()}`,
         title: data.title,
@@ -71,12 +71,12 @@ export default function AddRecipeScreen() {
         favourite: false,
       };
 
-      // Save recipe
+      // ✅ 4. Save recipe
       addRecipe(newRecipe);
 
-      // Reset input
+      // ✅ 5. Reset input
       setInputUrl('');
-      // Show toast, navigate back to recipes and prompt for review
+
       Alert.alert(
         'Success', 
         'Recipe imported and saved!', 
@@ -84,10 +84,8 @@ export default function AddRecipeScreen() {
           {
             text: 'OK',
             onPress: () => {
-              router.replace('/recipes');
-              setTimeout(() => {
-                triggerReviewIfNeeded();
-              }, 1500); // 1.2s delay gives user time to see the imported recipe
+              router.replace('/recipes'),
+              triggerReviewIfNeeded();
             }
           },
         ]
@@ -230,7 +228,8 @@ export default function AddRecipeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingBottom:30,
     backgroundColor: theme.colors.bg,
   },
   centerContainer: {
