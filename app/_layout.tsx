@@ -12,6 +12,7 @@ import { useRecipeStore } from '../stores/useRecipeStore';
 
 import { Platform } from 'react-native';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Purchases from 'react-native-purchases';
 
 function NoRippleButton(props: PressableProps) {
@@ -97,7 +98,6 @@ export default function Layout() {
       }
     };
 
-    {/*
     const checkFirstOpen = async () => {
       try {
         const hasSeenTour = await AsyncStorage.getItem("hasSeenQuickTour");
@@ -113,13 +113,6 @@ export default function Layout() {
     setNavBar();
     checkFirstOpen();
   }, []);
-
-  */}
-    })
-
-  useEffect(() => {
-  setShowQuickTour(true);
-}, []);
 
 
   useEffect(() => {

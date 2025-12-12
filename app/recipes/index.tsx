@@ -172,7 +172,7 @@ export default function RecipeListScreen() {
               {filteredRecipes.length > 0 && (
                 <HStack pl={16} pb={12} pt={4}>
                   <Text 
-                      fontSize={24} 
+                      fontSize={26} 
                       color={theme.colors.text1} 
                       style={{ flex:1, fontFamily: 'heading-900'}}
                       numberOfLines={1}

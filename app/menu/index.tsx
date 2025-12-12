@@ -145,7 +145,7 @@ export default function Menu() {
           </Pressable>
         </Box>
 
-        <Text style={styles.heading}>Menu</Text>
+        <Text style={styles.heading}>Settings</Text>
 
         <ScrollView>
           <Box>
@@ -269,7 +269,7 @@ export default function Menu() {
 
 const styles = StyleSheet.create({
   container: { backgroundColor: theme.colors.bg, flex: 1, paddingHorizontal: 16 },
-  heading: { fontSize: 26, fontFamily: "body-800", marginTop: 20, marginBottom: 20, marginLeft: 40 },
+  heading: { fontSize: 26, fontFamily: "body-900", marginTop: 20, marginBottom: 20, marginLeft: 38 },
   text: { fontSize: 18, fontFamily: "body-800", marginLeft: 18 },
   menuItem: { paddingBottom: 10 },
   undertext: { fontSize: 17, fontFamily: "body-400", color: theme.colors.text2, marginLeft: 42, marginTop: 4 },
