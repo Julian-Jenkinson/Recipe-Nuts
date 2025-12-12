@@ -351,7 +351,7 @@ const styles = StyleSheet.create({
   },
   actionText: {
     fontFamily: 'body-600',
-    fontSize: 20,
+    fontSize: 19,
     paddingLeft: 12,
     color: '#000',
   },
