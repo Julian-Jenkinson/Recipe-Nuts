@@ -16,10 +16,12 @@ export const VersionNumber = () => {
 
 const styles = StyleSheet.create({ 
   versionText: {
-    textAlign:'left',
+    textAlign:'center',
     fontSize: 14, 
-    paddingLeft: 42,
-    paddingVertical: 20,
+    //textAlign:'left',
+    //paddingLeft: 42,
+    paddingBottom:65,
+    paddingVertical: 10,
     fontFamily: "body-400", 
     color: theme.colors.text2,
   }

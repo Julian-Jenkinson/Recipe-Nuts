@@ -256,10 +256,12 @@ export default function Menu() {
               <Text style={styles.subtext}>Privacy Policy</Text>
             </Pressable>
 
-            <VersionNumber/>
+
             
+
           </Box>
         </ScrollView>
+        <VersionNumber/>
       </View>
 
       <QuickTourModal isOpen={showQuickTourModal} onClose={() => setShowQuickTourModal(false)} />
