@@ -9,7 +9,7 @@ export default () => {
     "expo": {
       "name": "Recipe Nuts",
       "slug": "recipenuts",
-      "version": "1.0.2",
+      "version": "1.0.3",
       "orientation": "portrait",
       "icon": "./assets/images/icon.png",
       "scheme": "recipenuts",

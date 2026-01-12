@@ -35,17 +35,19 @@ Currently in closed testing. I am aiming towards a public release in late 2025.
 Utilising Expo managed workflow. The following commands will be useful:
 
    ```bash
-   npm install                                                    # Install dependencies
-   npx expo start -                                               # Start the app with clear cache
-   emulator -avd Medium_Phone_API_36.0 -wipe-data                 # Wipe android emulator data
+   npm install                                                       # Install dependencies
+   npx expo start -                                                  # Start the app with clear cache
+   emulator -avd Medium_Phone_API_36.0 -wipe-data                    # Wipe android emulator data
    npx expo-doctor
-   npx react-native log-android                                   # view logs on connected device
-   adb logcat | grep recipenuts                                   # detailed logs
-   npx expo prebuild                                              # (re)builds andoid/ios folders
-   eas build --profile preview --platform android                 # Test build preview
-   eas build --profile preview --platform android --clear-cache   # Test Preview build with a clean cache
-   eas build --platform android --profile production              # prod build
-   eas build --platfrom android --profile development             # dev build
+   npx react-native log-android                                      # view logs on connected device
+   adb logcat | grep recipenuts                                      # detailed logs
+   npx expo prebuild                                                 # (re)builds andoid/ios folders
+   eas build --profile preview --platform android                    # Test build preview
+   eas build --profile preview --platform android --clear-cache      # Test Preview build with a clean cache
+   
+   eas build --platfrom android --profile development                # dev build
+   eas build --platform android --profile production                 # prod build
+   eas build --platform android --profile production --auto-submit   # prod build with auto submit to playstore
 
    ```
 
