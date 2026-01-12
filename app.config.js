@@ -1,21 +1,15 @@
-import { execSync } from "child_process";
 
-function getCommitCount() {
-  try {
-    return execSync("git rev-list --count HEAD").toString().trim();
-  } catch {
-    return "0";
-  }
-}
+
+
 
 export default () => {
-  const commitCount = getCommitCount();
+  
 
   return {
     "expo": {
       "name": "Recipe Nuts",
       "slug": "recipenuts",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "orientation": "portrait",
       "icon": "./assets/images/icon.png",
       "scheme": "recipenuts",
@@ -83,8 +77,7 @@ export default () => {
         "router": {},
         "eas": {
           "projectId": "237e40d5-ae96-43b5-ad01-03847fc7e761"
-        },
-        commitCount
+        }
       },
       "assetBundlePatterns": [
         "**/*"

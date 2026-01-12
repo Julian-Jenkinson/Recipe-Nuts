@@ -4,12 +4,12 @@ import { StyleSheet } from "react-native";
 import theme from "../theme";
 
 export const VersionNumber = () => {
-  const version = Constants.expoConfig?.version ?? "67";
-  const commit = Constants.expoConfig?.extra?.commitCount ?? "0";
+  const version = Constants.nativeAppVersion ?? "0";
+  const build = Constants.nativeBuildVersion ?? "0";
 
   return (
     <Text style={styles.versionText}>
-      v{version} + {commit}
+      v{version} ({build})
     </Text>
   );
 };
