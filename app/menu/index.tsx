@@ -4,10 +4,8 @@ import { Box, HStack, Pressable, ScrollView, Text, View } from "@gluestack-ui/th
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Alert, Linking, Platform, Share, StatusBar, StyleSheet } from "react-native";
-import { PrivacyPolicyModal } from "../../components/PrivacyPolicyModal";
 import { QuickTourModal } from "../../components/QuickTourModal";
 import { RecipeBar } from "../../components/RecipeBar";
-import { TAndCModal } from "../../components/TAndCModal";
 import { useRecipeStore } from "../../stores/useRecipeStore";
 import theme from "../../theme";
 import { fetchPaywallPackage, purchasePackage } from '../../utils/revenueCat';
@@ -17,9 +15,6 @@ export default function Menu() {
   const isPro = useRecipeStore((state) => state.isPro);
   const syncCustomerInfo = useRecipeStore((state) => state.syncCustomerInfo);
   const router = useRouter();
-
-  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
-  const [showTAndCModal, setShowTAndCModal] = useState(false);
   const [showQuickTourModal, setShowQuickTourModal] = useState(false);
 
   // Ensure local Pro state is synced with RevenueCat on mount
@@ -33,6 +28,15 @@ export default function Menu() {
     };
     fetchProStatus();
   }, []);
+
+  const openURL = async (url: string) => {
+    try {
+      await Linking.openURL(url);
+    } catch (err) {
+      console.warn("Failed to open URL:", err);
+      Alert.alert("Error", "Could not open the link.");
+    }
+  };
 
   const handleUpgrade = async () => {
     const pkg = await fetchPaywallPackage("default");
@@ -57,7 +61,7 @@ export default function Menu() {
   const handleContactPress = async () => {
     if (Platform.OS !== 'android') return;
 
-    const email = 'hello.recipenuts@gmail.com';
+    const email = 'hello@recipenuts.app';
     const subject = 'Feedback / Support';
     const url = `mailto:${email}?subject=${encodeURIComponent(subject)}`;
 
@@ -248,11 +252,11 @@ export default function Menu() {
 
           {/* SUB MENU */}
           <Box flex={1} style={styles.submenu}>
-            <Pressable onPress={() => setShowTAndCModal(true)}>
+            <Pressable onPress={ () => openURL("https://www.recipenuts.app/terms.html")}>
               <Text style={styles.subtext}>Terms and Conditions</Text>
             </Pressable>
 
-            <Pressable onPress={() => setShowPrivacyModal(true)}>
+            <Pressable onPress={() => openURL("https://www.recipenuts.app/privacy.html")}>
               <Text style={styles.subtext}>Privacy Policy</Text>
             </Pressable>
           </Box>
@@ -261,8 +265,7 @@ export default function Menu() {
       </View>
 
       <QuickTourModal isOpen={showQuickTourModal} onClose={() => setShowQuickTourModal(false)} />
-      <TAndCModal isOpen={showTAndCModal} onClose={() => setShowTAndCModal(false)} />
-      <PrivacyPolicyModal isOpen={showPrivacyModal} onClose={() => setShowPrivacyModal(false)} />
+
     </View>
   );
 }

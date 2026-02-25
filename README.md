@@ -17,11 +17,12 @@ Recipe sites often make it cumbersome to save and re-use recipes. Recipe Nuts is
 
 ## Release Scedule 🚀
 
-Currently in closed testing. I am aiming towards a public release in late 2025.
+Available in the Play Store.
 
 
 ## Post Release Features 📦
 
+- AI integrated recipe extraction
 - Shopping list
 - Meal planner
 - Scale ingredients

@@ -19,6 +19,10 @@
 - Better display of version + versionCode
 - Configured EAS auto-submit to Playstore production track
 
-## [1.0.4] – 2026-xx-xx
-### Fixed
-- 
+## [1.0.4] – 19-02-2026
+### Feat
+- added url links to privacy and terms on website
+
+## [1.0.4] – 20-02-2026
+### Fix
+- fixed url links to privacy and terms on website
