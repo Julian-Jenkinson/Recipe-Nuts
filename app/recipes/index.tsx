@@ -78,6 +78,8 @@ export default function RecipeListScreen() {
     setLocalRecipes(sorted);
   };
 
+  console.log(recipes)
+
   return (
     <>
       {/* Fake "status bar background" */}

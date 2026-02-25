@@ -11,8 +11,14 @@ import {
   StyleSheet,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  getDisplayIngredientRows,
+  type DisplayIngredientRow,
+} from '../../domain/ingredients/ingredientDisplayAdapter';
 import { useRecipeStore } from '../../stores/useRecipeStore';
 import theme from '../../theme';
+
+const fallbackImage = require('../../assets/images/error.png');
 
 export default function RecipeDetailsScreen() {
   const router = useRouter();
@@ -27,18 +33,30 @@ export default function RecipeDetailsScreen() {
   const [tickedIngredients, setTickedIngredients] = useState<boolean[]>([]);
   const [tickedInstructions, setTickedInstructions] = useState<boolean[]>([]);
 
-  const ingredients = recipe ? (Array.isArray(recipe.ingredients) ? recipe.ingredients.map(String) : []) : [];
-  const instructions = recipe ? (Array.isArray(recipe.instructions) ? recipe.instructions : []) : [];
+  const ingredientRows = React.useMemo(() => getDisplayIngredientRows(recipe), [recipe]);
+  const ingredients = React.useMemo(
+    () => ingredientRows.map((row) => row.rawText),
+    [ingredientRows]
+  );
+  const instructions = React.useMemo(
+    () => (recipe && Array.isArray(recipe.instructions) ? recipe.instructions : []),
+    [recipe]
+  );
   
-  const notes = recipe && Array.isArray(recipe.notes) ? recipe.notes.map(String) : [];
-  const imageUri = recipe?.imageUrl?.length ? recipe.imageUrl : 'https://via.placeholder.com/400';
+  const notes = React.useMemo(
+    () => (recipe && Array.isArray(recipe.notes) ? recipe.notes.map(String) : []),
+    [recipe]
+  );
+  const imageSource =
+    recipe?.imageUrl?.length && (recipe.imageUrl.startsWith('http') || recipe.imageUrl.startsWith('file'))
+      ? { uri: recipe.imageUrl }
+      : fallbackImage;
 
 
   React.useEffect(() => {
-    if (!recipe) return;
     setTickedIngredients(ingredients.map(() => false));
     setTickedInstructions(instructions.map(() => false));
-  }, [recipe?.id]);
+  }, [ingredients, instructions]);
 
 
 
@@ -119,6 +137,24 @@ export default function RecipeDetailsScreen() {
     }
   };
 
+  const renderIngredientText = (row: DisplayIngredientRow) => {
+    if (row.mode === 'structured') {
+      return (
+        <Text style={styles.ingredientText}>
+          {(row.quantityText || row.unitText) && (
+            <Text style={styles.ingredientTextStrong}>
+              {[row.quantityText, row.unitText].filter(Boolean).join(' ')}{' '}
+            </Text>
+          )}
+          {row.ingredientText || row.rawText}
+          {row.noteText ? ` (${row.noteText})` : ''}
+        </Text>
+      );
+    }
+
+    return <Text style={styles.ingredientText}>{row.rawText}</Text>;
+  };
+
   return (
     <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: theme.colors.bg }}>
       <StatusBar backgroundColor={theme.colors.bg} barStyle="dark-content" />
@@ -153,7 +189,7 @@ export default function RecipeDetailsScreen() {
 
           {/* Recipe Image & Favorite */}
         <Box>
-          <Image source={{ uri: imageUri }} style={styles.image} resizeMode="cover" borderRadius={12}/>
+          <Image source={imageSource} style={styles.image} resizeMode="cover" borderRadius={12}/>
           <Pressable
             onPress={() => toggleFavourite(recipe.id)}
             hitSlop={5}
@@ -190,8 +226,8 @@ export default function RecipeDetailsScreen() {
           {/* Ingredients */}
           <Text style={styles.heading2xl}>Ingredients</Text>
           <Box style={styles.ingredientBox}>
-            {ingredients.length > 0 ? (
-              ingredients.map((item, index) => (
+            {ingredientRows.length > 0 ? (
+              ingredientRows.map((row, index) => (
                 
                 <View key={`ing-${index}`}>
                   <Pressable onPress={() => toggleIngredient(index)}>                  
@@ -205,12 +241,9 @@ export default function RecipeDetailsScreen() {
                           <Octicons name="check" size={20} color={theme.colors.ctaText} />
                         )}
                       </Box>
-                      <Text style={[
-                        styles.ingredientText, 
-                        tickedIngredients[index] && { opacity: 0.3 }]}
-                      >
-                        {item}
-                      </Text>
+                      <View style={tickedIngredients[index] ? { opacity: 0.3 } : undefined}>
+                        {renderIngredientText(row)}
+                      </View>
                     </HStack>
                   </Pressable> 
                 </View>
@@ -338,6 +371,10 @@ const styles = StyleSheet.create({
     lineHeight: 28, 
     fontFamily: 'body-500', 
     color: theme.colors.text1 
+  },
+  ingredientTextStrong: {
+    fontFamily: 'body-700',
+    color: theme.colors.text1,
   },
   instructionHStack: {
     alignItems:'center',

@@ -12,6 +12,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { Alert, StyleSheet, TextInput } from "react-native";
 import { KeyboardAwareScrollView, KeyboardAwareScrollViewRef } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { getDisplayIngredients } from "../domain/ingredients/ingredientDisplayAdapter";
+import { migrateLegacyIngredientsToDetails } from "../domain/ingredients/ingredientMigration";
 import { Recipe } from "../stores/useRecipeStore";
 import theme from "../theme";
 
@@ -61,9 +63,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
     prepTime: initialRecipe.prepTime ?? "",
     cookTime: initialRecipe.cookTime ?? "",
     favourite: initialRecipe.favourite ?? false,
-    ingredients: Array.isArray(initialRecipe.ingredients)
-      ? initialRecipe.ingredients.join("\n")
-      : (initialRecipe.ingredients as unknown as string) || "",
+    ingredients: getDisplayIngredients(initialRecipe).join("\n"),
     instructions: Array.isArray(initialRecipe.instructions)
       ? initialRecipe.instructions.join("\n\n")
       : (initialRecipe.instructions as unknown as string) || "",
@@ -82,6 +82,14 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
       return;
     }
 
+    const ingredientLines = draftRecipe.ingredients
+      ? draftRecipe.ingredients
+          .split("\n")
+          .map((i) => i.trim())
+          .filter(Boolean)
+      : [];
+    const ingredientDetails = migrateLegacyIngredientsToDetails(ingredientLines);
+
     // ✅ Always produce a safe Recipe
     const finalRecipe: Recipe = {
       id: draftRecipe.id || `recipe-${Date.now()}`,
@@ -94,12 +102,10 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({
       prepTime: draftRecipe.prepTime?.trim() || "",
       cookTime: draftRecipe.cookTime?.trim() || "",
       favourite: draftRecipe.favourite ?? false,
-      ingredients: draftRecipe.ingredients
-        ? draftRecipe.ingredients
-            .split("\n")
-            .map((i) => i.trim())
-            .filter(Boolean)
-        : [],
+      ingredients: ingredientDetails
+        .map((detail) => detail.raw?.trim() || detail.ingredient?.trim() || "")
+        .filter(Boolean),
+      ingredientDetails,
       instructions: draftRecipe.instructions
         ? draftRecipe.instructions
             .split(/\n{2,}/)

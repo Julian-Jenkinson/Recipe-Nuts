@@ -46,7 +46,7 @@ Utilising Expo managed workflow. The following commands will be useful:
    eas build --profile preview --platform android                    # Test build preview
    eas build --profile preview --platform android --clear-cache      # Test Preview build with a clean cache
    
-   eas build --platfrom android --profile development                # dev build
+   eas build --platform android --profile development                # dev build
    eas build --platform android --profile production                 # prod build
    eas build --platform android --profile production --auto-submit   # prod build with auto submit to playstore
 

@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { getDisplayIngredients } from '../../domain/ingredients/ingredientDisplayAdapter';
+import { migrateLegacyIngredientsToDetails } from '../../domain/ingredients/ingredientMigration';
 import { useRecipeStore } from '../../stores/useRecipeStore';
 import theme from '../../theme';
 
@@ -52,9 +54,7 @@ export default function EditRecipe() {
         if (recipe) {
           setDraftRecipe({
             ...recipe,
-            ingredients: Array.isArray(recipe.ingredients)
-              ? recipe.ingredients.join('\n')
-              : '',
+            ingredients: getDisplayIngredients(recipe).join('\n'),
             instructions: Array.isArray(recipe.instructions)
               ? recipe.instructions.join('\n\n')
               : '',
@@ -78,12 +78,18 @@ export default function EditRecipe() {
       return;
     }
 
+    const ingredientLines = draftRecipe.ingredients
+      .split('\n')
+      .map((i) => i.trim())
+      .filter(Boolean);
+    const ingredientDetails = migrateLegacyIngredientsToDetails(ingredientLines);
+
     const updatedRecipe = {
       ...draftRecipe,
-      ingredients: draftRecipe.ingredients
-        .split('\n')
-        .map((i) => i.trim())
+      ingredients: ingredientDetails
+        .map((detail) => detail.raw?.trim() || detail.ingredient?.trim() || '')
         .filter(Boolean),
+      ingredientDetails,
       instructions: draftRecipe.instructions
         .split(/\n{2,}/)
         .map((s) => s.trim())

@@ -5,6 +5,7 @@ import * as StoreReview from 'expo-store-review';
 import React, { useState } from 'react';
 import { ActivityIndicator, Alert, Keyboard, Pressable, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 import { FreeTierLimitReached } from '../../components/FreeTierLimitReached';
+import type { IngredientDetail } from '../../domain/ingredients/types';
 import { useRecipeStore } from '../../stores/useRecipeStore';
 import theme from '../../theme';
 import { downloadAndStoreImage } from '../../utils/downloadAndStoreImage';
@@ -17,6 +18,9 @@ export default function AddRecipeScreen() {
   const addRecipe = useRecipeStore((state) => state.addRecipe);
   const router = useRouter();
   const [focused, setFocused] = React.useState(false);
+
+  const getRawIngredientText = (detail: IngredientDetail) =>
+    detail.raw?.trim() || detail.ingredient?.trim() || '';
 
   console.log('isPro:', isPro, 'recipes.length:', recipes.length);
 
@@ -44,8 +48,13 @@ export default function AddRecipeScreen() {
 
       const data = await response.json();
 
-      if (!data.title || !data.ingredients?.length || !data.instructions?.length) {
-        throw new Error('Incomplete recipe data');
+      const ingredientDetails = Array.isArray(data.ingredientDetails)
+        ? (data.ingredientDetails as IngredientDetail[])
+        : [];
+      const instructions = Array.isArray(data.instructions) ? data.instructions.map(String) : [];
+
+      if (!data.title?.trim()) {
+        throw new Error('Recipe title missing');
       }
 
       // ✅ 2. Download image (still part of ONE loading phase)
@@ -58,8 +67,11 @@ export default function AddRecipeScreen() {
       const newRecipe = {
         id: `recipe-${Date.now()}`,
         title: data.title,
-        ingredients: Array.isArray(data.ingredients) ? data.ingredients.map(String) : [],
-        instructions: Array.isArray(data.instructions) ? data.instructions.map(String) : [],
+        ingredients: Array.isArray(data.ingredients)
+          ? data.ingredients.map(String).map((item: string) => item.trim()).filter(Boolean)
+          : ingredientDetails.map(getRawIngredientText).filter(Boolean),
+        ingredientDetails,
+        instructions,
         imageUrl: localImageUri,
         source: data.source || '',
         category: data.category || '',

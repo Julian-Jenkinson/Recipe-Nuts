@@ -2,11 +2,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Purchases, { CustomerInfo } from 'react-native-purchases';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
+import {
+  migrateLegacyIngredientItem,
+  migrateLegacyIngredientsToDetails,
+} from '../domain/ingredients/ingredientMigration';
+import type { IngredientDetail } from '../domain/ingredients/types';
 
 export type Recipe = {
   id: string; // local UUID
   title: string;
   ingredients: string[];
+  ingredientDetails?: IngredientDetail[];
   instructions: string[];
   imageUrl: string;
   source: string;
@@ -18,6 +24,51 @@ export type Recipe = {
   servingSize: string;
   favourite: boolean;
 };
+
+type RecipeLike = Omit<Recipe, 'ingredients' | 'ingredientDetails'> & {
+  ingredients?: unknown;
+  ingredientDetails?: unknown;
+};
+
+function getRawIngredientText(detail: IngredientDetail): string {
+  if (typeof detail.raw === 'string' && detail.raw.trim().length > 0) {
+    return detail.raw.trim();
+  }
+  if (typeof detail.ingredient === 'string' && detail.ingredient.trim().length > 0) {
+    return detail.ingredient.trim();
+  }
+  return '';
+}
+
+function normalizeRecipe(input: RecipeLike): Recipe {
+  const detailsInput = Array.isArray(input.ingredientDetails)
+    ? input.ingredientDetails
+    : undefined;
+  const legacyInput = Array.isArray(input.ingredients)
+    ? input.ingredients
+    : undefined;
+
+  const ingredientDetails = detailsInput
+    ? detailsInput.map(migrateLegacyIngredientItem)
+    : legacyInput
+    ? migrateLegacyIngredientsToDetails(legacyInput)
+    : [];
+
+  const ingredients = ingredientDetails
+    .map(getRawIngredientText)
+    .filter(Boolean);
+
+  return {
+    ...input,
+    ingredients,
+    ingredientDetails,
+  };
+}
+
+function normalizeRecipes(recipes: RecipeLike[] | undefined): Recipe[] {
+  if (!Array.isArray(recipes)) return [];
+  return recipes.map(normalizeRecipe);
+}
 
 type RecipeState = {
   recipes: Recipe[];
@@ -50,7 +101,7 @@ export const useRecipeStore = create<RecipeState>()(
       customerInfo: null,
 
       addRecipe: (recipe) =>
-        set((state) => ({ recipes: [...state.recipes, recipe] })),
+        set((state) => ({ recipes: [...state.recipes, normalizeRecipe(recipe)] })),
 
       getRecipeById: (id) => get().recipes.find((r) => r.id === id),
 
@@ -67,7 +118,7 @@ export const useRecipeStore = create<RecipeState>()(
       updateRecipe: (updatedRecipe) =>
         set((state) => ({
           recipes: state.recipes.map((r) =>
-            r.id === updatedRecipe.id ? updatedRecipe : r
+            r.id === updatedRecipe.id ? normalizeRecipe(updatedRecipe) : r
           ),
         })),
 
@@ -107,6 +158,21 @@ export const useRecipeStore = create<RecipeState>()(
     {
       name: 'recipe-storage',
       storage: createJSONStorage(() => AsyncStorage),
+      version: 2,
+      migrate: (persistedState) => {
+        const state = persistedState as Partial<RecipeState> | undefined;
+        if (!state || !Array.isArray(state.recipes)) {
+          return {
+            ...state,
+            recipes: [],
+          } as RecipeState;
+        }
+
+        return {
+          ...state,
+          recipes: normalizeRecipes(state.recipes as RecipeLike[]),
+        } as RecipeState;
+      },
     }
   )
 );
