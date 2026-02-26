@@ -158,7 +158,7 @@ export const useRecipeStore = create<RecipeState>()(
     {
       name: 'recipe-storage',
       storage: createJSONStorage(() => AsyncStorage),
-      version: 2,
+      version: 4,
       migrate: (persistedState) => {
         const state = persistedState as Partial<RecipeState> | undefined;
         if (!state || !Array.isArray(state.recipes)) {

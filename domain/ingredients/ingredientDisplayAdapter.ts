@@ -35,14 +35,75 @@ function toDisplayString(detail: IngredientDetail): string {
   return "";
 }
 
+function gcd(a: number, b: number): number {
+  let x = Math.abs(a);
+  let y = Math.abs(b);
+  while (y !== 0) {
+    const t = y;
+    y = x % y;
+    x = t;
+  }
+  return x || 1;
+}
+
+function formatQuantityValue(value: number): string {
+  if (!Number.isFinite(value)) return String(value);
+  if (Number.isInteger(value)) return String(value);
+
+  const sign = value < 0 ? "-" : "";
+  const absValue = Math.abs(value);
+  let whole = Math.floor(absValue);
+  const fractional = absValue - whole;
+
+  let bestNumerator = 0;
+  let bestDenominator = 1;
+  let bestError = Number.POSITIVE_INFINITY;
+
+  for (let denominator = 2; denominator <= 16; denominator += 1) {
+    const numerator = Math.round(fractional * denominator);
+    const approximation = numerator / denominator;
+    const error = Math.abs(fractional - approximation);
+    if (error < bestError) {
+      bestError = error;
+      bestNumerator = numerator;
+      bestDenominator = denominator;
+    }
+  }
+
+  if (bestError > 0.02) {
+    return `${sign}${absValue.toFixed(3).replace(/\.?0+$/, "")}`;
+  }
+
+  if (bestNumerator === bestDenominator) {
+    whole += 1;
+    bestNumerator = 0;
+  }
+
+  if (bestNumerator === 0) {
+    return `${sign}${whole}`;
+  }
+
+  const divisor = gcd(bestNumerator, bestDenominator);
+  const numerator = bestNumerator / divisor;
+  const denominator = bestDenominator / divisor;
+
+  if (whole > 0) {
+    return `${sign}${whole} ${numerator}/${denominator}`;
+  }
+
+  return `${sign}${numerator}/${denominator}`;
+}
+
 function formatQuantity(detail: IngredientDetail): string | undefined {
   if (typeof detail.quantity !== "number" || Number.isNaN(detail.quantity)) {
     return undefined;
   }
   if (typeof detail.quantityMax === "number" && !Number.isNaN(detail.quantityMax)) {
-    return `${detail.quantity}-${detail.quantityMax}`;
+    return `${formatQuantityValue(detail.quantity)}-${formatQuantityValue(
+      detail.quantityMax
+    )}`;
   }
-  return String(detail.quantity);
+  return formatQuantityValue(detail.quantity);
 }
 
 function toDisplayRow(detail: IngredientDetail): DisplayIngredientRow {
