@@ -4,12 +4,37 @@ const MIXED_FRACTION_PATTERN = /^(\d+)(?:\s+and)?\s+(\d+)\/(\d+)/i;
 const FRACTION_PATTERN = /^(\d+)\/(\d+)/;
 const DECIMAL_PATTERN = /^(\d*\.\d+|\d+)/;
 const UNIT_PATTERN =
-  /^(tsp|tbsp|ml|l|g|kg|oz|lb|cup|cups|pinch|clove|cloves|can|cans)\b/i;
+  /^(tsp|teaspoon|teaspoons|tbsp|tablespoon|tablespoons|ml|milliliter|milliliters|millilitre|millilitres|l|liter|liters|litre|litres|g|gram|grams|kg|kilogram|kilograms|oz|ounce|ounces|lb|lbs|pound|pounds|cup|cups|pinch|pinches|clove|cloves|can|cans)\b/i;
 
 type ParsedQuantity = {
   value: number;
   token: string;
 };
+
+function normalizeUnitToken(token: string): string {
+  const value = token.trim().toLowerCase();
+
+  if (value === "teaspoon" || value === "teaspoons") return "tsp";
+  if (value === "tablespoon" || value === "tablespoons") return "tbsp";
+  if (
+    value === "milliliter" ||
+    value === "milliliters" ||
+    value === "millilitre" ||
+    value === "millilitres"
+  ) {
+    return "ml";
+  }
+  if (value === "liter" || value === "liters" || value === "litre" || value === "litres") {
+    return "l";
+  }
+  if (value === "gram" || value === "grams") return "g";
+  if (value === "kilogram" || value === "kilograms") return "kg";
+  if (value === "ounce" || value === "ounces") return "oz";
+  if (value === "lbs" || value === "pound" || value === "pounds") return "lb";
+  if (value === "pinches") return "pinch";
+
+  return value;
+}
 
 function parseLeadingQuantity(input: string): ParsedQuantity | undefined {
   const mixedMatch = input.match(MIXED_FRACTION_PATTERN);
@@ -78,7 +103,7 @@ export function parseIngredientDetail(rawInput: string): IngredientDetail {
   const unitMatch = remaining.match(UNIT_PATTERN);
   if (unitMatch) {
     unitOriginal = unitMatch[1];
-    unit = unitOriginal.toLowerCase();
+    unit = normalizeUnitToken(unitOriginal);
     remaining = remaining.slice(unitMatch[0].length).trim();
   }
 
