@@ -301,6 +301,7 @@ export default function RecipeDetailsScreen() {
               <Pressable
                 style={styles.scaleInlineButton}
                 onPress={() => setScaledServingsTarget((value) => getNextServingsDown(value))}
+                hitSlop={8}
               >
                 <Feather name="minus" size={14} color={theme.colors.text1} />
               </Pressable>
@@ -312,11 +313,16 @@ export default function RecipeDetailsScreen() {
               <Pressable
                 style={styles.scaleInlineButton}
                 onPress={() => setScaledServingsTarget((value) => getNextServingsUp(value))}
+                hitSlop={8}
               >
                 <Feather name="plus" size={14} color={theme.colors.text1} />
               </Pressable>
             </HStack>
-            <Pressable style={styles.unitToggle} onPress={() => setIsUnitDrawerOpen(true)}>
+            <Pressable 
+              style={styles.unitToggle} 
+              onPress={() => setIsUnitDrawerOpen(true)}
+              hitSlop={8}
+            >
               <HStack style={styles.unitToggleInner}>
                 <Feather name="sliders" size={14} color={theme.colors.text1} />
                 <Text style={styles.unitToggleText}>Units</Text>

@@ -160,8 +160,9 @@ function roundForConvertedUnit(value: number | undefined, unitText: string): num
 }
 
 function formatCupValue(value: number): string {
-  const sign = value < 0 ? "-" : "";
-  const absolute = Math.abs(value);
+  const rounded = roundCupValue(value);
+  const sign = rounded < 0 ? "-" : "";
+  const absolute = Math.abs(rounded);
   const whole = Math.floor(absolute + 1e-9);
   const fractional = absolute - whole;
 
@@ -180,7 +181,7 @@ function formatCupValue(value: number): string {
 
   const match = candidates.find((candidate) => Math.abs(fractional - candidate.value) < epsilon);
   if (!match) {
-    return formatQuantityValue(value);
+    return `${sign}${whole}`;
   }
 
   if (whole > 0) {
