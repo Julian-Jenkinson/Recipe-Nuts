@@ -14,8 +14,15 @@ export default function Menu() {
   const recipes = useRecipeStore((state) => state.recipes);
   const isPro = useRecipeStore((state) => state.isPro);
   const syncCustomerInfo = useRecipeStore((state) => state.syncCustomerInfo);
+  const ingredientUnitPreference = useRecipeStore(
+    (state) => state.ingredientUnitPreference
+  );
+  const setIngredientUnitPreference = useRecipeStore(
+    (state) => state.setIngredientUnitPreference
+  );
   const router = useRouter();
   const [showQuickTourModal, setShowQuickTourModal] = useState(false);
+  const [showUnitDropdown, setShowUnitDropdown] = useState(false);
 
   // Ensure local Pro state is synced with RevenueCat on mount
   useEffect(() => {
@@ -205,6 +212,64 @@ export default function Menu() {
             </>
             )}
 
+            {/* INGREDIENT UNITS */}
+            <Pressable style={styles.menuItem}>
+              <HStack style={styles.textContainer}>
+                <MaterialCommunityIcons name="scale-balance" style={styles.icon} />
+                <Text style={styles.text}>Ingredient Units</Text>
+              </HStack>
+              <Text style={styles.undertext}>
+                Set default ingredient display for recipe pages
+              </Text>
+              <Box style={styles.dropdownWrap}>
+                <Pressable
+                  style={styles.dropdownTrigger}
+                  onPress={() => setShowUnitDropdown((current) => !current)}
+                >
+                  <Text style={styles.dropdownTriggerText}>
+                    {ingredientUnitPreference === 'default'
+                      ? 'Default'
+                      : ingredientUnitPreference === 'imperial'
+                      ? 'Imperial'
+                      : 'Metric'}
+                  </Text>
+                  <Feather
+                    name={showUnitDropdown ? 'chevron-up' : 'chevron-down'}
+                    style={styles.dropdownChevron}
+                  />
+                </Pressable>
+                {showUnitDropdown && (
+                  <Box style={styles.dropdownMenu}>
+                    {(['default', 'imperial', 'metric'] as const).map((option) => (
+                      <Pressable
+                        key={option}
+                        style={styles.dropdownOption}
+                        onPress={() => {
+                          setIngredientUnitPreference(option);
+                          setShowUnitDropdown(false);
+                        }}
+                      >
+                        <Text
+                          style={[
+                            styles.dropdownOptionText,
+                            ingredientUnitPreference === option && styles.dropdownOptionTextActive,
+                          ]}
+                        >
+                          {option === 'default'
+                            ? 'Default'
+                            : option === 'imperial'
+                            ? 'Imperial'
+                            : 'Metric'}
+                        </Text>
+                      </Pressable>
+                    ))}
+                  </Box>
+                )}
+              </Box>
+            </Pressable>
+
+            <View style={styles.pagebreak} />
+
             {/* QUICK TOUR */}
             <Pressable style={styles.menuItem} onPress={() => setShowQuickTourModal(true)}>
               <HStack style={styles.textContainer}>
@@ -279,6 +344,31 @@ const styles = StyleSheet.create({
   recipebar: { marginLeft: 42, marginRight: 42, marginTop: 10, marginBottom: 5 },
   textContainer: { marginTop: 12, marginBottom: 2, alignItems: "center" },
   icon: { color: theme.colors.cta, fontSize: 22 },
+  dropdownWrap: { marginTop: 10, marginLeft: 42, marginRight: 42 },
+  dropdownTrigger: {
+    minHeight: 40,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    backgroundColor: theme.colors.paper,
+  },
+  dropdownTriggerText: { fontSize: 15, fontFamily: "body-600", color: theme.colors.text1 },
+  dropdownChevron: { color: theme.colors.text2, fontSize: 20 },
+  dropdownMenu: {
+    marginTop: 6,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 10,
+    backgroundColor: theme.colors.paper,
+    overflow: 'hidden',
+  },
+  dropdownOption: { paddingHorizontal: 12, paddingVertical: 10 },
+  dropdownOptionText: { fontSize: 15, fontFamily: "body-500", color: theme.colors.text1 },
+  dropdownOptionTextActive: { color: theme.colors.cta, fontFamily: "body-700" },
   submenu: {},
   subtext: { fontSize: 19, fontFamily: "body-700", marginVertical: 8, marginLeft: 42 },
   exittext: { fontSize: 19, fontFamily: "body-800", marginTop: 10, marginBottom: 20, marginLeft: 42 },

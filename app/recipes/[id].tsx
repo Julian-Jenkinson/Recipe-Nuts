@@ -14,11 +14,19 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   getDisplayIngredientRows,
   type DisplayIngredientRow,
+  type UnitSystem,
 } from '../../domain/ingredients/ingredientDisplayAdapter';
 import { useRecipeStore } from '../../stores/useRecipeStore';
 import theme from '../../theme';
 
 const fallbackImage = require('../../assets/images/error.png');
+type IngredientDisplayMode = 'original' | UnitSystem;
+function getDisplayModeFromPreference(
+  preference: 'default' | UnitSystem
+): IngredientDisplayMode {
+  if (preference === 'imperial' || preference === 'metric') return preference;
+  return 'original';
+}
 
 export default function RecipeDetailsScreen() {
   const router = useRouter();
@@ -26,14 +34,27 @@ export default function RecipeDetailsScreen() {
 
   const deleteRecipe = useRecipeStore((state) => state.deleteRecipe);
   const toggleFavourite = useRecipeStore((state) => state.toggleFavourite);
+  const ingredientUnitPreference = useRecipeStore(
+    (state) => state.ingredientUnitPreference
+  );
   const recipe = useRecipeStore((state) => state.getRecipeById(id || ''));
 
   const scrollViewRef = useRef<ScrollView>(null);
 
   const [tickedIngredients, setTickedIngredients] = useState<boolean[]>([]);
   const [tickedInstructions, setTickedInstructions] = useState<boolean[]>([]);
+  const [displayMode, setDisplayMode] = useState<IngredientDisplayMode>(
+    getDisplayModeFromPreference(ingredientUnitPreference)
+  );
 
-  const ingredientRows = React.useMemo(() => getDisplayIngredientRows(recipe), [recipe]);
+  const ingredientRows = React.useMemo(
+    () =>
+      getDisplayIngredientRows(
+        recipe,
+        displayMode === 'original' ? undefined : displayMode
+      ),
+    [recipe, displayMode]
+  );
   const ingredients = React.useMemo(
     () => ingredientRows.map((row) => row.rawText),
     [ingredientRows]
@@ -57,6 +78,10 @@ export default function RecipeDetailsScreen() {
     setTickedIngredients(ingredients.map(() => false));
     setTickedInstructions(instructions.map(() => false));
   }, [ingredients, instructions]);
+
+  React.useEffect(() => {
+    setDisplayMode(getDisplayModeFromPreference(ingredientUnitPreference));
+  }, [id, ingredientUnitPreference]);
 
 
 
@@ -224,7 +249,27 @@ export default function RecipeDetailsScreen() {
           </HStack>
 
           {/* Ingredients */}
-          <Text style={styles.heading2xl}>Ingredients</Text>
+          <HStack style={styles.sectionHeaderRow}>
+            <Text style={[styles.heading2xl, { marginTop: 0, marginBottom: 0 }]}>Ingredients</Text>
+            <Pressable
+              style={styles.unitToggle}
+              onPress={() =>
+                setDisplayMode((current) => {
+                  if (current === 'original') return 'imperial';
+                  if (current === 'imperial') return 'metric';
+                  return 'original';
+                })
+              }
+            >
+              <Text style={styles.unitToggleText}>
+                {displayMode === 'original'
+                  ? 'Original'
+                  : displayMode === 'imperial'
+                  ? 'Imperial'
+                  : 'Metric'}
+              </Text>
+            </Pressable>
+          </HStack>
           <Box style={styles.ingredientBox}>
             {ingredientRows.length > 0 ? (
               ingredientRows.map((row, index) => (
@@ -435,6 +480,25 @@ const styles = StyleSheet.create({
     marginBottom: 20, 
     marginTop: 30, 
     color: theme.colors.text1 
+  },
+  sectionHeaderRow: {
+    marginTop: 30,
+    marginBottom: 20,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  unitToggle: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: theme.colors.text2,
+    backgroundColor: theme.colors.paper,
+  },
+  unitToggleText: {
+    fontFamily: 'body-600',
+    color: theme.colors.text1,
+    fontSize: 14,
   },
   heading3xl: { 
     fontSize: 30, 

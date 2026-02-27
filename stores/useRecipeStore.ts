@@ -6,6 +6,7 @@ import {
   migrateLegacyIngredientItem,
   migrateLegacyIngredientsToDetails,
 } from '../domain/ingredients/ingredientMigration';
+import type { UnitSystem } from '../domain/ingredients/ingredientDisplayAdapter';
 import type { IngredientDetail } from '../domain/ingredients/types';
 
 export type Recipe = {
@@ -75,8 +76,10 @@ type RecipeState = {
   isPro: boolean;             // ✅ Pro user flag
   purchaseDate: string | null; 
   customerInfo: CustomerInfo | null;
+  ingredientUnitPreference: 'default' | UnitSystem;
 
   setPro: (value: boolean) => void;
+  setIngredientUnitPreference: (preference: 'default' | UnitSystem) => void;
 
   addRecipe: (recipe: Recipe) => void;
   getRecipeById: (id: string) => Recipe | undefined;
@@ -99,6 +102,7 @@ export const useRecipeStore = create<RecipeState>()(
       isPro: false,
       purchaseDate: null,
       customerInfo: null,
+      ingredientUnitPreference: 'default',
 
       addRecipe: (recipe) =>
         set((state) => ({ recipes: [...state.recipes, normalizeRecipe(recipe)] })),
@@ -129,6 +133,8 @@ export const useRecipeStore = create<RecipeState>()(
         })),
 
       setPro: (value: boolean) => set({ isPro: value }),
+      setIngredientUnitPreference: (preference) =>
+        set({ ingredientUnitPreference: preference }),
 
       // RevenueCat helpers
       setCustomerInfo: (info) =>
@@ -158,19 +164,25 @@ export const useRecipeStore = create<RecipeState>()(
     {
       name: 'recipe-storage',
       storage: createJSONStorage(() => AsyncStorage),
-      version: 4,
+      version: 6,
       migrate: (persistedState) => {
         const state = persistedState as Partial<RecipeState> | undefined;
         if (!state || !Array.isArray(state.recipes)) {
           return {
             ...state,
             recipes: [],
+            ingredientUnitPreference: 'default',
           } as RecipeState;
         }
 
         return {
           ...state,
           recipes: normalizeRecipes(state.recipes as RecipeLike[]),
+          ingredientUnitPreference:
+            state.ingredientUnitPreference === 'imperial' ||
+            state.ingredientUnitPreference === 'metric'
+              ? state.ingredientUnitPreference
+              : 'default',
         } as RecipeState;
       },
     }
