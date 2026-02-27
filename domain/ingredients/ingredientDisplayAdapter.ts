@@ -138,7 +138,7 @@ function roundForConvertedUnit(value: number | undefined, unitText: string): num
 
   const unit = unitText.trim().toLowerCase();
 
-  if (unit === "ml") {
+  if (unit === "ml" || unit === "g") {
     const sign = value < 0 ? -1 : 1;
     const absolute = Math.abs(value);
     let rounded = Math.round(absolute);
@@ -304,15 +304,32 @@ function maybeConvertQuantity(
 
 function toDisplayRow(
   detail: IngredientDetail,
-  unitSystem: UnitSystem | undefined
+  unitSystem: UnitSystem | undefined,
+  scaleFactor: number
 ): DisplayIngredientRow {
-  const converted = maybeConvertQuantity(detail, unitSystem);
+  const safeScaleFactor =
+    Number.isFinite(scaleFactor) && scaleFactor > 0 ? scaleFactor : 1;
+  const scaledQuantity =
+    typeof detail.quantity === "number" && !Number.isNaN(detail.quantity)
+      ? detail.quantity * safeScaleFactor
+      : detail.quantity;
+  const scaledQuantityMax =
+    typeof detail.quantityMax === "number" && !Number.isNaN(detail.quantityMax)
+      ? detail.quantityMax * safeScaleFactor
+      : detail.quantityMax;
+  const scaledDetail: IngredientDetail = {
+    ...detail,
+    quantity: scaledQuantity,
+    quantityMax: scaledQuantityMax,
+  };
+
+  const converted = maybeConvertQuantity(scaledDetail, unitSystem);
   const unitText = converted?.unitText
     ? converted.unitText
-    : typeof detail.unit === "string" && detail.unit.trim().length > 0
-    ? detail.unit.trim()
-    : typeof detail.unitOriginal === "string" && detail.unitOriginal.trim().length > 0
-    ? detail.unitOriginal.trim()
+    : typeof scaledDetail.unit === "string" && scaledDetail.unit.trim().length > 0
+    ? scaledDetail.unit.trim()
+    : typeof scaledDetail.unitOriginal === "string" && scaledDetail.unitOriginal.trim().length > 0
+    ? scaledDetail.unitOriginal.trim()
     : undefined;
   const roundedConvertedQuantity = converted?.unitText
     ? roundForConvertedUnit(converted.quantity, converted.unitText)
@@ -321,19 +338,19 @@ function toDisplayRow(
     ? roundForConvertedUnit(converted.quantityMax, converted.unitText)
     : undefined;
   const quantityText = formatQuantityForUnit(
-    roundedConvertedQuantity ?? converted?.quantity ?? detail.quantity,
-    roundedConvertedQuantityMax ?? converted?.quantityMax ?? detail.quantityMax,
+    roundedConvertedQuantity ?? converted?.quantity ?? scaledDetail.quantity,
+    roundedConvertedQuantityMax ?? converted?.quantityMax ?? scaledDetail.quantityMax,
     unitText
   );
   const ingredientText =
-    typeof detail.ingredient === "string" && detail.ingredient.trim().length > 0
-      ? detail.ingredient.trim()
+    typeof scaledDetail.ingredient === "string" && scaledDetail.ingredient.trim().length > 0
+      ? scaledDetail.ingredient.trim()
       : undefined;
   const noteText =
-    typeof detail.notes === "string" && detail.notes.trim().length > 0
-      ? detail.notes.trim()
+    typeof scaledDetail.notes === "string" && scaledDetail.notes.trim().length > 0
+      ? scaledDetail.notes.trim()
       : undefined;
-  const rawText = toDisplayString(detail);
+  const rawText = toDisplayString(scaledDetail);
 
   if (quantityText || unitText || ingredientText) {
     return {
@@ -354,14 +371,15 @@ function toDisplayRow(
 
 export function getDisplayIngredientRows(
   recipe: IngredientCompatibleRecipe | null | undefined,
-  unitSystem?: UnitSystem
+  unitSystem?: UnitSystem,
+  scaleFactor = 1
 ): DisplayIngredientRow[] {
   if (!recipe) return [];
 
   if (Array.isArray(recipe.ingredientDetails)) {
     const fromDetails = recipe.ingredientDetails
       .filter(isIngredientDetail)
-      .map((detail) => toDisplayRow(detail, unitSystem))
+      .map((detail) => toDisplayRow(detail, unitSystem, scaleFactor))
       .filter((row) => row.rawText.length > 0);
 
     if (fromDetails.length > 0) {
@@ -382,7 +400,8 @@ export function getDisplayIngredientRows(
 
 export function getDisplayIngredients(
   recipe: IngredientCompatibleRecipe | null | undefined,
-  unitSystem?: UnitSystem
+  unitSystem?: UnitSystem,
+  scaleFactor = 1
 ): string[] {
-  return getDisplayIngredientRows(recipe, unitSystem).map((row) => row.rawText);
+  return getDisplayIngredientRows(recipe, unitSystem, scaleFactor).map((row) => row.rawText);
 }

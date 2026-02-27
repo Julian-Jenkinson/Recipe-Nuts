@@ -29,10 +29,10 @@ type Props = {
 export default function FilterDrawer({ isOpen, onClose, onFilterSelect, selectedFilter = 'newest' }: Props) {
 
   const filters = [
-      { key: 'newest', label: 'Newest', icon: <MaterialIcons name="calendar-today" size={22} color="#000" /> },
-      { key: 'oldest', label: 'Oldest', icon: <MaterialIcons name="calendar-today" size={22} color="#000" /> },
-      { key: 'aToZ', label: 'A - Z', icon: <FontAwesome name="sort-alpha-asc" size={22} color="#000" /> },
-      { key: 'zToA', label: 'Z - A', icon: <FontAwesome name="sort-alpha-desc" size={22} color="#000" /> },
+      { key: 'newest', label: 'Newest', icon: <MaterialIcons name="calendar-today" size={20} color="#000" /> },
+      { key: 'oldest', label: 'Oldest', icon: <MaterialIcons name="calendar-today" size={20} color="#000" /> },
+      { key: 'aToZ', label: 'A - Z', icon: <FontAwesome name="sort-alpha-asc" size={20} color="#000" /> },
+      { key: 'zToA', label: 'Z - A', icon: <FontAwesome name="sort-alpha-desc" size={20} color="#000" /> },
     ];
 
   const slideAnim = React.useRef(new Animated.Value(0)).current;
@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontFamily: 'body-800',
-    fontSize: 22,
+    fontSize: 20,
     color: '#000',
     paddingTop: 5,
   },
@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
   },
   actionText: {
     fontFamily: 'body-600',
-    fontSize: 19,
+    fontSize: 18,
     paddingLeft: 12,
     color: '#000',
   },

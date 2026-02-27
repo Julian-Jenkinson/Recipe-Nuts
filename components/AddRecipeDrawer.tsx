@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontFamily: 'body-800',
-    fontSize: 22,
+    fontSize: 20,
     color: '#000',
     paddingTop:10,
     paddingBottom:20,
@@ -351,7 +351,7 @@ const styles = StyleSheet.create({
   },
   actionText: {
     fontFamily: 'body-600',
-    fontSize: 19,
+    fontSize: 18,
     paddingLeft: 12,
     color: '#000',
   },

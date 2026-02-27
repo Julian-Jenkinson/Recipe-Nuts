@@ -1,7 +1,7 @@
 import { Feather, FontAwesome, Octicons } from '@expo/vector-icons';
 import { Box, HStack, Image, Pressable, StatusBar, Text, View } from '@gluestack-ui/themed';
 import * as FileSystem from 'expo-file-system';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import {
   Alert,
@@ -11,6 +11,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import UnitDrawer from '../../components/UnitDrawer';
 import {
   getDisplayIngredientRows,
   type DisplayIngredientRow,
@@ -26,6 +27,24 @@ function getDisplayModeFromPreference(
 ): IngredientDisplayMode {
   if (preference === 'imperial' || preference === 'metric') return preference;
   return 'original';
+}
+
+function getNextServingsUp(current: number): number {
+  if (!Number.isFinite(current)) return 1;
+  return Math.min(99, current + 1);
+}
+
+function getNextServingsDown(current: number): number {
+  if (!Number.isFinite(current)) return 1;
+  return Math.max(1, current - 1);
+}
+
+function formatServings(value: number): string {
+  if (!Number.isFinite(value) || value <= 0) return '-';
+  if (Math.abs(value - Math.round(value)) < 0.01) {
+    return String(Math.round(value));
+  }
+  return value.toFixed(2).replace(/\.?0+$/, '');
 }
 
 export default function RecipeDetailsScreen() {
@@ -46,14 +65,29 @@ export default function RecipeDetailsScreen() {
   const [displayMode, setDisplayMode] = useState<IngredientDisplayMode>(
     getDisplayModeFromPreference(ingredientUnitPreference)
   );
+  const [isUnitDrawerOpen, setIsUnitDrawerOpen] = useState(false);
+  const [scaledServingsTarget, setScaledServingsTarget] = useState<number>(1);
+
+  const servingsBase = React.useMemo(() => {
+    const parsed = Number(recipe?.servingSize);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
+  }, [recipe?.servingSize]);
+
+  const scaleFactor = React.useMemo(() => {
+    if (!Number.isFinite(scaledServingsTarget) || scaledServingsTarget <= 0 || servingsBase <= 0) {
+      return 1;
+    }
+    return scaledServingsTarget / servingsBase;
+  }, [scaledServingsTarget, servingsBase]);
 
   const ingredientRows = React.useMemo(
     () =>
       getDisplayIngredientRows(
         recipe,
-        displayMode === 'original' ? undefined : displayMode
+        displayMode === 'original' ? undefined : displayMode,
+        scaleFactor
       ),
-    [recipe, displayMode]
+    [recipe, displayMode, scaleFactor]
   );
   const ingredients = React.useMemo(
     () => ingredientRows.map((row) => row.rawText),
@@ -81,7 +115,15 @@ export default function RecipeDetailsScreen() {
 
   React.useEffect(() => {
     setDisplayMode(getDisplayModeFromPreference(ingredientUnitPreference));
-  }, [id, ingredientUnitPreference]);
+    setScaledServingsTarget(servingsBase);
+  }, [id, ingredientUnitPreference, servingsBase]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      setDisplayMode(getDisplayModeFromPreference(ingredientUnitPreference));
+      return undefined;
+    }, [ingredientUnitPreference])
+  );
 
 
 
@@ -214,7 +256,7 @@ export default function RecipeDetailsScreen() {
 
           {/* Recipe Image & Favorite */}
         <Box>
-          <Image source={imageSource} style={styles.image} resizeMode="cover" borderRadius={12}/>
+          <Image source={imageSource} style={styles.image} resizeMode="cover" borderRadius={12} alt='recipe image'/>
           <Pressable
             onPress={() => toggleFavourite(recipe.id)}
             hitSlop={5}
@@ -239,7 +281,7 @@ export default function RecipeDetailsScreen() {
 
               <Feather name="user" size={18} color="#111" />
               <Text style={styles.metaText}>
-                Serves {+recipe.servingSize || '-'}
+                Serves {formatServings(servingsBase)}
               </Text>
 
               <Feather name="bar-chart" size={18} color="#111" />
@@ -250,24 +292,35 @@ export default function RecipeDetailsScreen() {
 
           {/* Ingredients */}
           <HStack style={styles.sectionHeaderRow}>
-            <Text style={[styles.heading2xl, { marginTop: 0, marginBottom: 0 }]}>Ingredients</Text>
-            <Pressable
-              style={styles.unitToggle}
-              onPress={() =>
-                setDisplayMode((current) => {
-                  if (current === 'original') return 'imperial';
-                  if (current === 'imperial') return 'metric';
-                  return 'original';
-                })
-              }
-            >
-              <Text style={styles.unitToggleText}>
-                {displayMode === 'original'
-                  ? 'Original'
-                  : displayMode === 'imperial'
-                  ? 'Imperial'
-                  : 'Metric'}
-              </Text>
+            <Text style={[styles.heading2xl, { marginTop: 0, marginBottom: 0 }]}>
+              Ingredients
+            </Text>
+          </HStack>
+          <HStack style={styles.controlsRow}>
+            <HStack style={styles.inlineControls}>
+              <Pressable
+                style={styles.scaleInlineButton}
+                onPress={() => setScaledServingsTarget((value) => getNextServingsDown(value))}
+              >
+                <Feather name="minus" size={14} color={theme.colors.text1} />
+              </Pressable>
+              <View style={styles.scaleInlineValueBox}>
+                <Text style={styles.scaleInlineValue}>
+                  {formatServings(scaledServingsTarget)} Servings
+                </Text>
+              </View>
+              <Pressable
+                style={styles.scaleInlineButton}
+                onPress={() => setScaledServingsTarget((value) => getNextServingsUp(value))}
+              >
+                <Feather name="plus" size={14} color={theme.colors.text1} />
+              </Pressable>
+            </HStack>
+            <Pressable style={styles.unitToggle} onPress={() => setIsUnitDrawerOpen(true)}>
+              <HStack style={styles.unitToggleInner}>
+                <Feather name="sliders" size={14} color={theme.colors.text1} />
+                <Text style={styles.unitToggleText}>Units</Text>
+              </HStack>
             </Pressable>
           </HStack>
           <Box style={styles.ingredientBox}>
@@ -304,7 +357,7 @@ export default function RecipeDetailsScreen() {
             {instructions.length > 0 ? (
               instructions.map((step, index) => (
                 <Pressable key={`step-${index}`} onPress={() => toggleInstruction(index)}>
-                  <View style={{ marginBottom: index === instructions.length - 1 ? 0 : 25 }}>
+                  <View style={{ marginBottom: index === instructions.length - 1 ? 0 : 15 }}>
                     <HStack style={styles.instructionHStack}>
                       <View
                         style={[
@@ -351,6 +404,12 @@ export default function RecipeDetailsScreen() {
           )}
         </View>
       </ScrollView>
+      <UnitDrawer
+        isOpen={isUnitDrawerOpen}
+        onClose={() => setIsUnitDrawerOpen(false)}
+        selectedUnit={displayMode}
+        onUnitSelect={(unit) => setDisplayMode(unit)}
+      />
     </SafeAreaView>
   );
 }
@@ -483,22 +542,63 @@ const styles = StyleSheet.create({
   },
   sectionHeaderRow: {
     marginTop: 30,
-    marginBottom: 20,
+    marginBottom: 10,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  controlsRow: {
+    marginBottom: 14,
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  inlineControls: {
+    alignItems: 'center',
+    gap: 12,
+  },
   unitToggle: {
-    paddingVertical: 6,
+    height: 35,
     paddingHorizontal: 12,
-    borderRadius: 999,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: theme.colors.text2,
-    backgroundColor: theme.colors.paper,
+    borderColor: '#B7BECB',
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  unitToggleInner: {
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
   },
   unitToggleText: {
     fontFamily: 'body-600',
     color: theme.colors.text1,
-    fontSize: 14,
+    fontSize: 16,
+    includeFontPadding: false,
+  },
+  scaleInlineButton: {
+    width: 35,
+    height: 35,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#B7BECB',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
+  },
+  scaleInlineValueBox: {
+    height: 35,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  scaleInlineValue: {
+    minWidth: 20,
+    textAlign: 'center',
+    fontFamily: 'body-600',
+    color: theme.colors.text1,
+    fontSize: 16,
+    includeFontPadding: false,
   },
   heading3xl: { 
     fontSize: 30, 
