@@ -212,13 +212,24 @@ export default function Menu() {
             </>
             )}
 
+            {/* QUICK TOUR */}
+            <Pressable style={styles.menuItem} onPress={() => setShowQuickTourModal(true)}>
+              <HStack style={styles.textContainer}>
+                <MaterialCommunityIcons name="map-marker-path" style={styles.icon} />
+                <Text style={styles.text}>Quick Tour</Text>
+              </HStack>
+              <Text style={styles.undertext}>Take a tour of the app</Text>
+            </Pressable>
+
+            <View style={styles.pagebreak} />
+
             {/* INGREDIENT UNITS */}
             <Pressable style={styles.menuItem}>
               <HStack style={styles.textContainer}>
                 <MaterialCommunityIcons name="scale-balance" style={styles.icon} />
                 <Text style={styles.text}>Ingredient Units</Text>
               </HStack>
-              <Text style={styles.undertext}>
+              <Text style={[styles.undertext, styles.undertextConstrained]}>
                 Set default ingredient display for recipe pages
               </Text>
               <Box style={styles.dropdownWrap}>
@@ -266,17 +277,6 @@ export default function Menu() {
                   </Box>
                 )}
               </Box>
-            </Pressable>
-
-            <View style={styles.pagebreak} />
-
-            {/* QUICK TOUR */}
-            <Pressable style={styles.menuItem} onPress={() => setShowQuickTourModal(true)}>
-              <HStack style={styles.textContainer}>
-                <MaterialCommunityIcons name="map-marker-path" style={styles.icon} />
-                <Text style={styles.text}>Quick Tour</Text>
-              </HStack>
-              <Text style={styles.undertext}>Take a tour of the app</Text>
             </Pressable>
 
             <View style={styles.pagebreak} />
@@ -341,6 +341,7 @@ const styles = StyleSheet.create({
   text: { fontSize: 18, fontFamily: "body-800", marginLeft: 18 },
   menuItem: { paddingBottom: 10 },
   undertext: { fontSize: 17, fontFamily: "body-400", color: theme.colors.text2, marginLeft: 42, marginTop: 4 },
+  undertextConstrained: { marginRight: 42, flexShrink: 1 },
   recipebar: { marginLeft: 42, marginRight: 42, marginTop: 10, marginBottom: 5 },
   textContainer: { marginTop: 12, marginBottom: 2, alignItems: "center" },
   icon: { color: theme.colors.cta, fontSize: 22 },
@@ -350,24 +351,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#aaa',
     alignItems: 'center',
     justifyContent: 'space-between',
     flexDirection: 'row',
-    backgroundColor: theme.colors.paper,
+    //backgroundColor: theme.colors.paper,
   },
-  dropdownTriggerText: { fontSize: 15, fontFamily: "body-600", color: theme.colors.text1 },
+  dropdownTriggerText: { fontSize: 15, fontFamily: "body-400", color: theme.colors.text1 },
   dropdownChevron: { color: theme.colors.text2, fontSize: 20 },
   dropdownMenu: {
     marginTop: 6,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#aaa',
     borderRadius: 10,
-    backgroundColor: theme.colors.paper,
+    //backgroundColor: theme.colors.paper,
     overflow: 'hidden',
   },
   dropdownOption: { paddingHorizontal: 12, paddingVertical: 10 },
-  dropdownOptionText: { fontSize: 15, fontFamily: "body-500", color: theme.colors.text1 },
+  dropdownOptionText: { fontSize: 15, fontFamily: "body-400", color: theme.colors.text1 },
   dropdownOptionTextActive: { color: theme.colors.cta, fontFamily: "body-700" },
   submenu: {},
   subtext: { fontSize: 19, fontFamily: "body-700", marginVertical: 8, marginLeft: 42 },
