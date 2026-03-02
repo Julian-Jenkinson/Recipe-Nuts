@@ -351,7 +351,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#aaa',
+    borderColor: '#e2e2e2',
     alignItems: 'center',
     justifyContent: 'space-between',
     flexDirection: 'row',
@@ -362,7 +362,7 @@ const styles = StyleSheet.create({
   dropdownMenu: {
     marginTop: 6,
     borderWidth: 1,
-    borderColor: '#aaa',
+    borderColor: '#e2e2e2',
     borderRadius: 10,
     //backgroundColor: theme.colors.paper,
     overflow: 'hidden',
@@ -373,5 +373,5 @@ const styles = StyleSheet.create({
   submenu: {},
   subtext: { fontSize: 19, fontFamily: "body-700", marginVertical: 8, marginLeft: 42 },
   exittext: { fontSize: 19, fontFamily: "body-800", marginTop: 10, marginBottom: 20, marginLeft: 42 },
-  pagebreak: { height: 1, backgroundColor: '#ddd', marginVertical: 15, marginLeft: 42, marginRight: 42 },
+  pagebreak: { height: 1, backgroundColor: '#e2e2e2', marginVertical: 15, marginLeft: 42, marginRight: 42 },
 });
