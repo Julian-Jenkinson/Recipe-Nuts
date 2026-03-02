@@ -84,6 +84,31 @@ function formatQuantity(
   return formatQuantityValue(quantity);
 }
 
+function formatDecimalValue(value: number, decimals = 2): string {
+  if (!Number.isFinite(value)) return String(value);
+  const rounded = Number(value.toFixed(decimals));
+  if (Math.abs(rounded - Math.round(rounded)) < 0.0001) {
+    return String(Math.round(rounded));
+  }
+  return rounded.toString();
+}
+
+function formatDecimalQuantity(
+  quantity: number | undefined,
+  quantityMax: number | undefined,
+  decimals = 2
+): string | undefined {
+  if (typeof quantity !== "number" || Number.isNaN(quantity)) {
+    return undefined;
+  }
+
+  if (typeof quantityMax === "number" && !Number.isNaN(quantityMax)) {
+    return `${formatDecimalValue(quantity, decimals)}-${formatDecimalValue(quantityMax, decimals)}`;
+  }
+
+  return formatDecimalValue(quantity, decimals);
+}
+
 function normalizeUnit(detail: IngredientDetail): string | undefined {
   const fromUnit =
     typeof detail.unit === "string" && detail.unit.trim().length > 0
@@ -104,8 +129,21 @@ type ConvertedQuantity = {
   unitText: string;
 };
 
+const KITCHEN_CONVERSIONS = {
+  tspToMl: 5,
+  tbspToMl: 15,
+  cupToMl: 240,
+  ozToG: 28,
+  lbToG: 454,
+} as const;
+
 function roundToStep(value: number, step: number): number {
   return Math.round(value / step) * step;
+}
+
+function roundSpoonValue(value: number): number {
+  const step = Math.abs(value) < 1 ? 1 / 8 : 1 / 4;
+  return roundToStep(value, step);
 }
 
 function roundCupValue(value: number): number {
@@ -141,15 +179,16 @@ function roundForConvertedUnit(value: number | undefined, unitText: string): num
   if (unit === "ml" || unit === "g") {
     const sign = value < 0 ? -1 : 1;
     const absolute = Math.abs(value);
-    let rounded = Math.round(absolute);
+    const step = absolute >= 100 ? 5 : 1;
+    let rounded = roundToStep(absolute, step);
     if (absolute > 0 && rounded === 0) {
       rounded = 1;
     }
     return sign * rounded;
   }
 
-  if (unit === "tsp") {
-    return roundToStep(value, 1 / 8);
+  if (unit === "tsp" || unit === "tbsp") {
+    return roundSpoonValue(value);
   }
 
   if (unit === "cup" || unit === "cups") {
@@ -197,6 +236,22 @@ function formatQuantityForUnit(
   unitText: string | undefined
 ): string | undefined {
   const normalizedUnit = unitText?.trim().toLowerCase();
+  if (normalizedUnit === "ml" || normalizedUnit === "g") {
+    return formatDecimalQuantity(
+      roundForConvertedUnit(quantity, normalizedUnit),
+      roundForConvertedUnit(quantityMax, normalizedUnit),
+      0
+    );
+  }
+  if (normalizedUnit === "l" || normalizedUnit === "kg") {
+    return formatDecimalQuantity(quantity, quantityMax, 2);
+  }
+  if (normalizedUnit === "tsp" || normalizedUnit === "tbsp") {
+    return formatQuantity(
+      roundForConvertedUnit(quantity, normalizedUnit),
+      roundForConvertedUnit(quantityMax, normalizedUnit)
+    );
+  }
   if (normalizedUnit === "cup" || normalizedUnit === "cups") {
     if (typeof quantity !== "number" || Number.isNaN(quantity)) {
       return undefined;
@@ -239,13 +294,13 @@ function convertVolumeToImperial(
         : quantityMax
       : undefined;
 
-  if (quantityMl >= 236.588) {
-    return convertUsingFactor(quantityMl, quantityMaxMl, 1 / 236.588, "cups");
+  if (quantityMl >= KITCHEN_CONVERSIONS.cupToMl) {
+    return convertUsingFactor(quantityMl, quantityMaxMl, 1 / KITCHEN_CONVERSIONS.cupToMl, "cups");
   }
-  if (quantityMl >= 14.7868) {
-    return convertUsingFactor(quantityMl, quantityMaxMl, 1 / 14.7868, "tbsp");
+  if (quantityMl >= KITCHEN_CONVERSIONS.tbspToMl) {
+    return convertUsingFactor(quantityMl, quantityMaxMl, 1 / KITCHEN_CONVERSIONS.tbspToMl, "tbsp");
   }
-  return convertUsingFactor(quantityMl, quantityMaxMl, 1 / 4.92892, "tsp");
+  return convertUsingFactor(quantityMl, quantityMaxMl, 1 / KITCHEN_CONVERSIONS.tspToMl, "tsp");
 }
 
 function convertWeightToImperial(
@@ -261,10 +316,10 @@ function convertWeightToImperial(
         : quantityMax
       : undefined;
 
-  if (quantityG >= 453.592) {
-    return convertUsingFactor(quantityG, quantityMaxG, 1 / 453.592, "lb");
+  if (quantityG >= KITCHEN_CONVERSIONS.lbToG) {
+    return convertUsingFactor(quantityG, quantityMaxG, 1 / KITCHEN_CONVERSIONS.lbToG, "lb");
   }
-  return convertUsingFactor(quantityG, quantityMaxG, 1 / 28.3495, "oz");
+  return convertUsingFactor(quantityG, quantityMaxG, 1 / KITCHEN_CONVERSIONS.ozToG, "oz");
 }
 
 function maybeConvertQuantity(
@@ -280,15 +335,19 @@ function maybeConvertQuantity(
   if (!unit) return undefined;
 
   if (unitSystem === "metric") {
-    if (unit === "tsp") return convertUsingFactor(detail.quantity, detail.quantityMax, 4.92892, "ml");
-    if (unit === "tbsp") return convertUsingFactor(detail.quantity, detail.quantityMax, 14.7868, "ml");
+    if (unit === "tsp") {
+      return convertUsingFactor(detail.quantity, detail.quantityMax, KITCHEN_CONVERSIONS.tspToMl, "ml");
+    }
+    if (unit === "tbsp") {
+      return convertUsingFactor(detail.quantity, detail.quantityMax, KITCHEN_CONVERSIONS.tbspToMl, "ml");
+    }
     if (unit === "cup" || unit === "cups") {
-      return convertUsingFactor(detail.quantity, detail.quantityMax, 236.588, "ml");
+      return convertUsingFactor(detail.quantity, detail.quantityMax, KITCHEN_CONVERSIONS.cupToMl, "ml");
     }
     if (unit === "ml") return convertUsingFactor(detail.quantity, detail.quantityMax, 1, "ml");
     if (unit === "l") return convertUsingFactor(detail.quantity, detail.quantityMax, 1000, "ml");
-    if (unit === "oz") return convertUsingFactor(detail.quantity, detail.quantityMax, 28.3495, "g");
-    if (unit === "lb") return convertUsingFactor(detail.quantity, detail.quantityMax, 453.592, "g");
+    if (unit === "oz") return convertUsingFactor(detail.quantity, detail.quantityMax, KITCHEN_CONVERSIONS.ozToG, "g");
+    if (unit === "lb") return convertUsingFactor(detail.quantity, detail.quantityMax, KITCHEN_CONVERSIONS.lbToG, "g");
     if (unit === "g") return convertUsingFactor(detail.quantity, detail.quantityMax, 1, "g");
     if (unit === "kg") return convertUsingFactor(detail.quantity, detail.quantityMax, 1000, "g");
     return undefined;

@@ -22,21 +22,13 @@ import theme from '../../theme';
 
 const fallbackImage = require('../../assets/images/error.png');
 type IngredientDisplayMode = 'original' | UnitSystem;
+const SCALE_OPTIONS = [1, 2, 3, 4] as const;
+
 function getDisplayModeFromPreference(
   preference: 'default' | UnitSystem
 ): IngredientDisplayMode {
   if (preference === 'imperial' || preference === 'metric') return preference;
   return 'original';
-}
-
-function getNextServingsUp(current: number): number {
-  if (!Number.isFinite(current)) return 1;
-  return Math.min(99, current + 1);
-}
-
-function getNextServingsDown(current: number): number {
-  if (!Number.isFinite(current)) return 1;
-  return Math.max(1, current - 1);
 }
 
 function formatServings(value: number): string {
@@ -66,7 +58,7 @@ export default function RecipeDetailsScreen() {
     getDisplayModeFromPreference(ingredientUnitPreference)
   );
   const [isUnitDrawerOpen, setIsUnitDrawerOpen] = useState(false);
-  const [scaledServingsTarget, setScaledServingsTarget] = useState<number>(1);
+  const [scaleMultiplier, setScaleMultiplier] = useState<number>(1);
 
   const servingsBase = React.useMemo(() => {
     const parsed = Number(recipe?.servingSize);
@@ -74,11 +66,11 @@ export default function RecipeDetailsScreen() {
   }, [recipe?.servingSize]);
 
   const scaleFactor = React.useMemo(() => {
-    if (!Number.isFinite(scaledServingsTarget) || scaledServingsTarget <= 0 || servingsBase <= 0) {
+    if (!Number.isFinite(scaleMultiplier) || scaleMultiplier <= 0 || servingsBase <= 0) {
       return 1;
     }
-    return scaledServingsTarget / servingsBase;
-  }, [scaledServingsTarget, servingsBase]);
+    return scaleMultiplier;
+  }, [scaleMultiplier, servingsBase]);
 
   const ingredientRows = React.useMemo(
     () =>
@@ -115,7 +107,7 @@ export default function RecipeDetailsScreen() {
 
   React.useEffect(() => {
     setDisplayMode(getDisplayModeFromPreference(ingredientUnitPreference));
-    setScaledServingsTarget(servingsBase);
+    setScaleMultiplier(1);
   }, [id, ingredientUnitPreference, servingsBase]);
 
   useFocusEffect(
@@ -292,31 +284,40 @@ export default function RecipeDetailsScreen() {
 
           {/* Ingredients */}
           <HStack style={styles.sectionHeaderRow}>
-            <Text style={[styles.heading2xl, { marginTop: 0, marginBottom: 0 }]}>
+            <Text style={[styles.heading2xl, { marginTop: -8, marginBottom: 7 }]}>
               Ingredients
             </Text>
           </HStack>
           <HStack style={styles.controlsRow}>
-            <HStack style={styles.inlineControls}>
-              <Pressable
-                style={styles.scaleInlineButton}
-                onPress={() => setScaledServingsTarget((value) => getNextServingsDown(value))}
-                hitSlop={8}
-              >
-                <Feather name="minus" size={14} color={theme.colors.text1} />
-              </Pressable>
-              <View style={styles.scaleInlineValueBox}>
-                <Text style={styles.scaleInlineValue}>
-                  {formatServings(scaledServingsTarget)} Servings
-                </Text>
-              </View>
-              <Pressable
-                style={styles.scaleInlineButton}
-                onPress={() => setScaledServingsTarget((value) => getNextServingsUp(value))}
-                hitSlop={8}
-              >
-                <Feather name="plus" size={14} color={theme.colors.text1} />
-              </Pressable>
+            <HStack style={styles.scaleOptionsRow}>
+              {SCALE_OPTIONS.map((option, index) => {
+                const isSelected = option === scaleMultiplier;
+                const isFirst = index === 0;
+                const isLast = index === SCALE_OPTIONS.length - 1;
+                return (
+                  <Pressable
+                    key={`scale-${option}`}
+                    onPress={() => setScaleMultiplier(option)}
+                    style={[
+                      styles.scaleOptionButton,
+                      !isLast && styles.scaleOptionDivider,
+                      isFirst && styles.scaleOptionButtonFirst,
+                      isLast && styles.scaleOptionButtonLast,
+                      isSelected && styles.scaleOptionButtonActive,
+                    ]}
+                    hitSlop={8}
+                  >
+                    <Text
+                      style={[
+                        styles.scaleOptionText,
+                        isSelected && styles.scaleOptionTextActive,
+                      ]}
+                    >
+                      {option}X
+                    </Text>
+                  </Pressable>
+                );
+              })}
             </HStack>
             <Pressable 
               style={styles.unitToggle} 
@@ -543,11 +544,11 @@ const styles = StyleSheet.create({
     fontSize: 24, 
     fontFamily: 'heading-900', 
     marginBottom: 20, 
-    marginTop: 30, 
+    marginTop: 20, 
     color: theme.colors.text1 
   },
   sectionHeaderRow: {
-    marginTop: 30,
+    marginTop: 20,
     marginBottom: 10,
     justifyContent: 'flex-start',
     alignItems: 'center',
@@ -557,16 +558,24 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  inlineControls: {
+  scaleOptionsRow: {
+    height: 35,
     alignItems: 'center',
-    gap: 12,
+    gap: 0,
+    borderWidth: 1,
+    borderColor: '#C2C2C2',
+    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+    overflow: 'hidden',
   },
   unitToggle: {
     height: 35,
     paddingHorizontal: 12,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#aaa',
+    borderColor: '#C2C2C2',
     backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
@@ -583,27 +592,42 @@ const styles = StyleSheet.create({
     fontSize: 16,
     includeFontPadding: false,
   },
-  scaleInlineButton: {
-    width: 35,
-    height: 35,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#aaa',
+  scaleOptionButton: {
+    minWidth: 44,
+    height: 33,
+    borderRadius: 0,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'transparent',
+    paddingHorizontal: 10,
   },
-  scaleInlineValueBox: {
-    height: 35,
-    justifyContent: 'center',
-    alignItems: 'center',
+  scaleOptionDivider: {
+    borderRightWidth: 1,
+    borderRightColor: '#C2C2C2',
   },
-  scaleInlineValue: {
-    minWidth: 20,
+  scaleOptionButtonFirst: {
+    borderTopLeftRadius: 11,
+    borderBottomLeftRadius: 11,
+  },
+  scaleOptionButtonLast: {
+    borderTopRightRadius: 11,
+    borderBottomRightRadius: 11,
+  },
+  scaleOptionButtonActive: {
+    backgroundColor: theme.colors.paper,
+    //backgroundColor: theme.colors.cta,
+  },
+  scaleOptionText: {
     textAlign: 'center',
     fontFamily: 'body-600',
     color: theme.colors.text1,
-    fontSize: 16,
+    
+    fontSize: 15,
+    includeFontPadding: false,
+  },
+  scaleOptionTextActive: {
+    color: theme.colors.text1,
+    fontFamily: 'body-800',
     includeFontPadding: false,
   },
   heading3xl: { 
