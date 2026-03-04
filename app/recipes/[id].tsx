@@ -19,6 +19,7 @@ import {
 } from '../../domain/ingredients/ingredientDisplayAdapter';
 import { useRecipeStore } from '../../stores/useRecipeStore';
 import theme from '../../theme';
+import { fetchPaywallPackage, purchasePackage } from '../../utils/revenueCat';
 
 const fallbackImage = require('../../assets/images/error.png');
 type IngredientDisplayMode = 'original' | UnitSystem;
@@ -45,6 +46,8 @@ export default function RecipeDetailsScreen() {
 
   const deleteRecipe = useRecipeStore((state) => state.deleteRecipe);
   const toggleFavourite = useRecipeStore((state) => state.toggleFavourite);
+  const isPro = useRecipeStore((state) => state.isPro);
+  const syncCustomerInfo = useRecipeStore((state) => state.syncCustomerInfo);
   const ingredientUnitPreference = useRecipeStore(
     (state) => state.ingredientUnitPreference
   );
@@ -59,6 +62,7 @@ export default function RecipeDetailsScreen() {
   );
   const [isUnitDrawerOpen, setIsUnitDrawerOpen] = useState(false);
   const [scaleMultiplier, setScaleMultiplier] = useState<number>(1);
+  const [isPurchasing, setIsPurchasing] = useState(false);
 
   const servingsBase = React.useMemo(() => {
     const parsed = Number(recipe?.servingSize);
@@ -116,6 +120,33 @@ export default function RecipeDetailsScreen() {
       return undefined;
     }, [ingredientUnitPreference])
   );
+
+  const openPaywallForUnitsAndScale = async () => {
+    if (isPurchasing) return;
+    setIsPurchasing(true);
+    try {
+      const pkg = await fetchPaywallPackage('default');
+      if (!pkg) {
+        Alert.alert('Purchase not available');
+        return;
+      }
+      await purchasePackage(pkg);
+      await syncCustomerInfo();
+      Alert.alert('Success', 'You have upgraded to Pro! Unlimited recipes unlocked.');
+    } catch (e: any) {
+      if (!e?.userCancelled) {
+        Alert.alert('Purchase failed', e?.message ?? 'Please try again.');
+      }
+    } finally {
+      setIsPurchasing(false);
+    }
+  };
+
+  React.useEffect(() => {
+    if (isPro) return;
+    if (displayMode !== 'original') setDisplayMode('original');
+    if (scaleMultiplier !== 1) setScaleMultiplier(1);
+  }, [isPro, displayMode, scaleMultiplier]);
 
 
 
@@ -297,7 +328,13 @@ export default function RecipeDetailsScreen() {
                 return (
                   <Pressable
                     key={`scale-${option}`}
-                    onPress={() => setScaleMultiplier(option)}
+                    onPress={() => {
+                      if (!isPro && option > 1) {
+                        void openPaywallForUnitsAndScale();
+                        return;
+                      }
+                      setScaleMultiplier(option);
+                    }}
                     style={[
                       styles.scaleOptionButton,
                       !isLast && styles.scaleOptionDivider,
@@ -321,7 +358,13 @@ export default function RecipeDetailsScreen() {
             </HStack>
             <Pressable 
               style={styles.unitToggle} 
-              onPress={() => setIsUnitDrawerOpen(true)}
+              onPress={() => {
+                if (!isPro) {
+                  void openPaywallForUnitsAndScale();
+                  return;
+                }
+                setIsUnitDrawerOpen(true);
+              }}
               hitSlop={8}
             >
               <HStack style={styles.unitToggleInner}>
@@ -415,7 +458,13 @@ export default function RecipeDetailsScreen() {
         isOpen={isUnitDrawerOpen}
         onClose={() => setIsUnitDrawerOpen(false)}
         selectedUnit={displayMode}
-        onUnitSelect={(unit) => setDisplayMode(unit)}
+        onUnitSelect={(unit) => {
+          if (!isPro && unit !== 'original') {
+            void openPaywallForUnitsAndScale();
+            return;
+          }
+          setDisplayMode(unit);
+        }}
       />
     </SafeAreaView>
   );

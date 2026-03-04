@@ -239,7 +239,7 @@ export default function Menu() {
                 >
                   <Text style={styles.dropdownTriggerText}>
                     {ingredientUnitPreference === 'default'
-                      ? 'Default'
+                      ? 'Original'
                       : ingredientUnitPreference === 'imperial'
                       ? 'Imperial'
                       : 'Metric'}
@@ -256,6 +256,11 @@ export default function Menu() {
                         key={option}
                         style={styles.dropdownOption}
                         onPress={() => {
+                          if (!isPro && option !== 'default') {
+                            setShowUnitDropdown(false);
+                            handleUpgrade();
+                            return;
+                          }
                           setIngredientUnitPreference(option);
                           setShowUnitDropdown(false);
                         }}
@@ -267,7 +272,7 @@ export default function Menu() {
                           ]}
                         >
                           {option === 'default'
-                            ? 'Default'
+                            ? 'Original'
                             : option === 'imperial'
                             ? 'Imperial'
                             : 'Metric'}
@@ -370,7 +375,7 @@ const styles = StyleSheet.create({
   },
   dropdownOption: { paddingHorizontal: 12, paddingVertical: 10 },
   dropdownOptionText: { fontSize: 17, fontFamily: "body-400", color: theme.colors.text1 },
-  dropdownOptionTextActive: { color: theme.colors.cta, fontFamily: "body-700" },
+  dropdownOptionTextActive: { color: theme.colors.text1, fontFamily: "body-700" },
   submenu: {},
   subtext: { fontSize: 19, fontFamily: "body-700", marginVertical: 8, marginLeft: 42 },
   exittext: { fontSize: 19, fontFamily: "body-800", marginTop: 10, marginBottom: 20, marginLeft: 42 },

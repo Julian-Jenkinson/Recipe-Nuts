@@ -23,9 +23,8 @@ function NoRippleButton(props: PressableProps) {
 export default function Layout() {
   console.log("🟡 Layout started");
 
-  const setPro = useRecipeStore((state) => state.setPro);
+  const setCustomerInfo = useRecipeStore((state) => state.setCustomerInfo);
   const [showQuickTour, setShowQuickTour] = useState(false);
-
   const [loaded, error] = useFonts({
     'heading-800': require('../assets/fonts/Mulish-ExtraBold.ttf'),
     'heading-900': require('../assets/fonts/Mulish-Black.ttf'),
@@ -52,20 +51,11 @@ export default function Layout() {
           });
         }
 
-        const store = useRecipeStore.getState();
-
-        // 2️⃣ Use persisted Pro state first (offline-friendly)
-        let isPro = store.isPro;
-        let customerInfo = store.customerInfo;
-
         // 3️⃣ Try fetching latest info from RevenueCat
         try {
           const info = await Purchases.getCustomerInfo();
-          customerInfo = info;
-          isPro = !!info.entitlements.active["pro"];
-
           // 4️⃣ Only update store if info is available
-          useRecipeStore.setState({ customerInfo, isPro });
+          setCustomerInfo(info);
         } catch (err) {
           console.warn("⚠️ RevenueCat fetch failed, using persisted state", err);
           // Keep offline state intact; do not overwrite isPro

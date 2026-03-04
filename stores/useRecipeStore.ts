@@ -132,15 +132,27 @@ export const useRecipeStore = create<RecipeState>()(
           purchaseDate: new Date().toISOString(),
         })),
 
-      setPro: (value: boolean) => set({ isPro: value }),
+      setPro: (value: boolean) =>
+        set((state) => ({
+          isPro: value,
+          ingredientUnitPreference:
+            value ? state.ingredientUnitPreference : 'default',
+        })),
       setIngredientUnitPreference: (preference) =>
-        set({ ingredientUnitPreference: preference }),
+        set((state) => ({
+          ingredientUnitPreference:
+            state.isPro || preference === 'default' ? preference : 'default',
+        })),
 
       // RevenueCat helpers
       setCustomerInfo: (info) =>
-        set({
-          customerInfo: info,
-          isPro: !!info?.entitlements.active["pro"],
+        set((state) => {
+          const isPro = !!info?.entitlements.active["pro"];
+          return {
+            customerInfo: info,
+            isPro,
+            ingredientUnitPreference: isPro ? state.ingredientUnitPreference : 'default',
+          };
         }),
 
       restorePurchases: async () => {
