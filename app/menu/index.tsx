@@ -8,7 +8,7 @@ import { QuickTourModal } from "../../components/QuickTourModal";
 import { RecipeBar } from "../../components/RecipeBar";
 import { useRecipeStore } from "../../stores/useRecipeStore";
 import theme from "../../theme";
-import { fetchPaywallPackage, purchasePackage } from '../../utils/revenueCat';
+import { presentRevenueCatPaywall } from '../../utils/revenueCat';
 
 export default function Menu() {
   const recipes = useRecipeStore((state) => state.recipes);
@@ -46,22 +46,18 @@ export default function Menu() {
   };
 
   const handleUpgrade = async () => {
-    const pkg = await fetchPaywallPackage("default");
-    if (!pkg) return Alert.alert("Purchase not available");
-
-    try {
-      await purchasePackage(pkg);
-      // Sync store state with RevenueCat
+    const result = await presentRevenueCatPaywall("default");
+    if (result === "purchased" || result === "restored") {
       await syncCustomerInfo();
-
-      Alert.alert(
-        "Success",
-        "You have upgraded to Pro! Unlimited recipes unlocked."
-      );
-    } catch (e: any) {
-      if (!e.userCancelled) {
-        Alert.alert("Purchase failed", e.message);
-      }
+      Alert.alert("Success", "You have upgraded to Pro! Unlimited recipes unlocked.");
+      return;
+    }
+    if (result === "not_presented") {
+      Alert.alert("Paywall unavailable", "No RevenueCat paywall is available for this offering.");
+      return;
+    }
+    if (result === "error") {
+      Alert.alert("Purchase failed", "Something went wrong opening the paywall.");
     }
   };
 
