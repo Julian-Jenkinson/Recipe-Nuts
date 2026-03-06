@@ -2,6 +2,40 @@
 import Purchases from 'react-native-purchases';
 import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui';
 
+type RevenueCatErrorLike = {
+  code?: string;
+  message?: string;
+  userInfo?: unknown;
+  underlyingErrorMessage?: string;
+};
+
+function serializeRevenueCatError(err: unknown) {
+  if (err instanceof Error) {
+    const errorWithExtras = err as Error & RevenueCatErrorLike;
+    return {
+      name: err.name,
+      message: err.message,
+      stack: err.stack,
+      code: errorWithExtras.code,
+      userInfo: errorWithExtras.userInfo,
+      underlyingErrorMessage: errorWithExtras.underlyingErrorMessage,
+    };
+  }
+
+  if (typeof err === 'object' && err !== null) {
+    const errorLike = err as RevenueCatErrorLike;
+    return {
+      code: errorLike.code,
+      message: errorLike.message,
+      userInfo: errorLike.userInfo,
+      underlyingErrorMessage: errorLike.underlyingErrorMessage,
+      raw: err,
+    };
+  }
+
+  return { raw: err };
+}
+
 export const fetchPaywallPackage = async (paywallId: string) => {
   try {
     const offerings = await Purchases.getOfferings();
@@ -37,6 +71,10 @@ export const presentRevenueCatPaywall = async (
 ): Promise<RevenueCatPaywallOutcome> => {
   try {
     const offerings = await Purchases.getOfferings();
+    console.log(
+      `[RevenueCat] Loaded offerings: ${Object.keys(offerings.all).join(', ')}`
+    );
+
     const offering =
       offerings.all[offeringId] ??
       Object.values(offerings.all).find((o) => o.identifier === offeringId);
@@ -62,9 +100,13 @@ export const presentRevenueCatPaywall = async (
     if (result === PAYWALL_RESULT.CANCELLED) return 'cancelled';
     if (result === PAYWALL_RESULT.NOT_PRESENTED) return 'not_presented';
 
+    console.warn('[RevenueCat] Paywall returned an unexpected result:', result);
     return 'error';
   } catch (err) {
-    console.warn('[RevenueCat] Failed to present paywall:', err);
+    console.warn(
+      '[RevenueCat] Failed to present paywall:',
+      JSON.stringify(serializeRevenueCatError(err), null, 2)
+    );
     return 'error';
   }
 };

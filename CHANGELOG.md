@@ -26,3 +26,15 @@
 ## [1.0.4] – 20-02-2026
 ### Fix
 - fixed url links to privacy and terms on website
+
+## [1.1.0] – 02-03-2026
+### Feat
+- Added convert and scale feature 
+
+## [1.1.1] – 03-03-2026
+### Fix
+- improved scale and convert feature
+
+## [1.2.0] – 06-03-2026
+### Feat
+- added better paywall

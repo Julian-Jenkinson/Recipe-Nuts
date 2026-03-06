@@ -126,9 +126,12 @@ export default function RecipeDetailsScreen() {
     setIsPurchasing(true);
     try {
       const result = await presentRevenueCatPaywall('default');
-      if (result === 'purchased' || result === 'restored') {
+      if (result === 'purchased') {
         await syncCustomerInfo();
         Alert.alert('Success', 'You have upgraded to Pro! Unlimited recipes unlocked.');
+      } else if (result === 'restored') {
+        await syncCustomerInfo();
+        Alert.alert('Restored', 'Your Pro purchase has been restored.');
       } else if (result === 'not_presented') {
         Alert.alert('Paywall unavailable', 'No RevenueCat paywall is available for this offering.');
       } else if (result === 'error') {

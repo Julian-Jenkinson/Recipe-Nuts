@@ -47,9 +47,14 @@ export default function Menu() {
 
   const handleUpgrade = async () => {
     const result = await presentRevenueCatPaywall("default");
-    if (result === "purchased" || result === "restored") {
+    if (result === "purchased") {
       await syncCustomerInfo();
       Alert.alert("Success", "You have upgraded to Pro! Unlimited recipes unlocked.");
+      return;
+    }
+    if (result === "restored") {
+      await syncCustomerInfo();
+      Alert.alert("Restored", "Your Pro purchase has been restored.");
       return;
     }
     if (result === "not_presented") {
