@@ -38,3 +38,19 @@
 ## [1.2.0] – 06-03-2026
 ### Feat
 - added better paywall
+
+## [1.2.1] – 06-03-2026
+### Fix
+- patched an issue that caused an error when opeing the paywall
+
+## [1.2.2] – 07-03-2026
+### Fix
+- patched an issue that caused an error when opeing the paywall
+
+## [1.2.3] – 07-03-2026
+### Fix
+- added rc api key to eas build env variables
+
+## [1.2.4] – 07-03-2026
+### Fix
+- reconfigured eas env variables api key public key

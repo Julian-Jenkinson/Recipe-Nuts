@@ -10,10 +10,9 @@ import { KeyboardProvider } from "react-native-keyboard-controller";
 import { QuickTourModal } from "../components/QuickTourModal";
 import { useRecipeStore } from '../stores/useRecipeStore';
 
-import { Platform } from 'react-native';
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Purchases from 'react-native-purchases';
+import { ensureRevenueCatConfigured } from '../utils/revenueCat';
 
 function NoRippleButton(props: PressableProps) {
   console.log("🟡 no ripple about to be called");
@@ -41,15 +40,7 @@ export default function Layout() {
   useEffect(() => {
     const initRevenueCat = async () => {
       try {
-        // 1️⃣ Configure RevenueCat
-        if (Platform.OS === "ios") {
-          // Purchases.configure({ apiKey: IOS_KEY });
-        } 
-        else {
-          Purchases.configure({
-            apiKey: process.env.EXPO_PUBLIC_REVENUECAT_GOOGLE_API_KEY!,
-          });
-        }
+        await ensureRevenueCatConfigured();
 
         // 3️⃣ Try fetching latest info from RevenueCat
         try {

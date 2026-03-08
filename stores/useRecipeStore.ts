@@ -8,6 +8,7 @@ import {
 } from '../domain/ingredients/ingredientMigration';
 import type { UnitSystem } from '../domain/ingredients/ingredientDisplayAdapter';
 import type { IngredientDetail } from '../domain/ingredients/types';
+import { ensureRevenueCatConfigured } from '../utils/revenueCat';
 
 export type Recipe = {
   id: string; // local UUID
@@ -157,6 +158,7 @@ export const useRecipeStore = create<RecipeState>()(
 
       restorePurchases: async () => {
         try {
+          await ensureRevenueCatConfigured();
           const info = await Purchases.restorePurchases();
           get().setCustomerInfo(info);
         } catch (err) {
@@ -166,6 +168,7 @@ export const useRecipeStore = create<RecipeState>()(
 
       syncCustomerInfo: async () => {
         try {
+          await ensureRevenueCatConfigured();
           const info = await Purchases.getCustomerInfo();
           get().setCustomerInfo(info);
         } catch (err) {

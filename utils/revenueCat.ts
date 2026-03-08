@@ -1,6 +1,7 @@
 
 import Purchases from 'react-native-purchases';
 import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui';
+import { Platform } from 'react-native';
 
 type RevenueCatErrorLike = {
   code?: string;
@@ -36,8 +37,47 @@ function serializeRevenueCatError(err: unknown) {
   return { raw: err };
 }
 
+let configurePurchasesPromise: Promise<void> | null = null;
+
+function getRevenueCatApiKey() {
+  if (Platform.OS === 'android') {
+    return process.env.EXPO_PUBLIC_REVENUECAT_GOOGLE_API_KEY;
+  }
+
+  if (Platform.OS === 'ios') {
+    return process.env.EXPO_PUBLIC_REVENUECAT_IOS_API_KEY;
+  }
+
+  return null;
+}
+
+export async function ensureRevenueCatConfigured() {
+  if (configurePurchasesPromise) {
+    return configurePurchasesPromise;
+  }
+
+  configurePurchasesPromise = (async () => {
+    const apiKey = getRevenueCatApiKey();
+
+    if (!apiKey) {
+      throw new Error(
+        `[RevenueCat] Missing API key for platform "${Platform.OS}".`
+      );
+    }
+
+    Purchases.configure({ apiKey });
+    console.log(`[RevenueCat] Purchases configured for ${Platform.OS}.`);
+  })().catch((err) => {
+    configurePurchasesPromise = null;
+    throw err;
+  });
+
+  return configurePurchasesPromise;
+}
+
 export const fetchPaywallPackage = async (paywallId: string) => {
   try {
+    await ensureRevenueCatConfigured();
     const offerings = await Purchases.getOfferings();
     const paywall = Object.values(offerings.all).find(
       (o) => o.identifier === paywallId
@@ -53,6 +93,7 @@ export const fetchPaywallPackage = async (paywallId: string) => {
 
 export const purchasePackage = async (pkg: any) => {
   try {
+    await ensureRevenueCatConfigured();
     return await Purchases.purchasePackage(pkg);
   } catch (e) {
     throw e;
@@ -70,6 +111,7 @@ export const presentRevenueCatPaywall = async (
   offeringId: string
 ): Promise<RevenueCatPaywallOutcome> => {
   try {
+    await ensureRevenueCatConfigured();
     const offerings = await Purchases.getOfferings();
     console.log(
       `[RevenueCat] Loaded offerings: ${Object.keys(offerings.all).join(', ')}`
