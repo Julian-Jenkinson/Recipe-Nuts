@@ -54,3 +54,7 @@
 ## [1.2.4] – 07-03-2026
 ### Fix
 - reconfigured eas env variables api key public key
+
+## [1.2.5] – 24-03-2026
+### Feat
+- added temp security key to better control recipe extrator api usage

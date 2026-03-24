@@ -10,6 +10,8 @@ import { useRecipeStore } from '../../stores/useRecipeStore';
 import theme from '../../theme';
 import { downloadAndStoreImage } from '../../utils/downloadAndStoreImage';
 
+const recipeExtractorAppKey = process.env.EXPO_PUBLIC_RECIPE_EXTRACTOR_APP_KEY;
+
 export default function AddRecipeScreen() {
   const recipes = useRecipeStore((state) => state.recipes);
   const isPro = useRecipeStore((state) => state.isPro);
@@ -32,12 +34,22 @@ export default function AddRecipeScreen() {
       return;
     }
 
+    if (!recipeExtractorAppKey) {
+      Alert.alert('Configuration error', 'Recipe extractor app key is missing.');
+      return;
+    }
+
     setLoading(true);
 
     try {
       // ✅ 1. Fetch recipe data
       const response = await fetch(
-        `https://recipe-extractor-api.fly.dev/extract?url=${encodeURIComponent(inputUrl)}`
+        `https://recipe-extractor-api.fly.dev/extract?url=${encodeURIComponent(inputUrl)}`,
+        {
+          headers: {
+            'X-App-Key': recipeExtractorAppKey,
+          },
+        }
       );
       if (!response.ok) {
         console.warn('Invalid response from API');

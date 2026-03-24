@@ -51,10 +51,7 @@ Utilising Expo managed workflow. The following commands will be useful:
    
 
    # have you bumped the version number
-   eas build --platform android --profile production --auto-submit
-
-
-    # auto submit to production
+   eas build --platform android --profile production --auto-submit   # auto submit to production
 
    ```
 

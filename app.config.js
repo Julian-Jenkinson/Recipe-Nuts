@@ -5,7 +5,7 @@ export default () => {
     "expo": {
       "name": "Recipe Nuts",
       "slug": "recipenuts",
-      "version": "1.2.4",
+      "version": "1.2.6",
       "orientation": "portrait",
       "icon": "./assets/images/icon.png",
       "scheme": "recipenuts",
