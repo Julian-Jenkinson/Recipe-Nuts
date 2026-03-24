@@ -14,6 +14,7 @@ export default function Menu() {
   const recipes = useRecipeStore((state) => state.recipes);
   const isPro = useRecipeStore((state) => state.isPro);
   const syncCustomerInfo = useRecipeStore((state) => state.syncCustomerInfo);
+  const restorePurchases = useRecipeStore((state) => state.restorePurchases);
   const ingredientUnitPreference = useRecipeStore(
     (state) => state.ingredientUnitPreference
   );
@@ -111,8 +112,9 @@ export default function Menu() {
 
   const handleRestore = async () => {
     try {
-      await syncCustomerInfo(); // RevenueCat syncs purchases
-      if (isPro) {
+      await restorePurchases();
+      const hasProAccess = useRecipeStore.getState().isPro;
+      if (hasProAccess) {
         Alert.alert("Restored!", "Your Pro subscription has been restored.");
       } else {
         Alert.alert("Nothing to restore", "No previous purchases found.");
