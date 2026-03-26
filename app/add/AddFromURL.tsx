@@ -1,8 +1,8 @@
 import { Feather } from '@expo/vector-icons';
 import { Input, InputField, InputSlot, StatusBar } from '@gluestack-ui/themed';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as StoreReview from 'expo-store-review';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Keyboard, Pressable, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 import { FreeTierLimitReached } from '../../components/FreeTierLimitReached';
 import type { IngredientDetail } from '../../domain/ingredients/types';
@@ -19,17 +19,30 @@ export default function AddRecipeScreen() {
   const [loading, setLoading] = useState(false);
   const addRecipe = useRecipeStore((state) => state.addRecipe);
   const router = useRouter();
+  const { sharedUrl } = useLocalSearchParams<{ sharedUrl?: string | string[] }>();
   const [focused, setFocused] = React.useState(false);
+  const normalizedSharedUrl = Array.isArray(sharedUrl) ? sharedUrl[0] : sharedUrl;
+  const lastAutoImportedUrl = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!normalizedSharedUrl) {
+      return;
+    }
+
+    setInputUrl((currentValue) =>
+      currentValue === normalizedSharedUrl ? currentValue : normalizedSharedUrl
+    );
+  }, [normalizedSharedUrl]);
 
   const getRawIngredientText = (detail: IngredientDetail) =>
     detail.raw?.trim() || detail.ingredient?.trim() || '';
 
   console.log('isPro:', isPro, 'recipes.length:', recipes.length);
 
-  const handleImportAndSave = async () => {
+  const importRecipeFromUrl = async (urlToImport: string) => {
     Keyboard.dismiss();
 
-    if (!inputUrl.trim()) {
+    if (!urlToImport.trim()) {
       Alert.alert('Missing URL', 'Please enter a recipe URL.');
       return;
     }
@@ -44,7 +57,7 @@ export default function AddRecipeScreen() {
     try {
       // ✅ 1. Fetch recipe data
       const response = await fetch(
-        `https://recipe-extractor-api.fly.dev/extract?url=${encodeURIComponent(inputUrl)}`,
+        `https://recipe-extractor-api.fly.dev/extract?url=${encodeURIComponent(urlToImport)}`,
         {
           headers: {
             'X-App-Key': recipeExtractorAppKey,
@@ -100,42 +113,8 @@ export default function AddRecipeScreen() {
 
       // ✅ 5. Reset input
       setInputUrl('');
-
-      Alert.alert(
-        'Success', 
-        'Recipe imported and saved!', 
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              router.replace('/recipes'),
-              triggerReviewIfNeeded();
-            }
-          },
-        ]
-      );
-
-      
-      
-      // ✅ 6. Navigate back *after everything is done*
-      //router.replace('/recipes');
-      
-      // ✅ 7. Show quick success toast/alert AFTER navigation
-      //setTimeout(() => {
-       // Alert.alert(
-        //  'Success',
-        //  'Recipe imported and saved!',
-        //  [
-        //    {
-        //      text: 'OK',
-        //      onPress: () => {
-        //        // NOW the alert is gone → trigger review
-        //        triggerReviewIfNeeded();
-        //      }
-        //    }
-        //  ]
-        //);
-      //}, 1000);// tiny delay to avoid blocking transition
+      router.replace(`/recipes/${newRecipe.id}`);
+      void triggerReviewIfNeeded();
 
     } catch (err: any) {
       console.error('Import error:', err);
@@ -143,6 +122,19 @@ export default function AddRecipeScreen() {
     } finally {
       setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    if (!normalizedSharedUrl || loading || lastAutoImportedUrl.current === normalizedSharedUrl) {
+      return;
+    }
+
+    lastAutoImportedUrl.current = normalizedSharedUrl;
+    void importRecipeFromUrl(normalizedSharedUrl);
+  }, [loading, normalizedSharedUrl]);
+
+  const handleImportAndSave = async () => {
+    await importRecipeFromUrl(inputUrl);
   };
 
   const handleCreateBlank = () => {

@@ -1,10 +1,11 @@
 import { config } from '@gluestack-ui/config';
 import { GluestackUIProvider } from '@gluestack-ui/themed';
 import { useFonts } from 'expo-font';
+import { ShareIntentProvider, useShareIntentContext } from 'expo-share-intent';
 import * as NavigationBar from "expo-navigation-bar";
-import { Stack } from "expo-router";
+import { Stack, usePathname, useRouter } from "expo-router";
 import * as SplashScreen from 'expo-splash-screen';
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Pressable, PressableProps, StatusBar } from "react-native";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { QuickTourModal } from "../components/QuickTourModal";
@@ -17,6 +18,37 @@ import { ensureRevenueCatConfigured } from '../utils/revenueCat';
 function NoRippleButton(props: PressableProps) {
   console.log("🟡 no ripple about to be called");
   return <Pressable {...props} android_ripple={null} />;
+}
+
+function SharedRecipeUrlHandler() {
+  const { hasShareIntent, isReady, resetShareIntent, shareIntent } = useShareIntentContext();
+  const router = useRouter();
+  const pathname = usePathname();
+  const lastHandledUrl = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!isReady || !hasShareIntent) {
+      return;
+    }
+
+    const sharedUrl = shareIntent.webUrl?.trim();
+    if (!sharedUrl || lastHandledUrl.current === sharedUrl) {
+      return;
+    }
+
+    lastHandledUrl.current = sharedUrl;
+    const targetPath = `/add/AddFromURL?sharedUrl=${encodeURIComponent(sharedUrl)}`;
+
+    if (pathname === '/add/AddFromURL') {
+      router.replace(targetPath);
+    } else {
+      router.push(targetPath);
+    }
+
+    resetShareIntent();
+  }, [hasShareIntent, isReady, pathname, resetShareIntent, router, shareIntent.webUrl]);
+
+  return null;
 }
 
 export default function Layout() {
@@ -125,20 +157,23 @@ export default function Layout() {
   }
 
   return (
-    <GluestackUIProvider config={config}>
-      <KeyboardProvider>
-        <StatusBar
-          //backgroundColor={theme.colors.cta}
-          //barStyle="light-content"
-          translucent={true} // added this to try and resolve extra padding bug... not sure if i need it
-        />
-        <Stack
-          screenOptions={{
-            headerShown: false,
-          }} 
-        />     
-        <QuickTourModal isOpen={showQuickTour} onClose={() => setShowQuickTour(false)} />
-      </KeyboardProvider>
-    </GluestackUIProvider>
+    <ShareIntentProvider>
+      <GluestackUIProvider config={config}>
+        <KeyboardProvider>
+          <SharedRecipeUrlHandler />
+          <StatusBar
+            //backgroundColor={theme.colors.cta}
+            //barStyle="light-content"
+            translucent={true} // added this to try and resolve extra padding bug... not sure if i need it
+          />
+          <Stack
+            screenOptions={{
+              headerShown: false,
+            }} 
+          />     
+          <QuickTourModal isOpen={showQuickTour} onClose={() => setShowQuickTour(false)} />
+        </KeyboardProvider>
+      </GluestackUIProvider>
+    </ShareIntentProvider>
   );
 }

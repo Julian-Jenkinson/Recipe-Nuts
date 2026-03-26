@@ -18,12 +18,7 @@ export default function AddBlankRecipe() {
       };
 
       addRecipe(newRecipe);
-      Alert.alert('Success', 'Recipe created successfully!', [
-        {
-          text: 'OK',
-          onPress: () => router.replace('/recipes'),
-        },
-      ]);
+      router.replace(`/recipes/${newRecipe.id}`);
     } catch (error) {
       console.error('Error creating recipe:', error);
       Alert.alert('Error', 'Failed to create recipe. Please try again.');

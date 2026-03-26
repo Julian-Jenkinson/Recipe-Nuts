@@ -5,7 +5,7 @@ export default () => {
     "expo": {
       "name": "Recipe Nuts",
       "slug": "recipenuts",
-      "version": "1.2.6",
+      "version": "1.3.0",
       "orientation": "portrait",
       "icon": "./assets/images/icon.png",
       "scheme": "recipenuts",
@@ -47,6 +47,7 @@ export default () => {
       },
       "plugins": [
         "expo-router",
+        "expo-share-intent",
         [
           "expo-splash-screen",
           {

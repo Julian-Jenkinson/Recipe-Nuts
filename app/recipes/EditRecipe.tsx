@@ -100,14 +100,7 @@ export default function EditRecipe() {
     };
 
     updateRecipe(updatedRecipe);
-    //Alert.alert('Success', 'Recipe updated!');
-    //router.back();
-    Alert.alert('Success', 'Recipe updated!', [
-            {
-              text: 'OK',
-              onPress: () => router.replace('/recipes'),
-            },
-          ]);
+    router.replace(`/recipes/${updatedRecipe.id}`);
   };
 
   const handleCancel = () => {

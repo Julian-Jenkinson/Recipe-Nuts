@@ -58,3 +58,10 @@
 ## [1.2.5] – 24-03-2026
 ### Feat
 - added temp security key to better control recipe extrator api usage
+
+## [1.3.0] – 26-03-2026
+### Feat
+- users can now share directly from chrome to the app to avoiding cutting and pasting
+### Improved
+- when adding a recipe go straight to the recipe id page instead of the recipe list page
+- improved flow when adding or editing a recipe and removed a success toast when importing
