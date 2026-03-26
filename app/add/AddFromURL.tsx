@@ -147,7 +147,7 @@ export default function AddRecipeScreen() {
       <FreeTierLimitReached 
         currentCount={recipes.length} 
         maxFree={10} 
-        onUpgrade={() => router.push('/menu')} // navigate to menu/upgrade - change this later to specific screen after payment
+        onUpgrade={() => router.push('/settings')}
       />
     );
   }

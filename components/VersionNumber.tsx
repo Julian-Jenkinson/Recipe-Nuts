@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
   versionText: {
     textAlign: "center",
     fontSize: 14,
-    paddingBottom: 65,
+    paddingBottom: 30,
     paddingVertical: 10,
     fontFamily: "body-400",
     color: theme.colors.text2,

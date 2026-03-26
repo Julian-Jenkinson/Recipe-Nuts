@@ -1,5 +1,5 @@
 import { Feather } from '@expo/vector-icons';
-import { Box, HStack, Pressable, StatusBar, Text, VStack, View } from '@gluestack-ui/themed';
+import { Box, HStack, Pressable, Text, VStack, View } from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Alert, Animated, Dimensions, Easing, Modal, PanResponder, StyleSheet } from 'react-native';
@@ -181,9 +181,6 @@ export default function AddRecipeDrawer({ isOpen, onClose }: Props) {
       statusBarTranslucent={true}
       navigationBarTranslucent={true}
     >
-      
-      <StatusBar backgroundColor={theme.colors.cta} barStyle="light-content" />
-      
       {/* Simplified Backdrop */}
       <Animated.View
         style={[styles.backdrop, { opacity: backdropOpacity }]}
